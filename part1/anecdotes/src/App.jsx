@@ -13,27 +13,39 @@ const App = () => {
   ]
    
   const [selected, setSelected] = useState(0)
+  const [vote, setVote] = useState(new Array(8).fill(0))
 
   const getRandomNumber = () => {
     return Math.floor(Math.random() * 8)
   }
 
-  const handleClick = () => {
+  const handleNextAnecdoteClick = () => {
     let nextSelected = getRandomNumber()
     while (nextSelected == selected) {
       console.log('still the same number... regenerate')
       nextSelected = getRandomNumber()
     }
       
-    console.log('next anecdote position ', nextSelected)
+    console.log('next anecdote position', nextSelected, vote[nextSelected])
     setSelected(nextSelected)
+  }
+
+  const handleVote = () => {
+    const newVote = [...vote]
+    newVote[selected]++
+    console.log('increase vote of', selected, 'to', newVote[selected])
+    setVote(newVote)
   }
 
   return (
     <div>
       {anecdotes[selected]}
+      <p>has {vote[selected]} votes</p>
       <div>
-        <button onClick={handleClick}>
+        <button onClick={handleVote}>
+          vote
+        </button>
+        <button onClick={handleNextAnecdoteClick}>
           next anecdote
         </button>
       </div>
