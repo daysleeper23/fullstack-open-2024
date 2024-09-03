@@ -19,7 +19,12 @@ const App = () => {
 
     if (newName.length == 0)
       return
-    
+
+    if (persons.find(person => person.name === newName)) {
+      alert(`${newName} is already added to phonebook`)
+      return
+    }
+
     console.log('start submitting...')
     let newPersons = [...persons]
     newPersons.push({name: newName})
