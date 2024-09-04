@@ -1,8 +1,22 @@
+import { useState } from "react"
 import SingleCountryInfo from "./SingleCountryInfo"
 
-const SearchResultEntry = ({ name }) => {
+const SearchResultEntry = ({ country }) => {
+  const [showDetail, setShowDetail] = useState(false)
+
+  const toggleShowDetail = (e) => {
+    const newStatus = !showDetail
+    setShowDetail(newStatus)
+  }
+
   return (
-    <div>{name}</div>
+    <div>
+      {country.name.common}
+      <button onClick={toggleShowDetail}>
+        { !showDetail ? 'show' : 'hide'}
+      </button>
+      { showDetail ? <SingleCountryInfo country={country} /> : <></>}
+    </div>
   )
 }
 
@@ -21,7 +35,7 @@ const SearchResult = ({ searchTerm, results }) => {
       return (
         <>
           {
-            countries.map(country => <SearchResultEntry key={country.name.common} name={country.name.common} />)
+            countries.map(country => <SearchResultEntry key={country.name.common} country={country} />)
           }
         </>
       )
