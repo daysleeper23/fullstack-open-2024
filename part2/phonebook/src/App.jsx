@@ -1,29 +1,23 @@
 import { useState } from 'react'
-
-const Item = ({person}) => {
-  return (
-    <tr>
-      <td>
-        <p>{person.name}</p>
-      </td>
-      <td>
-        <p>{person.number}</p>
-      </td>
-    </tr>
-  )
-}
+import Filter from './components/Filter'
+import Persons from './components/Persons'
+import PersonForm from './components/PersonForm'
 
 const App = () => {
+
   const [persons, setPersons] = useState([
-    { 
-      name: 'Arto Hellas',
-      number: '0401234567'  
-     }
+    { name: 'Arto Hellas', number: '040-123456', id: 1 },
+    { name: 'Ada Lovelace', number: '39-44-5323523', id: 2 },
+    { name: 'Dan Abramov', number: '12-43-234345', id: 3 },
+    { name: 'Mary Poppendieck', number: '39-23-6423122', id: 4 }
   ])
+
 
   const [newNumber, setNewNumber] = useState('')
 
   const [newName, setNewName] = useState('')
+
+  const [newSearch, setNewSearch] = useState('')
 
   const handleNameChange = (e) => {
     console.log('current string of the name input', e.target.value)
@@ -33,6 +27,11 @@ const App = () => {
   const handleNumberChange = (e) => {
     console.log('current string of the number input', e.target.value)
     setNewNumber(e.target.value)
+  }
+
+  const handleSearchChange = (e) => {
+    console.log('current string of the search input', e.target.value)
+    setNewSearch(e.target.value)
   }
 
   const handleSubmit = (e) => {
@@ -48,32 +47,26 @@ const App = () => {
 
     console.log('start submitting...')
     let newPersons = [...persons]
-    newPersons.push({name: newName, number: newNumber})
+    newPersons.push({name: newName, number: newNumber, id: persons.length + 1})
     console.log('new Persons:', newPersons)
     setPersons(newPersons)
 
     setNewName('')
     setNewNumber('')
+    document.getElementById('name').focus()
   }
 
   return (
     <div>
       <h2>Phonebook</h2>
-      <form onSubmit={handleSubmit}>
-        <div>
-          name: <input value={newName} onChange={handleNameChange}/>
-        </div>
-        <div>
-          number: <input value={newNumber} onChange={handleNumberChange}/>
-        </div>
-        <div>
-          <button type="submit">add</button>
-        </div>
-      </form>
+      <Filter search={newSearch} handleSearchChange={handleSearchChange} />
+      <h2>Add a new</h2>
+      <PersonForm 
+        name={newName} number={newNumber} 
+        submitHandler={handleSubmit} nameChangeHandler={handleNameChange} numChangeHandler={handleNumberChange}
+      />
       <h2>Numbers</h2>
-      <table>
-        {persons.map(person => <Item key={person.name} person={person} />)}
-      </table>
+      <Persons list={persons} searchTerm={newSearch} />
     </div>
   )
 }
