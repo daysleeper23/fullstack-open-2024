@@ -1,5 +1,7 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
+import { getAll, create, update} from './services/persons'
+
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
@@ -16,8 +18,7 @@ const App = () => {
 
   useEffect(() => {
     console.log('effect')
-    axios
-      .get('http://localhost:3001/persons')
+    getAll()
       .then(response => {
         console.log('promise fulfilled')
         setPersons(response.data)
@@ -53,9 +54,13 @@ const App = () => {
 
     console.log('start submitting...')
     let newPersons = [...persons]
-    newPersons.push({name: newName, number: newNumber, id: persons.length + 1})
-    console.log('new Persons:', newPersons)
-    setPersons(newPersons)
+    create({name: newName, number: newNumber, id: persons.length + 1})
+      .then(response => {
+        console.log('create promise fulfilled')
+        newPersons.push({name: newName, number: newNumber, id: (persons.length + 1).toString()})
+        console.log('new Persons:', newPersons)
+        setPersons(newPersons)
+      })
 
     setNewName('')
     setNewNumber('')
