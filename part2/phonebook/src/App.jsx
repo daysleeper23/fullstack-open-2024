@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react'
 import axios from 'axios'
-import { getAll, create, update} from './services/persons'
+import { getAll, create, update, deletePerson } from './services/persons'
 
 import Filter from './components/Filter'
 import Persons from './components/Persons'
@@ -53,18 +53,50 @@ const App = () => {
     }
 
     console.log('start submitting...')
-    let newPersons = [...persons]
-    create({name: newName, number: newNumber, id: persons.length + 1})
+    const newId = Number(persons.reduce((newId, person) => {
+      return person.id > newId ? person.id : newId
+    }, 0)) + 1
+    
+    create({name: newName, number: newNumber, id: newId.toString()})
       .then(response => {
         console.log('create promise fulfilled')
-        newPersons.push({name: newName, number: newNumber, id: (persons.length + 1).toString()})
+
+        let newPersons = [...persons]
+        newPersons.push({name: response.data.name, number: response.data.number, id: response.data.id})
+        
         console.log('new Persons:', newPersons)
         setPersons(newPersons)
+      })
+      .catch(error => {
+        console.log('fail')
       })
 
     setNewName('')
     setNewNumber('')
     document.getElementById('name').focus()
+  }
+
+  const handleDelete = (e) => {
+    const deletingPerson = persons.find(person => person.id == e.target.id)
+
+    if (window.confirm(`Delete ${deletingPerson.name} ?`)) {
+      deletePerson(deletingPerson.id)
+        .then(response => {
+          console.log('delete promise fulfilled')
+          
+          const newPersons = [...persons]
+          const index = persons.findIndex(person => person.id == response.data.id)
+          if (index !== -1) {
+            newPersons.splice(index, 1);
+          }
+
+          console.log('new Persons:', newPersons)
+          setPersons(newPersons)
+        })
+        .catch(error => {
+          console.log('delete fail')
+        })
+    }
   }
 
   return (
@@ -77,7 +109,9 @@ const App = () => {
         submitHandler={handleSubmit} nameChangeHandler={handleNameChange} numChangeHandler={handleNumberChange}
       />
       <h2>Numbers</h2>
-      <Persons list={persons} searchTerm={newSearch} />
+      <Persons 
+        list={persons} searchTerm={newSearch}
+        deleteHandler={handleDelete} />
     </div>
   )
 }

@@ -1,4 +1,4 @@
-const Item = ({ person }) => {
+const Item = ({ person, deleteHandler }) => {
   return (
     <tr>
       <td>
@@ -7,18 +7,23 @@ const Item = ({ person }) => {
       <td>
         <p>{person.number}</p>
       </td>
+      <td>
+        <button id={person.id} onClick={deleteHandler}>
+          delete
+        </button>
+      </td>
     </tr>
   )
 }
 
-const Persons = ({ list, searchTerm }) => {
+const Persons = ({ list, searchTerm, deleteHandler }) => {
   return (
     <table>
       <tbody>
         {
           list.filter(
             person => person.name.toLowerCase().includes(searchTerm.toLowerCase())
-          ).map(person => <Item key={person.id} person={person} />)
+          ).map(person => <Item key={person.id} person={person} deleteHandler={deleteHandler} />)
         }
       </tbody>
     </table>
