@@ -16,7 +16,7 @@ const App = () => {
 
   const [newSearch, setNewSearch] = useState('')
 
-  const [notification, setNotification] = useState('')
+  const [notification, setNotification] = useState({ type: 'success', message: ''})
 
   useEffect(() => {
     console.log('effect')
@@ -69,15 +69,32 @@ const App = () => {
             console.log('new Persons:', newPersons)
             setPersons(newPersons)
 
-            setNotification(`Updated ${response.data.name}`)
+            setNotification({type: 'success', message: `Updated ${response.data.name}`})
             setTimeout(() => { 
-              setNotification(``)
-              }, 2000)
+              setNotification({type: 'success', message: ``})
+            }, 2000)
             
               return
             })
           .catch(error => {
-            console.log('fail')
+            if (error.response) {
+              console.log('Error status code:', error.response.status);
+              if (error.response.status == 404)
+              {
+                console.log('found error!')
+                setNotification({ type: 'error', message: `Information of ${newName} has been removed from server` })
+                setTimeout(() => { 
+                  setNotification({type: 'success', message: ``})
+                }, 2000)
+                return
+              }
+            } else if (error.request) {
+              console.log('No response received:', error.request);
+            } else {
+              console.log('Error while :', error.message);
+            }
+
+            console.log('update fail')
             return
           })
 
@@ -99,9 +116,9 @@ const App = () => {
           console.log('new Persons:', newPersons)
           setPersons(newPersons)
 
-          setNotification(`Added ${response.data.name}`)
+          setNotification({ type: 'success', message: `Added ${response.data.name}` })
           setTimeout(() => { 
-            setNotification(``)
+            setNotification({type: 'success', message: ``})
            }, 2000)
         })  
         .catch(error => {
@@ -132,10 +149,10 @@ const App = () => {
           console.log('new Persons:', newPersons)
           setPersons(newPersons)
           
-          setNotification(`Deleted ${response.data.name}`)
+          setNotification({ type: 'success', message: `Deleted ${response.data.name}` })
           setTimeout(() => { 
-            setNotification(``)
-            }, 2000)
+            setNotification({type: 'success', message: ``})
+          }, 2000)
         })
         .catch(error => {
           console.log('delete fail')
@@ -146,7 +163,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification type="success" message={notification}/>
+      <Notification type={notification.type} message={notification.message}/>
       <Filter search={newSearch} handleSearchChange={handleSearchChange} />
       <h2>Add a new</h2>
       <PersonForm 
