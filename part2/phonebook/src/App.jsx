@@ -1,10 +1,10 @@
 import { useState, useEffect } from 'react'
-import axios from 'axios'
 import { getAll, create, update, deletePerson } from './services/persons'
 
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import PersonForm from './components/PersonForm'
+import Notification from './components/Notification'
 
 const App = () => {
 
@@ -15,6 +15,8 @@ const App = () => {
   const [newName, setNewName] = useState('')
 
   const [newSearch, setNewSearch] = useState('')
+
+  const [notification, setNotification] = useState('')
 
   useEffect(() => {
     console.log('effect')
@@ -66,8 +68,14 @@ const App = () => {
             
             console.log('new Persons:', newPersons)
             setPersons(newPersons)
-            return
-          })
+
+            setNotification(`Updated ${response.data.name}`)
+            setTimeout(() => { 
+              setNotification(``)
+              }, 2000)
+            
+              return
+            })
           .catch(error => {
             console.log('fail')
             return
@@ -90,7 +98,12 @@ const App = () => {
           
           console.log('new Persons:', newPersons)
           setPersons(newPersons)
-        })
+
+          setNotification(`Added ${response.data.name}`)
+          setTimeout(() => { 
+            setNotification(``)
+           }, 2000)
+        })  
         .catch(error => {
           console.log('fail')
         })
@@ -118,6 +131,11 @@ const App = () => {
 
           console.log('new Persons:', newPersons)
           setPersons(newPersons)
+          
+          setNotification(`Deleted ${response.data.name}`)
+          setTimeout(() => { 
+            setNotification(``)
+            }, 2000)
         })
         .catch(error => {
           console.log('delete fail')
@@ -128,6 +146,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification type="success" message={notification}/>
       <Filter search={newSearch} handleSearchChange={handleSearchChange} />
       <h2>Add a new</h2>
       <PersonForm 
