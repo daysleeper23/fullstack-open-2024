@@ -47,29 +47,55 @@ const App = () => {
     if (newName.length == 0 || newNumber.length == 0)
       return
 
-    if (persons.find(person => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`)
-      return
-    }
+    const newPerson = persons.find(person => person.name === newName)
 
-    console.log('start submitting...')
-    const newId = Number(persons.reduce((newId, person) => {
-      return person.id > newId ? person.id : newId
-    }, 0)) + 1
+    if (newPerson) {      
+      if (newPerson.number === newNumber) {
+        alert(`${newName} with the number ${newNumber} is already added to phonebook`)
+        return 
+      }
+
+      if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)) {
+        update(newPerson.id, {...newPerson, number: newNumber})
+          .then(response => {
+            console.log('update promise fulfilled')
     
-    create({name: newName, number: newNumber, id: newId.toString()})
-      .then(response => {
-        console.log('create promise fulfilled')
+            let newPersons = [...persons]
+            const index = newPersons.findIndex(person => person.id === response.data.id);
+            newPersons[index].number = response.data.number
+            
+            console.log('new Persons:', newPersons)
+            setPersons(newPersons)
+            return
+          })
+          .catch(error => {
+            console.log('fail')
+            return
+          })
 
-        let newPersons = [...persons]
-        newPersons.push({name: response.data.name, number: response.data.number, id: response.data.id})
-        
-        console.log('new Persons:', newPersons)
-        setPersons(newPersons)
-      })
-      .catch(error => {
-        console.log('fail')
-      })
+      }
+    }
+    else {
+      console.log('start submitting new entry...')
+      const newId = Number(persons.reduce((newId, person) => {
+        return person.id > newId ? person.id : newId
+      }, 0)) + 1
+      
+      create({name: newName, number: newNumber, id: newId.toString()})
+        .then(response => {
+          console.log('create promise fulfilled')
+
+          let newPersons = [...persons]
+          newPersons.push({name: response.data.name, number: response.data.number, id: response.data.id})
+          
+          console.log('new Persons:', newPersons)
+          setPersons(newPersons)
+        })
+        .catch(error => {
+          console.log('fail')
+        })
+    }
+    
 
     setNewName('')
     setNewNumber('')
