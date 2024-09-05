@@ -35,7 +35,7 @@ app.get('/info', (request, response) => {
       `)
     })
     .catch(error => {
-      return response.status(400).json({ 
+      return response.status(400).json({
         error: error.message
       })
     })
@@ -49,7 +49,7 @@ app.get('/api/persons', (request, response) => {
       response.json(persons)
     })
     .catch(error => {
-      return response.status(400).json({ 
+      return response.status(400).json({
         error: error.message
       })
     })
@@ -66,22 +66,22 @@ app.get('/api/persons/:id', (request, response, next) => {
       else
         response.status(404).end()
     })
-    // .catch(error => next(error))
+    .catch(error => next(error))
 })
 
 //create new person
-app.post('/api/persons', (request, response, next) => {  
+app.post('/api/persons', (request, response, next) => {
   const body = request.body
 
   if (!body.name || !body.number) {
-    return response.status(400).json({ 
-      error: 'missing name or number' 
+    return response.status(400).json({
+      error: 'missing name or number'
     })
   }
 
   // if (persons.findIndex(person => person.name === body.name) !== -1)
-  //   return response.status(400).json({ 
-  //     error: 'name must be unique' 
+  //   return response.status(400).json({
+  //     error: 'name must be unique'
   //   })
 
   const person = new Person({
@@ -115,7 +115,7 @@ app.put('/api/persons/:id', (request, response, next) => {
 //delete person
 app.delete('/api/persons/:id', (request, response, next) => {
   Person.findByIdAndDelete(request.params.id)
-    .then(result => {
+    .then(() => {
       response.status(204).end()
     })
     .catch(error => next(error))
