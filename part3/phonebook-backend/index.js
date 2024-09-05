@@ -15,6 +15,7 @@ var logger = morgan(':method :url :status :res[content-length] - :response-time 
 //middleware
 app.use(cors())
 app.use(express.json())
+app.use(express.static('dist'))
 app.use(logger)
 
 let persons = jsonData.persons

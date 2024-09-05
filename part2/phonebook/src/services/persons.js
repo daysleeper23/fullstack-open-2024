@@ -1,5 +1,5 @@
 import axios from 'axios'
-const baseUrl = 'https://fullstack-open-2024-phonebook-backend.onrender.com/api/persons'
+const baseUrl = '/api/persons'
 
 const getAll = () => {
   return axios.get(baseUrl)
