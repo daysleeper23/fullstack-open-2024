@@ -106,7 +106,7 @@ const App = () => {
         return person.id > newId ? person.id : newId
       }, 0)) + 1
       
-      create({name: newName, number: newNumber, id: newId.toString()})
+      create({name: newName, number: newNumber})
         .then(response => {
           console.log('create promise fulfilled')
 
@@ -141,7 +141,9 @@ const App = () => {
           console.log('delete promise fulfilled')
           
           const newPersons = [...persons]
-          const index = persons.findIndex(person => person.id == response.data.id)
+          console.log(newPersons)
+          const index = persons.findIndex(person => person.id == deletingPerson.id)
+          console.log('deleting index', index)
           if (index !== -1) {
             newPersons.splice(index, 1);
           }
@@ -149,7 +151,7 @@ const App = () => {
           console.log('new Persons:', newPersons)
           setPersons(newPersons)
           
-          setNotification({ type: 'success', message: `Deleted ${response.data.name}` })
+          setNotification({ type: 'success', message: `Deleted ${deletingPerson.name}` })
           setTimeout(() => { 
             setNotification({type: 'success', message: ``})
           }, 2000)

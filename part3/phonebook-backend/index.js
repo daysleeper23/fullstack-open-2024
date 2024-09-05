@@ -1,6 +1,8 @@
 const express = require('express')
 const app = express()
 const jsonData = require('./db.json')
+const cors = require('cors')
+
 
 //logging configuration
 var morgan = require('morgan')
@@ -10,6 +12,8 @@ morgan.token('body', req => {
 
 var logger = morgan(':method :url :status :res[content-length] - :response-time ms :body')
 
+//middleware
+app.use(cors())
 app.use(express.json())
 app.use(logger)
 
