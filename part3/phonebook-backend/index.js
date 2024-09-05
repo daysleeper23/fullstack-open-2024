@@ -14,8 +14,8 @@ var logger = morgan(':method :url :status :res[content-length] - :response-time 
 
 //middleware
 app.use(cors())
-app.use(express.json())
 app.use(express.static('dist'))
+app.use(express.json())
 app.use(logger)
 
 //generic
@@ -61,10 +61,14 @@ app.get('/api/persons/:id', (request, response) => {
   Person
     .findById(request.params.id)
     .then(person => {
-      response.json(person)
+      if (person)
+        response.json(person)
+      else
+        response.status(404).end()
     })
     .catch(error => {
-      return response.status(404).send('Sorry, person not found')
+      console.log(error)
+      response.status(400).send({ error: 'invalid id' })
     })
 })
 
@@ -99,16 +103,34 @@ app.post('/api/persons', (request, response) => {
 })
 
 //delete person
-// app.delete('/api/persons/:id', (request, response) => {
-//   const id = request.params.id.toString()
-//   const beforeDeleteCount = persons.length
-//   persons = persons.filter(person => person.id !== id)
-  
-//   if (persons.length < beforeDeleteCount)
-//     response.status(204).end()
-//   else
-//     response.status(404).send('Sorry, person not found')
-// })
+app.delete('/api/persons/:id', (request, response) => {
+  Person.findByIdAndDelete(request.params.id)
+    .then(result => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
+})
+
+const unknownEndpoint = (request, response) => {
+  response.status(404).send({ error: 'unknown endpoint' })
+}
+
+// handler of requests with unknown endpoint
+app.use(unknownEndpoint)
+
+//Error Handler
+const errorHandler = (error, request, response, next) => {
+  console.error(error.message)
+
+  if (error.name === 'CastError') {
+    return response.status(400).send({ error: 'invalid id' })
+  } 
+
+  next(error)
+}
+
+// this has to be the last loaded middleware, also all the routes should be registered before this!
+app.use(errorHandler)
 
 const PORT = process.env.PORT
 app.listen(PORT, () => {
