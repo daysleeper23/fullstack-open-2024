@@ -1,0 +1,7 @@
+PUT http://localhost:3001/api/persons/66da1ad7b656e0a6495ec77e HTTP/1.1
+Content-Type: application/json
+
+{
+  "name":"Rafael Nadal",
+  "number":"123456"
+}

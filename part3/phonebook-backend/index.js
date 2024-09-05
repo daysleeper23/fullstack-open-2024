@@ -66,10 +66,7 @@ app.get('/api/persons/:id', (request, response) => {
       else
         response.status(404).end()
     })
-    .catch(error => {
-      console.log(error)
-      response.status(400).send({ error: 'invalid id' })
-    })
+    // .catch(error => next(error))
 })
 
 //create new person
@@ -95,11 +92,24 @@ app.post('/api/persons', (request, response) => {
     .then(savedPerson => {
       response.json(savedPerson)
     })
-    .catch(error => {
-      return response.status(400).json({
-        error: error.message
-      })
+    .catch(error => next(error))
+})
+
+//update number
+app.put('/api/persons/:id', (request, response, next) => {
+  const body = request.body
+
+  const person = {
+    name: body.name,
+    number: body.number,
+  }
+
+  Person.findByIdAndUpdate(request.params.id, person, { new: true })
+    .then(updatedPerson => {
+      console.log('update success')
+      response.json(updatedPerson)
     })
+    .catch(error => next(error))
 })
 
 //delete person
@@ -120,7 +130,7 @@ app.use(unknownEndpoint)
 
 //Error Handler
 const errorHandler = (error, request, response, next) => {
-  console.error(error.message)
+  console.log(error.message)
 
   if (error.name === 'CastError') {
     return response.status(400).send({ error: 'invalid id' })
