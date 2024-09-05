@@ -79,15 +79,16 @@ const App = () => {
           .catch(error => {
             if (error.response) {
               console.log('Error status code:', error.response.status);
-              if (error.response.status == 404)
-              {
-                console.log('found error!')
-                setNotification({ type: 'error', message: `Information of ${newName} has been removed from server` })
-                setTimeout(() => { 
-                  setNotification({type: 'success', message: ``})
-                }, 2000)
-                return
-              }
+              // if (error.response.status == 404)
+              // {
+              //   console.log('found error!')
+              //   setNotification({ type: 'error', message: `Information of ${newName} has been removed from server` })
+              //   setTimeout(() => { 
+              //     setNotification({type: 'success', message: ``})
+              //   }, 2000)
+              //   return
+              // }
+
             } else if (error.request) {
               console.log('No response received:', error.request);
             } else {
@@ -122,7 +123,10 @@ const App = () => {
            }, 2000)
         })  
         .catch(error => {
-          console.log('fail')
+          setNotification({ type: 'error', message: error.response.data.error })
+          setTimeout(() => { 
+            setNotification({type: 'success', message: ``})
+           }, 2000)
         })
     }
     
