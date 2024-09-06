@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    "title": "Rafael Nadal", 
-    "author": "123-456-90",
+    "title": "Novak Djokovic", 
+    "author": "555-5555",
     "url": "def",
     "likes": 3
 }
