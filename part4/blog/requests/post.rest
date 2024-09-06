@@ -2,8 +2,8 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    "title": "Novak Djokovic", 
-    "author": "555-5555",
-    "url": "def",
+    "title": "Jannik Sinner", 
+    "author": "666-6666",
+    "url": "Italian",
     "likes": 3
 }
