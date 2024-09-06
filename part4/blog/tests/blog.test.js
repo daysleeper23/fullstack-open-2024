@@ -63,7 +63,15 @@ const blogs = [
     url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
     likes: 2,
     __v: 0
-  }  
+  },
+  {
+    _id: "5a422bc61b54a676234d17fe",
+    title: "Type wars II",
+    author: "Robert C. Martin",
+    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWarsII.html",
+    likes: 2,
+    __v: 0
+  }
 ]
 
 describe('total likes', () => {
@@ -79,7 +87,7 @@ describe('total likes', () => {
 
   test('of a bigger list is calculated right', () => {
     const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, 36)
+    assert.strictEqual(result, 38)
   })
 })
 
@@ -108,3 +116,25 @@ describe('favorite blog', () => {
   })
 })
 
+describe('most blogs', () => {
+  test('of emtpy list is an empty object', () => {
+    const result = listHelper.mostBlogs(emptyList)
+    assert.deepStrictEqual(result, {})
+  })
+
+  test('when list has only one blog, equals that', () => {
+    const result = listHelper.mostBlogs(listWithOneBlog)
+    assert.deepStrictEqual(result, {
+      author: 'Edsger W. Dijkstra',
+      blogs: 1
+    })
+  })
+
+  test('of a bigger list is returned right', () => {
+    const result = listHelper.mostBlogs(blogs)
+    assert.deepStrictEqual(result, {
+      author: 'Robert C. Martin',
+      blogs: 4
+    })
+  })
+})
