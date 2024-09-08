@@ -1,8 +1,10 @@
-const { test, after, beforeEach } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
+const assert = require('node:assert/strict')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
-const Blog = require('../model/blog')
+const Blog = require('../models/blog')
+const { response } = require('express')
 
 const api = supertest(app)
 
@@ -65,17 +67,44 @@ const initialBlogs = [
   }
 ]
 
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  // initialBlogs.forEach(async (blog) => {
+  //   let blogObject = new Blog(blog)
+  //   await blogObject.save()
+  // })
+  let blogObject = new Blog(initialBlogs[0])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[1])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[2])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[3])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[4])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[5])
+  await blogObject.save()
+  blogObject = new Blog(initialBlogs[6])
+  await blogObject.save()
+})
+
 test('blogs are returned as json', async () => {
   await api
-    .get('/api/blogs')
+    .get('/api/blogs')  
     .expect(200)
     .expect('Content-Type', /application\/json/)
+    .expect((response) => {
+      const blog = response.body[0]
+      if (!blog.id) throw new Error('id property is missing');
+      if (blog._id) throw new Error('_id property should not be presented');
+    })
 })
 
 test('there are seven blog', async () => {
   const response = await api.get('/api/blogs')
 
-  assert.strictEqual(response.body.length, 7)
+  assert.strictEqual(response.body.length, initialBlogs.length)
 })
 
 test('the first blog is about React patterns', async () => {
@@ -85,13 +114,52 @@ test('the first blog is about React patterns', async () => {
   assert.strictEqual(titles.includes('React patterns'), true)
 })
 
-beforeEach(async () => {
-  await Note.deleteMany({})
-  let noteObject = new Note(initialNotes[0])
-  await noteObject.save()
-  noteObject = new Note(initialNotes[1])
-  await noteObject.save()
+describe('blog creation', () => {
+
+  test('valid blog is created normally', async () => {
+    const newBlog = {
+      title: "No Home",
+      author: "Charles Dickens",
+      url: "https",
+      likes: 5
+    }
+
+    //return code and content-type
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    //new note is added
+    const response = await api.get('/api/blogs')
+    const titles = response.body.map(r => r.title)
+    assert.strictEqual(response.body.length, initialBlogs.length + 1)
+    assert(titles.includes('No Home'))
+  })
+
+  test('default like is 0', async () => {
+    const newBlog = {
+      title: "Evolution",
+      author: "Charles Darwin",
+      url: "https"
+    }
+
+    //return code and content-type
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    //new blog's like is 0
+    const response = await api.get('/api/blogs')
+    const likes = response.body.map(r => r.likes)
+    const newIndex = response.body.findIndex(blog => blog.title == "Evolution")
+    assert.strictEqual(likes[newIndex], 0)
+  })
 })
+
 
 after(async () => {
   await mongoose.connection.close()

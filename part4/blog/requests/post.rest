@@ -2,8 +2,7 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    "title": "Jannik Sinner", 
-    "author": "666-6666",
-    "url": "Italian",
-    "likes": 3
+    "title": "One Love", 
+    "author": "Simon Sinek",
+    "url": "Ame"
 }
