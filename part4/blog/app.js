@@ -9,6 +9,14 @@ const mongoose = require('mongoose')
 const blogsRouter = require('./controllers/blogs')
 const logger = require('./utils/logger')
 
+//logging configuration
+var morgan = require('morgan')
+morgan.token('body', req => {
+  return JSON.stringify(req.body)
+})
+
+var loggerMorgan = morgan(':method :url :status :res[content-length] - :response-time ms :body')
+
 mongoose.connect(config.MONGODB_URI)
   .then(() => {
     logger.info('connected to MongoDB')
@@ -19,7 +27,8 @@ mongoose.connect(config.MONGODB_URI)
 
 app.use(cors())
 app.use(express.json())
-app.use(middleware.requestLogger)
+app.use(loggerMorgan)
+// app.use(middleware.requestLogger)
 
 app.use('/api/blogs', blogsRouter)
 

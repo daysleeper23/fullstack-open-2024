@@ -69,27 +69,27 @@ const initialBlogs = [
 
 beforeEach(async () => {
   await Blog.deleteMany({})
-  // initialBlogs.forEach(async (blog) => {
-  //   let blogObject = new Blog(blog)
-  //   await blogObject.save()
-  // })
-  let blogObject = new Blog(initialBlogs[0])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[1])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[2])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[3])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[4])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[5])
-  await blogObject.save()
-  blogObject = new Blog(initialBlogs[6])
-  await blogObject.save()
+  const blogObjects = initialBlogs.map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blogObject => blogObject.save())
+  await Promise.all(promiseArray)
+  
+  // let blogObject = new Blog(initialBlogs[0])
+  // await blogObject.save()
+  // blogObject = new Blog(initialBlogs[1])
+  // await blogObject.save()
+  // blogObject = new Blog(initialBlogs[2])
+  // await blogObject.save()
+  // blogObject = new Blog(initialBlogs[3])
+  // await blogObject.save()
+  // blogObject = new Blog(initialBlogs[4])
+  // await blogObject.save()
+  // blogObject = new Blog(initialBlogs[5])
+  // await blogObject.save()
+  // blogObject = new Blog(initialBlogs[6])
+  // await blogObject.save()
 })
 
-describe('blog query', () => {
+describe('blog inquiry', () => {
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')  
@@ -113,6 +113,46 @@ describe('blog query', () => {
   
     const titles = response.body.map(e => e.title)
     assert.strictEqual(titles.includes('React patterns'), true)
+  })
+})
+
+describe('blog deletion', () => {
+  test('valid blog is deleted normally', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17f7')
+      .expect(204)
+
+    //note is deleted
+    const response = await api.get('/api/blogs')
+    const titles = response.body.map(r => r.title)
+    assert.strictEqual(response.body.length, initialBlogs.length - 1)
+    assert.strictEqual(titles.includes('React patterns'), false)
+  })
+
+  test('invalid blog id is not deleted', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d1700')
+      .expect(204)
+
+    //note is deleted
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+
+  test('missing blog id results in 404', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/')
+      .expect(404)
+
+    //note is deleted
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, initialBlogs.length)
   })
 })
 
