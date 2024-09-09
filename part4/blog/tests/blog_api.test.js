@@ -89,32 +89,80 @@ beforeEach(async () => {
   await blogObject.save()
 })
 
-test('blogs are returned as json', async () => {
-  await api
-    .get('/api/blogs')  
-    .expect(200)
-    .expect('Content-Type', /application\/json/)
-    .expect((response) => {
-      const blog = response.body[0]
-      if (!blog.id) throw new Error('id property is missing');
-      if (blog._id) throw new Error('_id property should not be presented');
-    })
-})
-
-test('there are seven blog', async () => {
-  const response = await api.get('/api/blogs')
-
-  assert.strictEqual(response.body.length, initialBlogs.length)
-})
-
-test('the first blog is about React patterns', async () => {
-  const response = await api.get('/api/blogs')
-
-  const titles = response.body.map(e => e.title)
-  assert.strictEqual(titles.includes('React patterns'), true)
+describe('blog query', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')  
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+      .expect((response) => {
+        const blog = response.body[0]
+        if (!blog.id) throw new Error('id property is missing');
+        if (blog._id) throw new Error('_id property should not be presented');
+      })
+  })
+  
+  test('there are seven blog', async () => {
+    const response = await api.get('/api/blogs')
+  
+    assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+  
+  test('the first blog is about React patterns', async () => {
+    const response = await api.get('/api/blogs')
+  
+    const titles = response.body.map(e => e.title)
+    assert.strictEqual(titles.includes('React patterns'), true)
+  })
 })
 
 describe('blog creation', () => {
+  test('missing title', async () => {
+    const newBlog = {
+      author: "Charles Darwin",
+      url: "https",
+      likes: 3
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+
+  test('missing url', async () => {
+    const newBlog = {
+      title: "Evolution",
+      author: "Charles Darwin",
+      likes: 3
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+
+  test('missing both title & url', async () => {
+    const newBlog = {
+      author: "Charles Darwin",
+      likes: 3
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, initialBlogs.length)
+  })
 
   test('valid blog is created normally', async () => {
     const newBlog = {
@@ -157,6 +205,7 @@ describe('blog creation', () => {
     const likes = response.body.map(r => r.likes)
     const newIndex = response.body.findIndex(blog => blog.title == "Evolution")
     assert.strictEqual(likes[newIndex], 0)
+    assert.strictEqual(response.body[newIndex].title, 'Evolution')
   })
 })
 
