@@ -124,35 +124,170 @@ describe('blog deletion', () => {
       .delete('/api/blogs/5a422a851b54a676234d17f7')
       .expect(204)
 
-    //note is deleted
+    //blog is deleted
     const response = await api.get('/api/blogs')
     const titles = response.body.map(r => r.title)
     assert.strictEqual(response.body.length, initialBlogs.length - 1)
     assert.strictEqual(titles.includes('React patterns'), false)
   })
 
-  test('invalid blog id is not deleted', async () => {
+  test('non-existent blog is not deleted', async () => {
 
     //return code and content-type
     await api
       .delete('/api/blogs/5a422a851b54a676234d1700')
       .expect(204)
 
-    //note is deleted
+    //blog is not deleted
     const response = await api.get('/api/blogs')
     assert.strictEqual(response.body.length, initialBlogs.length)
   })
 
-  test('missing blog id results in 404', async () => {
+  test('invalid blog id format results in 400 Bad Request', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17')
+      .expect(400)
+
+    //blog is not deleted
+    const response = await api.get('/api/blogs')
+    assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+
+  test('missing blog id results in 400', async () => {
 
     //return code and content-type
     await api
       .delete('/api/blogs/')
-      .expect(404)
+      .expect(400)
 
-    //note is deleted
+    //blog is not deleted
     const response = await api.get('/api/blogs')
     assert.strictEqual(response.body.length, initialBlogs.length)
+  })
+})
+
+describe('blog update', () => {
+  test('valid blog is updated normally', async () => {
+    const updatingBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 17,
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17f7')
+      .send(updatingBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    //the right blog is updated
+    const response = await api.get('/api/blogs')
+    const index = response.body.findIndex(blog => blog.id == '5a422a851b54a676234d17f7')
+    const likes = response.body.map(blog => blog.likes)
+    assert.strictEqual(likes[index], 17)
+  })
+
+  test('non-existent blog results in initial blogs remained unchanged', async () => {
+    const updatingBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 17,
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17ff')
+      .send(updatingBlog)
+      .expect(404)
+
+    //the initial blog list is not updated as the id was invalid
+    const response = await api.get('/api/blogs')
+    const index = response.body.findIndex(blog => blog.title == 'React patterns')
+    assert.strictEqual(response.body[index].likes, 7)
+  })
+
+  test('invalid blog id format results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: 17,
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const response = await api.get('/api/blogs')
+    const index = response.body.findIndex(blog => blog.title == 'React patterns')
+    assert.strictEqual(response.body[index].likes, 7)
+  })
+
+  test('missing likes results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/"
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const response = await api.get('/api/blogs')
+    const index = response.body.findIndex(blog => blog.title == 'React patterns')
+    assert.strictEqual(response.body[index].likes, 7)
+  })
+
+  test('string values (number-like) for likes results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: "17"
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const response = await api.get('/api/blogs')
+    const index = response.body.findIndex(blog => blog.title == 'React patterns')
+    assert.strictEqual(response.body[index].likes, 7)
+  })
+
+  test('object values for likes results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: "React patterns",
+      author: "Michael Chan",
+      url: "https://reactpatterns.com/",
+      likes: { likes: "17" }
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const response = await api.get('/api/blogs')
+    const index = response.body.findIndex(blog => blog.title == 'React patterns')
+    assert.strictEqual(response.body[index].likes, 7)
   })
 })
 
@@ -219,7 +354,7 @@ describe('blog creation', () => {
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
-    //new note is added
+    //new blog is added
     const response = await api.get('/api/blogs')
     const titles = response.body.map(r => r.title)
     assert.strictEqual(response.body.length, initialBlogs.length + 1)

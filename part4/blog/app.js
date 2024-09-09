@@ -15,7 +15,7 @@ morgan.token('body', req => {
   return JSON.stringify(req.body)
 })
 
-var loggerMorgan = morgan(':method :url :status :res[content-length] - :response-time ms :body')
+var loggerMorgan = morgan(':method :url :body --- :status - :response-time ms - :res[content-length]')
 
 mongoose.connect(config.MONGODB_URI)
   .then(() => {
