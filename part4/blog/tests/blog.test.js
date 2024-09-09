@@ -1,163 +1,317 @@
-const { test, describe } = require('node:test')
+const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert/strict')
-const listHelper = require('../utils/list_helper')
+const mongoose = require('mongoose')
+const supertest = require('supertest')
+const app = require('../app')
+const Blog = require('../models/blog')
 
-const emptyList = []
+const api = supertest(app)
+const helper = require('../utils/test_helper')
 
-const listWithOneBlog = [
-  {
-    _id: '5a422aa71b54a676234d17f8',
-    title: 'Go To Statement Considered Harmful',
-    author: 'Edsger W. Dijkstra',
-    url: 'https://homepages.cwi.nl/~storm/teaching/reader/Dijkstra68.pdf',
-    likes: 5,
-    __v: 0
-  }
-]
+beforeEach(async () => {
+  await Blog.deleteMany({})
+  const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
+  const promiseArray = blogObjects.map(blogObject => blogObject.save())
+  await Promise.all(promiseArray)
+})
 
-const blogs = [
-  {
-    _id: "5a422a851b54a676234d17f7",
-    title: "React patterns",
-    author: "Michael Chan",
-    url: "https://reactpatterns.com/",
-    likes: 7,
-    __v: 0
-  },
-  {
-    _id: "5a422aa71b54a676234d17f8",
-    title: "Go To Statement Considered Harmful",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html",
-    likes: 5,
-    __v: 0
-  },
-  {
-    _id: "5a422b3a1b54a676234d17f9",
-    title: "Canonical string reduction",
-    author: "Edsger W. Dijkstra",
-    url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
-    likes: 12,
-    __v: 0
-  },
-  {
-    _id: "5a422b891b54a676234d17fa",
-    title: "First class tests",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll",
-    likes: 10,
-    __v: 0
-  },
-  {
-    _id: "5a422ba71b54a676234d17fb",
-    title: "TDD harms architecture",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html",
-    likes: 0,
-    __v: 0
-  },
-  {
-    _id: "5a422bc61b54a676234d17fc",
-    title: "Type wars",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html",
-    likes: 2,
-    __v: 0
-  },
-  {
-    _id: "5a422bc61b54a676234d17fe",
-    title: "Type wars II",
-    author: "Robert C. Martin",
-    url: "http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWarsII.html",
-    likes: 2,
-    __v: 0
-  }
-]
-
-describe('total likes', () => {
-  test('of emtpy list is zero', () => {
-    const result = listHelper.totalLikes(emptyList)
-    assert.strictEqual(result, 0)
+describe('blog inquiry', () => {
+  test('blogs are returned as json', async () => {
+    await api
+      .get('/api/blogs')
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+      .expect((response) => {
+        const blog = response.body[0]
+        if (!blog.id) throw new Error('id property is missing')
+        if (blog._id) throw new Error('_id property should not be presented')
+      })
   })
 
-  test('when list has only one blog, equals the likes of that', () => {
-    const result = listHelper.totalLikes(listWithOneBlog)
-    assert.strictEqual(result, 5)
+  test('there are seven blog', async () => {
+    const response = await api.get('/api/blogs')
+
+    assert.strictEqual(response.body.length, helper.initialBlogs.length)
   })
 
-  test('of a bigger list is calculated right', () => {
-    const result = listHelper.totalLikes(blogs)
-    assert.strictEqual(result, 38)
+  test('the first blog is about React patterns', async () => {
+    const response = await api.get('/api/blogs')
+
+    const titles = response.body.map(e => e.title)
+    assert.strictEqual(titles.includes('React patterns'), true)
   })
 })
 
-describe('favorite blog', () => {
-  test('of emtpy list is an empty object', () => {
-    const result = listHelper.favoriteBlog(emptyList)
-    assert.deepStrictEqual(result, {})
+describe('blog deletion', () => {
+  test('valid blog is deleted normally', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17f7')
+      .expect(204)
+
+    //blog is deleted
+    const blogsAfter = await helper.blogsInDb()
+    const titles = blogsAfter.map(r => r.title)
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length - 1)
+    assert.strictEqual(titles.includes('React patterns'), false)
   })
 
-  test('when list has only one blog, equals that', () => {
-    const result = listHelper.favoriteBlog(listWithOneBlog)
-    assert.deepStrictEqual(result, {
-      title: 'Go To Statement Considered Harmful',
-      author: 'Edsger W. Dijkstra',
+  test('non-existent blog is not deleted', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d1700')
+      .expect(204)
+
+    //blog is not deleted
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+  })
+
+  test('invalid blog id format results in 400 Bad Request', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/5a422a851b54a676234d17')
+      .expect(400)
+
+    //blog is not deleted
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+  })
+
+  test('missing blog id results in 400', async () => {
+
+    //return code and content-type
+    await api
+      .delete('/api/blogs/')
+      .expect(400)
+
+    //blog is not deleted
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+  })
+})
+
+describe('blog update', () => {
+  test('valid blog is updated normally', async () => {
+    const updatingBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: 17,
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17f7')
+      .send(updatingBlog)
+      .expect(200)
+      .expect('Content-Type', /application\/json/)
+
+    //the right blog is updated
+    const blogsAfter = await helper.blogsInDb()
+    const index = blogsAfter.findIndex(blog => blog.id === '5a422a851b54a676234d17f7')
+    const likes = blogsAfter.map(blog => blog.likes)
+    assert.strictEqual(likes[index], 17)
+  })
+
+  test('non-existent blog results in initial blogs remained unchanged', async () => {
+    const updatingBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: 17,
+    }
+
+    //return code and content-type
+    const fakeId = await helper.nonExistingId()
+    await api
+      .put(`/api/blogs/${fakeId}`)
+      .send(updatingBlog)
+      .expect(404)
+
+    //the initial blog list is not updated as the id was invalid
+    const blogsAfter = await helper.blogsInDb()
+    const index = blogsAfter.findIndex(blog => blog.title === 'React patterns')
+    assert.strictEqual(blogsAfter[index].likes, 7)
+  })
+
+  test('invalid blog id format results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: 17,
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/123')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const blogsAfter = await helper.blogsInDb()
+    const index = blogsAfter.findIndex(blog => blog.title === 'React patterns')
+    assert.strictEqual(blogsAfter[index].likes, 7)
+  })
+
+  test('missing likes results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/'
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const blogsAfter = await helper.blogsInDb()
+    const index = blogsAfter.findIndex(blog => blog.title === 'React patterns')
+    assert.strictEqual(blogsAfter[index].likes, 7)
+  })
+
+  test('string values (number-like) for likes results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: '17'
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const blogsAfter = await helper.blogsInDb()
+    const index = blogsAfter.findIndex(blog => blog.title === 'React patterns')
+    assert.strictEqual(blogsAfter[index].likes, 7)
+  })
+
+  test('object values for likes results in 400 Bad Request', async () => {
+    const updatingBlog = {
+      title: 'React patterns',
+      author: 'Michael Chan',
+      url: 'https://reactpatterns.com/',
+      likes: { likes: '17' }
+    }
+
+    //return code and content-type
+    await api
+      .put('/api/blogs/5a422a851b54a676234d17')
+      .send(updatingBlog)
+      .expect(400)
+
+    //the likes of the updating blog remained unchanged
+    const blogsAfter = await helper.blogsInDb()
+    const index = blogsAfter.findIndex(blog => blog.title === 'React patterns')
+    assert.strictEqual(blogsAfter[index].likes, 7)
+  })
+})
+
+describe('blog creation', () => {
+  test('missing title', async () => {
+    const newBlog = {
+      author: 'Charles Darwin',
+      url: 'https',
+      likes: 3
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+  })
+
+  test('missing url', async () => {
+    const newBlog = {
+      title: 'Evolution',
+      author: 'Charles Darwin',
+      likes: 3
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+  })
+
+  test('missing both title & url', async () => {
+    const newBlog = {
+      author: 'Charles Darwin',
+      likes: 3
+    }
+
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(400)
+
+    const blogsAfter = await helper.blogsInDb()
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+  })
+
+  test('valid blog is created normally', async () => {
+    const newBlog = {
+      title: 'No Home',
+      author: 'Charles Dickens',
+      url: 'https',
       likes: 5
-    })
+    }
+
+    //return code and content-type
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    //new blog is added
+    const blogsAfter = await helper.blogsInDb()
+    const titles = blogsAfter.map(r => r.title)
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length + 1)
+    assert(titles.includes('No Home'))
   })
 
-  test('of a bigger list is returned right', () => {
-    const result = listHelper.favoriteBlog(blogs)
-    assert.deepStrictEqual(result, {
-      title: "Canonical string reduction",
-      author: "Edsger W. Dijkstra",
-      likes: 12
-    })
+  test('default like is 0', async () => {
+    const newBlog = {
+      title: 'Evolution',
+      author: 'Charles Darwin',
+      url: 'https'
+    }
+
+    //return code and content-type
+    await api
+      .post('/api/blogs')
+      .send(newBlog)
+      .expect(201)
+      .expect('Content-Type', /application\/json/)
+
+    //new blog's like is 0
+    const blogsAfter = await helper.blogsInDb()
+    const likes = blogsAfter.map(r => r.likes)
+    const newIndex = blogsAfter.findIndex(blog => blog.title === 'Evolution')
+    assert.strictEqual(likes[newIndex], 0)
+    assert.strictEqual(blogsAfter[newIndex].title, 'Evolution')
   })
 })
 
-describe('most blogs', () => {
-  test('of emtpy list is an empty object', () => {
-    const result = listHelper.mostBlogs(emptyList)
-    assert.deepStrictEqual(result, {})
-  })
 
-  test('when list has only one blog, equals that', () => {
-    const result = listHelper.mostBlogs(listWithOneBlog)
-    assert.deepStrictEqual(result, {
-      author: 'Edsger W. Dijkstra',
-      blogs: 1
-    })
-  })
-
-  test('of a bigger list is returned right', () => {
-    const result = listHelper.mostBlogs(blogs)
-    assert.deepStrictEqual(result, {
-      author: 'Robert C. Martin',
-      blogs: 4
-    })
-  })
-})
-
-describe('most likes', () => {
-  test('of emtpy list is an empty object', () => {
-    const result = listHelper.mostLikes(emptyList)
-    assert.deepStrictEqual(result, {})
-  })
-
-  test('when list has only one blog, equals that', () => {
-    const result = listHelper.mostLikes(listWithOneBlog)
-    assert.deepStrictEqual(result, {
-      author: 'Edsger W. Dijkstra',
-      likes: 5
-    })
-  })
-
-  test('of a bigger list is returned right', () => {
-    const result = listHelper.mostLikes(blogs)
-    assert.deepStrictEqual(result, {
-      author: 'Edsger W. Dijkstra',
-      likes: 17
-    })
-  })
+after(async () => {
+  await mongoose.connection.close()
 })
