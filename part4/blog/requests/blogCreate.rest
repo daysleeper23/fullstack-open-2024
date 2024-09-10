@@ -1,10 +1,10 @@
 POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imx1dSIsImlkIjoiNjZkZjFhMTU5NDM3YjAyOWFlMGIyZWJlIiwiaWF0IjoxNzI1OTU5NTk4fQ.kxDGgwrmUD_pW6v9JRYXkC6je4u__NnJZmGvgJdvnQ8
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imx1dSIsImlkIjoiNjZkZjFhMTU5NDM3YjAyOWFlMGIyZWJlIiwiaWF0IjoxNzI1OTY4MDg2LCJleHAiOjE3MjYwNTQ0ODZ9.SQ11Th6ObqhswRl5DLB-gjJ-3c7kT5jjdTbqinGNPps
 
 {
-    "title": "iPhone 16 Pro Max", 
+    "title": "iPhone 16 Pro Max 2024", 
     "author": "Tim Cook II",
     "url": "iphone.apple.com",
-    "likes": 1
+    "likes": 11
 }

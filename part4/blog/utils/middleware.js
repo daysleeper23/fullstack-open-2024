@@ -1,4 +1,4 @@
-const logger = require('./logger')
+  const logger = require('./logger')
 
 const requestLogger = (request, response, next) => {
   logger.info('Method:', request.method)
@@ -7,6 +7,18 @@ const requestLogger = (request, response, next) => {
   logger.info('---')
   logger.info('Response status:', response)
   // logger.info('Response body:', response.body)
+  next()
+}
+
+const tokenExtractor = (request, _response, next) => {
+  const authorization = request.get('authorization')
+
+  if (authorization && authorization.startsWith('Bearer ')) {
+    request.token = authorization.replace('Bearer ', '')
+  } else {
+    request.token = ''
+  }
+
   next()
 }
 
@@ -28,8 +40,7 @@ const errorHandler = (error, _request, response, next) => {
     return response.status(401).json({ error: 'token invalid' })
   }
 
-
   next(error)
 }
 
-module.exports = { requestLogger, unknownEndpoint, errorHandler }
+module.exports = { requestLogger, tokenExtractor, unknownEndpoint, errorHandler }

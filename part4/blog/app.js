@@ -6,6 +6,8 @@ const app = express()
 const cors = require('cors')
 const mongoose = require('mongoose')
 
+app.use(middleware.tokenExtractor)
+
 const blogsRouter = require('./controllers/blogs')
 const loginRouter = require('./controllers/login')
 const usersRouter = require('./controllers/users')
