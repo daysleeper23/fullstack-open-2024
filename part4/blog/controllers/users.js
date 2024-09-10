@@ -1,11 +1,13 @@
 const bcrypt = require('bcrypt')
 const usersRouter = require('express').Router()
 const User = require('../models/user')
+const Blog = require('../models/blog')
+const mongoose = require('mongoose')
 
 usersRouter.get('/', async (_request, response) => {
   const users = await User
     .find({})
-    // .populate('blogs', { title: 1, author: 1, url: 1, likes: 1})
+    .populate('blogs', { title: 1, author: 1, url: 1 })
 
   response.json(users)
 })
@@ -26,6 +28,7 @@ usersRouter.post('/', async (request, response) => {
       username: username,
       name: stringName,
       passwordHash: passwordHash,
+      blogs: []
     })
 
     const savedUser = await user.save()
@@ -60,18 +63,26 @@ usersRouter.post('/', async (request, response) => {
 //     likes: body.likes
 //   }
 
-//   if (!user.likes)
-//     response.status(400).send({ error: 'missing likes' })
-//   else if (isNaN(user.likes))
-//     response.status(400).send({ error: 'wrong field value for likes ' })
-//   else {
-//     const updatedUser = await User.findByIdAndUpdate(request.params.id, user, { new: true })
-//     if (updatedUser) {
-//       response.json(updatedUser)
-//     } else {
-//       response.status(404).end()
-//     }
-//   }
+//   const blogs = (await Blog.find({})).map(blog => new mongoose.Types.ObjectId(blog.id))
+//   user.blogs = blogs
+
+//   await User.findByIdAndUpdate(request.params.id, user, { new: true })
+//   response.status(200)
+
+
+
+//   // if (!user.likes)
+//   //   response.status(400).send({ error: 'missing likes' })
+//   // else if (isNaN(user.likes))
+//   //   response.status(400).send({ error: 'wrong field value for likes ' })
+//   // else {
+//   //   const updatedUser = await User.findByIdAndUpdate(request.params.id, user, { new: true })
+//   //   if (updatedUser) {
+//   //     response.json(updatedUser)
+//   //   } else {
+//   //     response.status(404).end()
+//   //   }
+//   // }
 // })
 
 module.exports = usersRouter

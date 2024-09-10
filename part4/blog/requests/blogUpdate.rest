@@ -1,9 +1,10 @@
-PUT http://localhost:3003/api/blogs/66deb141cd495a537a9c76e9 HTTP/1.1
+PUT http://localhost:3003/api/blogs/ HTTP/1.1
 content-type: application/json
 
 {
-    "title": "One Love",
-    "author": "Simon Sinek",
-    "url": "Ame",
-    "likes": "abc"
+    "title": "Novak Djokovic",
+    "author": "555-5555",
+    "url": "def",
+    "likes": 3,
+    "user": "66df1a159437b029ae0b2ebe"
 }

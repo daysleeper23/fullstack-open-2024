@@ -2,9 +2,8 @@ POST http://localhost:3003/api/blogs HTTP/1.1
 content-type: application/json
 
 {
-    # "title": "One Love", 
-    "author": "Simon Sinek",
-    
-    "url": "Ame",
-    "likes": 33
+    "title": "iPhone 16", 
+    "author": "Tim Cook",
+    "url": "apple.com",
+    "likes": 1
 }

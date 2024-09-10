@@ -1,6 +1,6 @@
-const blogsRouter = require('express').Router()
 const Blog = require('../models/blog')
 const User = require('../models/user')
+const blogsRouter = require('express').Router()
 const jwt = require('jsonwebtoken')
 
 const getTokenFrom = request => {
@@ -82,5 +82,7 @@ blogsRouter.put('/:id', async (request, response) => {
     }
   }
 })
+
+
 
 module.exports = blogsRouter
