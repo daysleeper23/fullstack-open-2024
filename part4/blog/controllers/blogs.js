@@ -22,12 +22,12 @@ blogsRouter.get('/', async (_request, response) => {
 blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
 
-  // const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
-  // if (!decodedToken.id) {
-  //   return response.status(401).json({ error: 'token invalid' })
-  // }
-  // const user = await User.findById(decodedToken.id)
-  const user = await User.findOne()
+  const decodedToken = jwt.verify(getTokenFrom(request), process.env.SECRET)
+  if (!decodedToken.id) {
+    return response.status(401).json({ error: 'token invalid' })
+  }
+  const user = await User.findById(decodedToken.id)
+  // const user = await User.findOne()
 
   blog.user = user.id
 
