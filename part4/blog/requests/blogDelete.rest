@@ -1,10 +1,10 @@
-DELETE http://localhost:3003/api/blogs/66deb17fcd495a537a9c76ec HTTP/1.1
+DELETE http://localhost:3003/api/blogs/66da4603facd263a608ed14c HTTP/1.1
 content-type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6Imx1dWRhbyIsImlkIjoiNjZkZjY1ZWQ0YmE2NDdjZTlkZDUzOWE2IiwiaWF0IjoxNzI1OTY5Mzc4LCJleHAiOjE3MjYwNTU3Nzh9.gfteD3870NH6VGyXogRzsrorpAQ4iNmglhdSD7tstrQ
 
 {
-    # "title": "One Love", 
+    "title": "One Love", 
     "author": "Simon Sinek",
-    
     "url": "Ame",
     "likes": 33
 }
