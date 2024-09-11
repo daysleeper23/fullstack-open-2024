@@ -20,6 +20,8 @@ const App = () => {
   const [author, setAuthor] = useState('')
   const [url, setUrl] = useState('')
 
+  const [showNew, setShowNew] = useState(false)
+
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBlogAppUser')
     if (loggedUserJSON) {
@@ -51,21 +53,6 @@ const App = () => {
   const handlePasswordChange = (e) => {
     // console.log('password', e.target.value)
     setPassword(e.target.value)
-  }
-
-  const handleTitleChange = (e) => {
-    console.log('title', e.target.value)
-    setTitle(e.target.value)
-  }
-
-  const handleAuthorChange = (e) => {
-    console.log('author', e.target.value)
-    setAuthor(e.target.value)
-  }
-
-  const handleUrlChange = (e) => {
-    console.log('url', e.target.value)
-    setUrl(e.target.value)
   }
 
   // ==============================
@@ -130,6 +117,7 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
+      setShowNew(false)
       setErrorMessage({type: 'success', message: `a new blog ${blog.title} by ${blog.author} added`})
       setTimeout(() => {
         setErrorMessage({ type: 'success', message: '' })
@@ -143,6 +131,16 @@ const App = () => {
     }
   }
 
+  // ==============================
+  // SECTION: Toggle Blog Creation Form
+  // ==============================
+  const handleShowNew = () => {
+    setShowNew(!showNew)
+  }
+
+  // ==============================
+  // SECTION: Component UI
+  // ==============================
   return (
     <div>
       {!user 
@@ -162,13 +160,13 @@ const App = () => {
               {user.name} logged in
               <button onClick={handleLogout}>logout</button>
             </p>
-
-            <BlogNewForm title={title} author={author} url={url}
-              titleHandler={handleTitleChange}
-              authorHandler={handleAuthorChange}
-              urlHandler={handleUrlChange}
-              createNewBlogHandler={handleCreateBlog}
-            />
+            {showNew
+              ? <BlogNewForm
+                  createNewBlogHandler={handleCreateBlog}
+                  toggleFormHandler={handleShowNew}
+                />
+              : <button onClick={handleShowNew}>create new blog</button>
+            }
 
             {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
           </>
