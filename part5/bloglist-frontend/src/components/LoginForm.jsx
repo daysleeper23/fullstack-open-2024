@@ -1,7 +1,17 @@
-const LoginForm = ({ username, password, usernameHandler, passwordHandler, loginHandler }) => {
+import Notification from './Notification'
+
+const LoginForm = ({
+  username, password,
+  usernameHandler, passwordHandler, loginHandler,
+  messageType, messageContent
+}) => {
   return (
     <>
       <h1>log in to application</h1>
+      {messageContent !== ''
+        ? <Notification type={messageType} message={messageContent} />
+        : <></>
+      }
       <form onSubmit={loginHandler}>
         <div>
           username <input type='text' value={username} onChange={usernameHandler} />

@@ -1,10 +1,12 @@
 import { useState, useEffect } from 'react'
 import Blog from './components/Blog'
 import LoginForm from './components/LoginForm'
+import BlogNewForm from './components/BlogNewForm'
+import Notification from './components/Notification'
 
 import blogService from './services/blogs'
 import loginService from './services/login'
-import BlogNewForm from './components/BlogNewForm'
+
 
 
 const App = () => {
@@ -12,7 +14,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
+  const [errorMessage, setErrorMessage] = useState({ type: 'success', message: ''})
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -85,9 +87,10 @@ const App = () => {
       setPassword('')
     }
     catch (exception) {
-      setErrorMessage('Wrong credentials')
+      console.log('catch error')
+      setErrorMessage({ type: 'error', message: 'Wrong username or password' })
       setTimeout(() => {
-        setErrorMessage(null)
+        setErrorMessage({ type: 'error', message: '' })
       }, 5000)
     }
   }
@@ -127,11 +130,15 @@ const App = () => {
       setTitle('')
       setAuthor('')
       setUrl('')
+      setErrorMessage({type: 'success', message: `a new blog ${blog.title} by ${blog.author} added`})
+      setTimeout(() => {
+        setErrorMessage({ type: 'success', message: '' })
+      }, 5000)
     }
     catch (exception) {
-      setErrorMessage('Error while creating blog')
+      setErrorMessage({ type: 'error', message: 'Error while creating blog' })
       setTimeout(() => {
-        setErrorMessage(null)
+        setErrorMessage({ type: 'success', message: '' })
       }, 5000)
     }
   }
@@ -140,12 +147,17 @@ const App = () => {
     <div>
       {!user 
         ? <LoginForm username={username} password={password} 
+            messageType={errorMessage.type} messageContent={errorMessage.message}
             usernameHandler={handleUsernameChange} 
             passwordHandler={handlePasswordChange} 
             loginHandler={handleLogin}
           />
         : <>
             <h1>blogs</h1>
+            {errorMessage.message !== ''
+              ? <Notification type={errorMessage.type} message={errorMessage.message} />
+              : <></>
+            }
             <p>
               {user.name} logged in
               <button onClick={handleLogout}>logout</button>
