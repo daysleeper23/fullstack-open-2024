@@ -1,21 +1,50 @@
 const { test, after, beforeEach, describe } = require('node:test')
 const assert = require('node:assert/strict')
+const bcrypt = require('bcrypt')
 const mongoose = require('mongoose')
 const supertest = require('supertest')
 const app = require('../app')
 const Blog = require('../models/blog')
+const User = require('../models/user')
 
 const api = supertest(app)
 const helper = require('../utils/test_helper')
+let token = ''
 
-beforeEach(async () => {
+const blogsInit = async () => {
   await Blog.deleteMany({})
   const blogObjects = helper.initialBlogs.map(blog => new Blog(blog))
   const promiseArray = blogObjects.map(blogObject => blogObject.save())
   await Promise.all(promiseArray)
+}
+
+const userInit = async () => {
+  await User.deleteMany({})
+  const passwordHash = await bcrypt.hash('sekret', 10)
+  const user = new User({ username: 'root', passwordHash })
+  await user.save()
+}
+
+const authInit = async () => {
+  const user = {
+    username: 'root',
+    password: 'sekret'
+  }
+
+  const response = await api
+    .post('/api/login')
+    .send(user)
+
+  token = 'Bearer ' + response.body.token
+}
+
+beforeEach(async () => {
+  await blogsInit()
+  await userInit()
+  await authInit()
 })
 
-describe('blog inquiry', () => {
+describe('querying blogs', () => {
   test('blogs are returned as json', async () => {
     await api
       .get('/api/blogs')
@@ -42,8 +71,8 @@ describe('blog inquiry', () => {
   })
 })
 
-describe('blog deletion', () => {
-  test('valid blog is deleted normally', async () => {
+describe('deleting a blog', () => {
+  test('with valid ID is OK', async () => {
 
     //return code and content-type
     await api
@@ -57,7 +86,7 @@ describe('blog deletion', () => {
     assert.strictEqual(titles.includes('React patterns'), false)
   })
 
-  test('non-existent blog is not deleted', async () => {
+  test('with a non-existent ID is OK but nothing changed', async () => {
 
     //return code and content-type
     await api
@@ -69,7 +98,7 @@ describe('blog deletion', () => {
     assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
   })
 
-  test('invalid blog id format results in 400 Bad Request', async () => {
+  test('with invalid blog ID format results in 400 Bad Request', async () => {
 
     //return code and content-type
     await api
@@ -81,7 +110,7 @@ describe('blog deletion', () => {
     assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
   })
 
-  test('missing blog id results in 400', async () => {
+  test('without blog ID results in 400 Bad Request', async () => {
 
     //return code and content-type
     await api
@@ -94,8 +123,8 @@ describe('blog deletion', () => {
   })
 })
 
-describe('blog update', () => {
-  test('valid blog is updated normally', async () => {
+describe('updating a blog', () => {
+  test('with valid information is OK', async () => {
     const updatingBlog = {
       title: 'React patterns',
       author: 'Michael Chan',
@@ -117,7 +146,7 @@ describe('blog update', () => {
     assert.strictEqual(likes[index], 17)
   })
 
-  test('non-existent blog results in initial blogs remained unchanged', async () => {
+  test('using non-existent ID results in 404 Not Found', async () => {
     const updatingBlog = {
       title: 'React patterns',
       author: 'Michael Chan',
@@ -138,7 +167,7 @@ describe('blog update', () => {
     assert.strictEqual(blogsAfter[index].likes, 7)
   })
 
-  test('invalid blog id format results in 400 Bad Request', async () => {
+  test('using invalid blog ID format results in 400 Bad Request', async () => {
     const updatingBlog = {
       title: 'React patterns',
       author: 'Michael Chan',
@@ -158,7 +187,7 @@ describe('blog update', () => {
     assert.strictEqual(blogsAfter[index].likes, 7)
   })
 
-  test('missing likes results in 400 Bad Request', async () => {
+  test('but missing likes results in 400 Bad Request', async () => {
     const updatingBlog = {
       title: 'React patterns',
       author: 'Michael Chan',
@@ -177,7 +206,7 @@ describe('blog update', () => {
     assert.strictEqual(blogsAfter[index].likes, 7)
   })
 
-  test('string values (number-like) for likes results in 400 Bad Request', async () => {
+  test('using string values (number-like) for likes results in 400 Bad Request', async () => {
     const updatingBlog = {
       title: 'React patterns',
       author: 'Michael Chan',
@@ -197,7 +226,7 @@ describe('blog update', () => {
     assert.strictEqual(blogsAfter[index].likes, 7)
   })
 
-  test('object values for likes results in 400 Bad Request', async () => {
+  test('using object values for likes results in 400 Bad Request', async () => {
     const updatingBlog = {
       title: 'React patterns',
       author: 'Michael Chan',
@@ -218,8 +247,8 @@ describe('blog update', () => {
   })
 })
 
-describe('blog creation', () => {
-  test('missing title', async () => {
+describe('creating a blog', () => {
+  test('when missing title is not possible', async () => {
     const newBlog = {
       author: 'Charles Darwin',
       url: 'https',
@@ -228,6 +257,8 @@ describe('blog creation', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', token)
+      // .set('user', rootUser)
       .send(newBlog)
       .expect(400)
 
@@ -235,7 +266,7 @@ describe('blog creation', () => {
     assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
   })
 
-  test('missing url', async () => {
+  test('when missing url is not possible', async () => {
     const newBlog = {
       title: 'Evolution',
       author: 'Charles Darwin',
@@ -244,6 +275,8 @@ describe('blog creation', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', token)
+      // .set('user', rootUser)
       .send(newBlog)
       .expect(400)
 
@@ -251,7 +284,7 @@ describe('blog creation', () => {
     assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
   })
 
-  test('missing both title & url', async () => {
+  test('when missing both title & url is not possible', async () => {
     const newBlog = {
       author: 'Charles Darwin',
       likes: 3
@@ -259,6 +292,8 @@ describe('blog creation', () => {
 
     await api
       .post('/api/blogs')
+      .set('Authorization', token)
+      // .set('user', rootUser)
       .send(newBlog)
       .expect(400)
 
@@ -266,7 +301,7 @@ describe('blog creation', () => {
     assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
   })
 
-  test('valid blog is created normally', async () => {
+  test('when missing authorization token is not possible', async () => {
     const newBlog = {
       title: 'No Home',
       author: 'Charles Dickens',
@@ -278,6 +313,30 @@ describe('blog creation', () => {
     await api
       .post('/api/blogs')
       .send(newBlog)
+      .expect(401)
+      .expect('Content-Type', /application\/json/)
+
+    //new blog is not added
+    const blogsAfter = await helper.blogsInDb()
+    const titles = blogsAfter.map(r => r.title)
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length)
+    assert.strictEqual(titles.includes('No Home'), false)
+  })
+
+  test('with valid information is OK', async () => {
+    const newBlog = {
+      title: 'No Home',
+      author: 'Charles Dickens',
+      url: 'https',
+      likes: 5
+    }
+
+    //return code and content-type
+    await api
+      .post('/api/blogs')
+      .set('Authorization', token)
+      // .set('user', rootUser)
+      .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
 
@@ -288,7 +347,7 @@ describe('blog creation', () => {
     assert(titles.includes('No Home'))
   })
 
-  test('default like is 0', async () => {
+  test('without like value is OK but then default like is 0', async () => {
     const newBlog = {
       title: 'Evolution',
       author: 'Charles Darwin',
@@ -298,6 +357,7 @@ describe('blog creation', () => {
     //return code and content-type
     await api
       .post('/api/blogs')
+      .set('Authorization', token)
       .send(newBlog)
       .expect(201)
       .expect('Content-Type', /application\/json/)
@@ -308,6 +368,7 @@ describe('blog creation', () => {
     const newIndex = blogsAfter.findIndex(blog => blog.title === 'Evolution')
     assert.strictEqual(likes[newIndex], 0)
     assert.strictEqual(blogsAfter[newIndex].title, 'Evolution')
+    assert.strictEqual(blogsAfter.length, helper.initialBlogs.length + 1)
   })
 })
 
