@@ -28,12 +28,14 @@ const App = () => {
       const user = JSON.parse(loggedUserJSON)
       blogService.setToken(user.token)
       setUser(user)
+      // console.log('effect user:', user)
     }
   }, [])
 
   useEffect(() => {
     const fetchBlogs = async () => {
       const blogs = await blogService.getAll()
+      blogs.sort((a, b) => b.likes - a.likes)
       setBlogs(blogs)
     }
 
@@ -96,22 +98,17 @@ const App = () => {
   // ==============================
   // SECTION: Blog Creation
   // ==============================
-  const handleCreateBlog = async (e) => {
+  const createBlog = async (blog) => {
 
     // console.log('creating a blog', title, author, url)
-    e.preventDefault()
-
-    const newBlog = {
-      title: title,
-      author: author,
-      url: url
-    }
+    // e.preventDefault()
+    console.log('blog to create:', blog)
 
     try {
-      const blog = await blogService.createNew(newBlog)
-      // console.log('new blog', blog)
-      const updatedBlogs = blogs.concat(blog)
-      // console.log('new blogs after concat', updatedBlogs)
+      const newBlog = await blogService.createNew(blog)
+      newBlog.user = user
+      const updatedBlogs = blogs.concat(newBlog)
+      updatedBlogs.sort((a, b) => b.likes - a.likes)
 
       setBlogs(updatedBlogs)
       setTitle('')
@@ -135,16 +132,16 @@ const App = () => {
   // SECTION: Increase Blog's Likes
   // ==============================
 
-  const handleLike = async (e) => {
-    console.log('current blog id', e.target.value)
+  const increaseLike = async (blog, id) => {
+    // console.log('current blog id', blog.id)
     try {
-      const updatingBlog = blogs.find(blog => blog.id === e.target.value)
-      const updatedBlog = await blogService.updateOne({...updatingBlog, likes: updatingBlog.likes + 1}, e.target.value)
+      const updatedBlog = await blogService.updateOne(blog, id)
 
       if (updatedBlog) {
-        const index = await blogs.findIndex(blog => blog.id === e.target.value)
+        const index = await blogs.findIndex(bl => bl.id === id)
         const newBlogs = [...blogs]
         newBlogs[index].likes += 1
+        newBlogs.sort((a, b) => b.likes - a.likes)
         setBlogs(newBlogs)
       }
     }
@@ -153,6 +150,30 @@ const App = () => {
       setTimeout(() => {
         setErrorMessage({ type: 'success', message: '' })
       }, 5000)
+    }
+  }
+
+  // ==============================
+  // SECTION: Remove Single Blog
+  // ==============================
+  const removeBlog = async (id) => {
+    // console.log('current blog id', e.target.value)
+    const deletingBlog = blogs.find(blog => blog.id === id)
+
+    if (window.confirm(`Remove blog ${deletingBlog.title} by ${deletingBlog.author} ?`)) {
+      try {
+        await blogService.deleteOne(id)
+        const index = await blogs.findIndex(blog => blog.id === id)
+        const newBlogs = [...blogs]
+        newBlogs.splice(index, 1)
+        setBlogs(newBlogs)
+      }
+      catch (exception) {
+        setErrorMessage({ type: 'error', message: 'Error while removing blog' })
+        setTimeout(() => {
+          setErrorMessage({ type: 'success', message: '' })
+        }, 5000)
+      }
     }
   }
 
@@ -166,6 +187,9 @@ const App = () => {
   // ==============================
   // SECTION: Component UI
   // ==============================
+  // if (user)
+  //   console.log('user id:', user.id)
+
   return (
     <div>
       {!user 
@@ -187,13 +211,13 @@ const App = () => {
             </p>
             {showNew
               ? <BlogNewForm
-                  createNewBlogHandler={handleCreateBlog}
+                  createNewBlogHandler={createBlog}
                   toggleFormHandler={handleShowNew}
                 />
               : <button onClick={handleShowNew}>create new blog</button>
             }
 
-            {blogs.map(blog => <Blog key={blog.id} blog={blog} onLikeClick={handleLike} />)}
+            {blogs.map(blog => <Blog key={blog.id} blog={blog} onLikeClick={increaseLike} onRemoveClick={removeBlog} username={user.username}/>)}
           </>
       }
       

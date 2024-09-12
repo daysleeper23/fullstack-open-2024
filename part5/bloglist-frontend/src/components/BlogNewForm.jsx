@@ -23,10 +23,20 @@ const BlogNewForm = ({
     setUrl(e.target.value)
   }
 
+  const handleSubmit = (e) => {
+    e.preventDefault()
+    const newBlog = {
+      title,
+      author,
+      url
+    }
+    createNewBlogHandler(newBlog)
+  }
+
   return (
     <>
       <h1>create new</h1>
-      <form onSubmit={createNewBlogHandler}>
+      <form onSubmit={handleSubmit}>
         <div>
           title <input type='text' value={title} onChange={handleTitleChange} />
         </div>
