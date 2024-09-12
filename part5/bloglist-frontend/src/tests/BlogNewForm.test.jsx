@@ -26,7 +26,6 @@ describe('<BlogNewForm />', () => {
     await user.type(authorInput, 'Test Author')
     await user.type(urlInput, 'Test URL')
     await user.click(createButton)
-  
 
     expect(createBlog.mock.calls).toHaveLength(1)
     expect(createBlog.mock.calls[0][0].title).toBe('Test Title')
