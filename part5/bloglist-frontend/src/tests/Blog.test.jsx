@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react'
+import { render, screen } from '@testing-library/react'
 import Blog from '../components/Blog'
 import { beforeEach, expect } from 'vitest'
 
@@ -50,5 +50,27 @@ describe('<Blog />', () => {
 
     const username = container.querySelector('#name')
     expect(url).toHaveTextContent('testuser')
+  }
+
+  test('does not render its toggable content after clicking the hide button'), async () => {
+    const user = userEvent.setup()
+    const button = container.querySelector('#showButton')
+    await user.click(button)
+
+    await user.click(button)
+    const div = container.querySelector('#toggable')
+    expect(div).toBeUndefined
+  }
+
+  test('has the event handler called twice if the like button is clicked twice'), async () => {
+    const user = userEvent.setup()
+    const button = container.querySelector('#showButton')
+    await user.click(button)
+
+    const likeButton = screen.getByText(like)
+    await user.click(likeButton)
+    await user.click(likeButton)
+
+    expect(mockLikeHandler.mock.calls).toHaveLength(2)
   }
 })
