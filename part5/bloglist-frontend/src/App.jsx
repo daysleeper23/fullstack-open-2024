@@ -132,6 +132,31 @@ const App = () => {
   }
 
   // ==============================
+  // SECTION: Increase Blog's Likes
+  // ==============================
+
+  const handleLike = async (e) => {
+    console.log('current blog id', e.target.value)
+    try {
+      const updatingBlog = blogs.find(blog => blog.id === e.target.value)
+      const updatedBlog = await blogService.updateOne({...updatingBlog, likes: updatingBlog.likes + 1}, e.target.value)
+
+      if (updatedBlog) {
+        const index = await blogs.findIndex(blog => blog.id === e.target.value)
+        const newBlogs = [...blogs]
+        newBlogs[index].likes += 1
+        setBlogs(newBlogs)
+      }
+    }
+    catch (exception) {
+      setErrorMessage({ type: 'error', message: 'Error while updating blog' })
+      setTimeout(() => {
+        setErrorMessage({ type: 'success', message: '' })
+      }, 5000)
+    }
+  }
+
+  // ==============================
   // SECTION: Toggle Blog Creation Form
   // ==============================
   const handleShowNew = () => {
@@ -168,7 +193,7 @@ const App = () => {
               : <button onClick={handleShowNew}>create new blog</button>
             }
 
-            {blogs.map(blog => <Blog key={blog.id} blog={blog} />)}
+            {blogs.map(blog => <Blog key={blog.id} blog={blog} onLikeClick={handleLike} />)}
           </>
       }
       
