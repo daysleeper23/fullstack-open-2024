@@ -14,7 +14,7 @@ const App = () => {
   const [user, setUser] = useState(null)
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState({ type: 'success', message: ''})
+  const [errorMessage, setErrorMessage] = useState({ type: 'success', message: '' })
 
   const [title, setTitle] = useState('')
   const [author, setAuthor] = useState('')
@@ -69,7 +69,7 @@ const App = () => {
 
       window.localStorage.setItem(
         'loggedBlogAppUser', JSON.stringify(user)
-      ) 
+      )
 
       setUser(user)
       setUsername('')
@@ -92,7 +92,7 @@ const App = () => {
     setPassword('')
     window.localStorage.setItem(
       'loggedBlogAppUser', JSON.stringify('')
-    ) 
+    )
   }
 
   // ==============================
@@ -115,7 +115,7 @@ const App = () => {
       setAuthor('')
       setUrl('')
       setShowNew(false)
-      setErrorMessage({type: 'success', message: `a new blog ${blog.title} by ${blog.author} added`})
+      setErrorMessage({ type: 'success', message: `a new blog ${blog.title} by ${blog.author} added` })
       setTimeout(() => {
         setErrorMessage({ type: 'success', message: '' })
       }, 5000)
@@ -192,35 +192,35 @@ const App = () => {
 
   return (
     <div>
-      {!user 
-        ? <LoginForm username={username} password={password} 
-            messageType={errorMessage.type} messageContent={errorMessage.message}
-            usernameHandler={handleUsernameChange} 
-            passwordHandler={handlePasswordChange} 
-            loginHandler={handleLogin}
-          />
+      {!user
+        ? <LoginForm
+          username={username} password={password}
+          messageType={errorMessage.type} messageContent={errorMessage.message}
+          usernameHandler={handleUsernameChange}
+          passwordHandler={handlePasswordChange}
+          loginHandler={handleLogin}
+        />
         : <>
-            <h1>blogs</h1>
-            {errorMessage.message !== ''
-              ? <Notification type={errorMessage.type} message={errorMessage.message} />
-              : <></>
-            }
-            <p>
-              {user.name} logged in
-              <button onClick={handleLogout}>logout</button>
-            </p>
-            {showNew
-              ? <BlogNewForm
-                  createNewBlogHandler={createBlog}
-                  toggleFormHandler={handleShowNew}
-                />
-              : <button onClick={handleShowNew}>create new blog</button>
-            }
+          <h1>blogs</h1>
+          {errorMessage.message !== ''
+            ? <Notification type={errorMessage.type} message={errorMessage.message} />
+            : <></>
+          }
+          <p>
+            {user.name} logged in
+            <button onClick={handleLogout}>logout</button>
+          </p>
+          {showNew
+            ? <BlogNewForm
+              createNewBlogHandler={createBlog}
+              toggleFormHandler={handleShowNew}
+            />
+            : <button onClick={handleShowNew}>create new blog</button>
+          }
 
-            {blogs.map(blog => <Blog key={blog.id} blog={blog} onLikeClick={increaseLike} onRemoveClick={removeBlog} username={user.username}/>)}
-          </>
+          {blogs.map(blog => <Blog key={blog.id} blog={blog} onLikeClick={increaseLike} onRemoveClick={removeBlog} username={user.username}/>)}
+        </>
       }
-      
     </div>
   )
 }

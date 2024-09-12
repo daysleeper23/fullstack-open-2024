@@ -12,23 +12,23 @@ const getToken = () => {
 
 const getAll = async () => {
   // console.log('get blogs with token:', token)
-  const response = await axios.get(baseUrl, { headers: { 'Authorization': token }})
+  const response = await axios.get(baseUrl, { headers: { 'Authorization': token } })
   return response.data
 }
 
 const createNew = async (newObject) => {
   // console.log('create blogs with token:', token)
-  const response = await axios.post(baseUrl, newObject, { headers: { 'Authorization': token }})
+  const response = await axios.post(baseUrl, newObject, { headers: { 'Authorization': token } })
   return response.data
 }
 
 const updateOne = async (newObject, objectId) => {
-  const response = await axios.put(`${baseUrl}/${objectId}`, newObject, { headers: { 'Authorization': token }})
+  const response = await axios.put(`${baseUrl}/${objectId}`, newObject, { headers: { 'Authorization': token } })
   return response.data
 }
 
 const deleteOne = async(objectId) => {
-  const response = await axios.delete(`${baseUrl}/${objectId}`, { headers: { 'Authorization': token }})
+  const response = await axios.delete(`${baseUrl}/${objectId}`, { headers: { 'Authorization': token } })
   return response.data
 }
 
