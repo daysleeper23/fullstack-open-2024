@@ -38,15 +38,15 @@ const BlogNewForm = ({
       <h1>create new</h1>
       <form onSubmit={handleSubmit}>
         <div>
-          title <input id='title' type='text' value={title} onChange={handleTitleChange} />
+          title <input data-testid='title' type='text' value={title} onChange={handleTitleChange} />
         </div>
         <div>
-          author <input id='author' type='text' value={author} onChange={handleAuthorChange} />
+          author <input data-testid='author' type='text' value={author} onChange={handleAuthorChange} />
         </div>
         <div>
-          url <input id='url' type='text' value={url} onChange={handleUrlChange} />
+          url <input data-testid='url' type='text' value={url} onChange={handleUrlChange} />
         </div>
-        <button id='create' type='submit'>create</button>
+        <button data-testid='create' type='submit'>create</button>
       </form>
       <button onClick={toggleFormHandler}>cancel</button>
     </>

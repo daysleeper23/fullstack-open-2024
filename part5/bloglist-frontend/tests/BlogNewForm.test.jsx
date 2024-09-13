@@ -17,9 +17,9 @@ describe('<BlogNewForm />', () => {
 
   test('updates parent state and calls onSubmit', async () => {
   
-    const titleInput = container.querySelector('#title')
-    const authorInput = container.querySelector('#author')
-    const urlInput = container.querySelector('#url')
+    const titleInput = screen.getByTestId('title')
+    const authorInput = screen.getByTestId('author')
+    const urlInput = screen.getByTestId('url')
     const createButton = screen.getByText('create')
   
     await user.type(titleInput, 'Test Title')

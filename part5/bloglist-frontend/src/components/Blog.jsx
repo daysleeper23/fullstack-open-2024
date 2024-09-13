@@ -28,18 +28,18 @@ const Blog = ({ blog, onLikeClick, onRemoveClick, username }) => {
   }
 
   return (
-    <div id='blog' style={blogStyle}>
+    <div data-testid='blog' style={blogStyle}>
       {blog.title} {blog.author}
-      <button id='showButton' onClick={() => setShow(!show)}>{show ? 'hide' : 'show'}</button>
+      <button data-testid='showButton' onClick={() => setShow(!show)}>{show ? 'hide' : 'show'}</button>
       {
         show
-          ? <div id='toggable'>
-            <div id='url'>{blog.url}</div>
-            <div id='likes'>likes {blog.likes}
+          ? <div data-testid='toggable'>
+            <div data-testid='url'>{blog.url}</div>
+            <div data-testid='likes'>likes {blog.likes}
               <button value={blog.id} onClick={handleLikeClick}>like</button>
             </div>
-            <div id='name'>{blog.user.name}</div>
-            {username === blog.user.username
+            <div data-testid='name'>{blog.user?.name || 'Unknown Creator'}</div>
+            {username === blog.user?.username
               ? <button value={blog.id} onClick={handleRemoveClick}>remove</button>
               : <></>
             }

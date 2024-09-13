@@ -25,46 +25,44 @@ describe('<Blog />', () => {
   })
 
   test('renders its title and author at default', () => {
-    const div = container.querySelector('#blog')
+    const div = screen.getByTestId('blog')
     expect(div).toHaveTextContent('Blog Title Blog Author')
   })
 
   test('does not render its likes and url at default', () => {
-    const div = container.querySelector('#toggable')
-    expect(div).toBeUndefined
+    expect(screen.queryByTestId('toggable')).not.toBeInTheDocument()
   })
 
   test('renders its toggable content correctly after clicking the show button'), async () => {
     const user = userEvent.setup()
-    const button = container.querySelector('#showButton')
+    const button = screen.getByTestId('showButton')
     await user.click(button)
 
-    const toggable = container.querySelector('#toggable')
+    const toggable = screen.getByTestId('toggable')
     expect(toggable).toBeDefined
 
-    const likes = container.querySelector('#likes')
+    const likes = screen.getByTestId('likes')
     expect(likes).toHaveTextContent('likes 3')
 
-    const url = container.querySelector('#url')
+    const url = screen.getByTestId('url')
     expect(url).toHaveTextContent('Blog URL')
 
-    const username = container.querySelector('#name')
-    expect(url).toHaveTextContent('testuser')
+    const username = screen.getByTestId('name')
+    expect(username).toHaveTextContent('testuser')
   }
 
   test('does not render its toggable content after clicking the hide button'), async () => {
     const user = userEvent.setup()
-    const button = container.querySelector('#showButton')
+    const button = screen.getByTestId('showButton')
     await user.click(button)
 
     await user.click(button)
-    const div = container.querySelector('#toggable')
-    expect(div).toBeUndefined
+    expect(screen.getByTestId('toggable')).toBeUndefined
   }
 
   test('has the event handler called twice if the like button is clicked twice'), async () => {
     const user = userEvent.setup()
-    const button = container.querySelector('#showButton')
+    const button = screen.getByTestId('showButton')
     await user.click(button)
 
     const likeButton = screen.getByText(like)
