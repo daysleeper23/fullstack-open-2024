@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import Blog from '../components/Blog'
+import Blog from '../src/components/Blog'
 import { beforeEach, expect } from 'vitest'
 
 describe('<Blog />', () => {

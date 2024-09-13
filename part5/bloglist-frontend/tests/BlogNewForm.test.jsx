@@ -1,5 +1,5 @@
 import { render, screen } from '@testing-library/react'
-import BlogNewForm from '../components/BlogNewForm'
+import BlogNewForm from '../src/components/BlogNewForm'
 import userEvent from '@testing-library/user-event'
 import { describe } from 'vitest'
 
