@@ -55,6 +55,18 @@ describe('Blog App', () => {
     test('create new blog out button is shown', async ({ page }) => {
       await expect(page.getByText('create new blog')).toBeVisible()
     })
+
+    test('a new blog can be created', async ({ page }) => {
+      await page.getByText('create new blog').click()
+      await page.getByTestId('title').fill('New Blog')
+      await page.getByTestId('author').fill('Mark Twain')
+      await page.getByTestId('url').fill('https://google.com')
+      await page.getByTestId('create').click()
+
+      await expect(page.getByText('New Blog Mark Twain')).toBeVisible()
+      await expect(page.getByText('show')).toBeVisible()
+      await expect(page.getByText('https://google.com')).not.toBeVisible()
+    })
   })
 
 })
