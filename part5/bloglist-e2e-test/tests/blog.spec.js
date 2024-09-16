@@ -129,6 +129,19 @@ describe('Blog App', () => {
         for (let i = 0; i < 7; ++i)
           assert(await blogs.nth(i).textContent(), iniTitles[i])
       })
+
+      test('position of blogs with equal likes remain unchanged after actions', async ({ page }) => {
+        const blog = await page.locator('[data-testid="blog"]', { hasText: 'Go To Statement Considered Harmful Edsger W. Dijkstra' })
+        await blog.getByText('show').click()
+        await blog.getByTestId('likeButton').click()
+        await expect(blog.getByText('likes 7')).toBeVisible()
+
+        const blogs = await page.getByTestId('blog')
+        const iniTitles = initialBlogs.map(blog => blog.title + ' ' + blog.author + 'show')
+
+        for (let i = 0; i < 7; ++i)
+          expect(await blogs.nth(i).textContent()).toStrictEqual(iniTitles[i])
+      })
     })
   })
 

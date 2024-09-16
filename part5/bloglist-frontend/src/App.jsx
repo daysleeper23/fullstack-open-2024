@@ -16,10 +16,6 @@ const App = () => {
   const [password, setPassword] = useState('')
   const [errorMessage, setErrorMessage] = useState({ type: 'success', message: '' })
 
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
-
   const [showNew, setShowNew] = useState(false)
 
   useEffect(() => {
@@ -35,7 +31,17 @@ const App = () => {
   useEffect(() => {
     const fetchBlogs = async () => {
       const blogs = await blogService.getAll()
-      blogs.sort((a, b) => b.likes - a.likes)
+      blogs.sort((a, b) => {
+        if (b.likes > a.likes)
+          return 1
+        if (b.likes < a.likes)
+          return -1
+
+        if (b.id >= a.id)
+          return 1
+        else
+          return -1
+      })
       setBlogs(blogs)
     }
 
@@ -111,9 +117,6 @@ const App = () => {
       updatedBlogs.sort((a, b) => b.likes - a.likes)
 
       setBlogs(updatedBlogs)
-      setTitle('')
-      setAuthor('')
-      setUrl('')
       setShowNew(false)
       setErrorMessage({ type: 'success', message: `a new blog ${blog.title} by ${blog.author} added` })
       setTimeout(() => {
