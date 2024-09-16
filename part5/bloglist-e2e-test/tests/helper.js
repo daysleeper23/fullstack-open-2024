@@ -16,9 +16,9 @@ const loginWith = async (page, username, password) => {
   await page.getByTestId('login-button').click()
 }
 
-const blogsInit = async (request, blogs) => {
+const blogsInit = async (request, blogs, user) => {
   blogs.forEach(async (blog) => {
-    await request.post('http://localhost:3003/api/testing/create', {
+    await request.post(`http://localhost:3003/api/testing/create/${user}`, {
       data: {
         title: blog.title,
         author: blog.author,

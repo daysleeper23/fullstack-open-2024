@@ -9,10 +9,24 @@ testingRouter.post('/reset', async (_request, _response) => {
   response.status(204).end()
 })
 
-testingRouter.post('/create', async (request, response) => {
+testingRouter.post('/create/:username', async (request, response) => {
   const blog = await new Blog(request.body)
-  const user = await User.findOne({ username: 'root' })
-  blog.user = user.id
+  let user = await User.findOne({ username: request.params.username })
+  if (user)
+    blog.user = user.id
+  else {
+    console.log('start creating fake user')
+
+    user = new User({
+      username: 'fake',
+      name: 'Fake'
+    })
+    await user.save()
+    blog.user = User.findOne({ username: 'fake' }).id
+    console.log('fake id', blog.user)
+    await User.findOneAndDelete({ username: 'fake' })
+  }
+
   blog.likes = 0
 
   await blog.save()

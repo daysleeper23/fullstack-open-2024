@@ -41,7 +41,7 @@ const Blog = ({ blog, onLikeClick, onRemoveClick, username }) => {
             </div>
             <div data-testid='name'>{blog.user?.name || 'Unknown Creator'}</div>
             {username === blog.user?.username
-              ? <button value={blog.id} onClick={handleRemoveClick}>remove</button>
+              ? <button data-testid='removeButton' value={blog.id} onClick={handleRemoveClick}>remove</button>
               : <></>
             }
           </div>

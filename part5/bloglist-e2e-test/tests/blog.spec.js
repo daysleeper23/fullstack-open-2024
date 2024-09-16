@@ -1,6 +1,8 @@
 const { describe, test, expect, beforeEach } = require('@playwright/test')
 import { userInit, loginWith, blogsInit } from './helper'
 
+let userId
+
 const oneBlog = [
   {
     title: 'React patterns',
@@ -49,7 +51,8 @@ const initialBlogs = [
 
 describe('Blog App', () => {
   beforeEach(async ({ page, request }) => {
-    await userInit(request)
+    userId = await userInit(request)
+    // console.log('root id:', userId)
     await page.goto('http://localhost:5173')
   })
 
@@ -112,7 +115,7 @@ describe('Blog App', () => {
 
   describe('Single Blog Function', () => {
     beforeEach(async ({ page, request }) => {
-      await blogsInit(request, oneBlog)
+      await blogsInit(request, oneBlog, 'root')
       await loginWith(page, 'root', 'sekret')
     })
 
@@ -122,6 +125,62 @@ describe('Blog App', () => {
       await page.getByText('show').click()
       await page.getByTestId('likeButton').click()
       await expect(page.getByText('likes 1')).toBeVisible()
+    })
+
+    test('remove button is shown on blogs added by the current user', async ({ page }) => {
+      await page.getByText('show').click()
+      await expect(page.getByTestId('removeButton')).toBeVisible()
+    })
+
+    test('confirmation dialog is shown correctly after clicking remove button', async ({ page }) => {
+      await page.getByText('show').click()
+      page.getByTestId('removeButton').click()
+      
+      const [dialog] = await Promise.all([
+        page.waitForEvent('dialog')
+      ])
+
+      await expect(dialog.message()).toBe('Remove blog React patterns by Michael Chan ?')
+      await dialog.dismiss();
+    })
+
+    test('blog list remained unchanged if user clicked Cancel button on the Dialog', async ({ page }) => {
+      await page.getByText('show').click()
+      page.getByTestId('removeButton').click()
+      
+      const [dialog] = await Promise.all([
+        page.waitForEvent('dialog')
+      ])
+
+      await expect(dialog.message()).toBe('Remove blog React patterns by Michael Chan ?')
+      await dialog.dismiss();
+      await expect(page.getByText('React patterns Michael Chan')).toBeVisible()
+    })
+
+    test('blog can be removed by user who added it', async ({ page }) => {
+      await page.getByText('show').click()
+      page.getByTestId('removeButton').click()
+
+      const [dialog] = await Promise.all([
+        page.waitForEvent('dialog')  
+      ])
+      
+      await expect(dialog.message()).toBe('Remove blog React patterns by Michael Chan ?')
+      await dialog.accept()
+      await expect(page.getByText('React patterns Michael Chan')).not.toBeVisible()
+    })
+
+    test ('remove button is not shown for user who did not add the blog', async ({ page, request }) => {
+      //add a new blog which is created by a fake user
+      await blogsInit(request, [initialBlogs[3]], '1')
+
+      //validate that the blog is visible
+      await expect(page.getByText('First class tests Robert C. Martin')).toBeVisible()
+
+      //validate that the Remove Button is not visible to the current user
+      const blog = await page.locator('[data-testid="blog"]', { hasText: 'First class tests Robert C. Martin' })
+      await blog.getByText('show').click()
+      await expect(page.getByTestId('removeButton')).not.toBeVisible()
     })
   })
 })
