@@ -1,5 +1,4 @@
 const { describe, test, expect, beforeEach } = require('@playwright/test')
-const assert = require('node:assert');
 import { userInit, loginWith, blogsInit } from './helper'
 
 let userId
@@ -127,7 +126,10 @@ describe('Blog App', () => {
         const iniTitles = initialBlogs.map(blog => blog.title + ' ' + blog.author + 'show')
 
         for (let i = 0; i < 7; ++i)
-          assert(await blogs.nth(i).textContent(), iniTitles[i])
+        {
+          console.log('title', i, await blogs.nth(i).textContent())
+          expect(await blogs.nth(i).textContent()).toStrictEqual(iniTitles[i])
+        }
       })
 
       test('position of blogs with equal likes remain unchanged after actions', async ({ page }) => {
@@ -138,9 +140,85 @@ describe('Blog App', () => {
 
         const blogs = await page.getByTestId('blog')
         const iniTitles = initialBlogs.map(blog => blog.title + ' ' + blog.author + 'show')
+        await blog.getByText('hide').click()
 
         for (let i = 0; i < 7; ++i)
+        {
+          // console.log('title', i, await blogs.nth(i).textContent())
           expect(await blogs.nth(i).textContent()).toStrictEqual(iniTitles[i])
+        }
+      })
+
+      test('liking multiple blogs', async ({ page }) => {
+        const blog = await page.locator('[data-testid="blog"]', { hasText: 'Go To Statement Considered Harmful Edsger W. Dijkstra' })
+        await blog.getByText('show').click()
+        await blog.getByTestId('likeButton').click()
+        await blog.getByTestId('likeButton').click()
+        await blog.getByTestId('likeButton').click()
+        await expect(blog.getByText('likes 9')).toBeVisible()
+        await blog.getByText('hide').click()
+
+        const blog1 = await page.locator('[data-testid="blog"]', { hasText: 'Canonical string reduction Edsger W. Dijkstra' })
+        await blog1.getByText('show').click()
+        await blog1.getByTestId('likeButton').click()
+        await blog1.getByTestId('likeButton').click()
+        await blog1.getByTestId('likeButton').click()
+        await expect(blog1.getByText('likes 8')).toBeVisible()
+        await blog1.getByText('hide').click()
+        
+        const blog2 = await page.locator('[data-testid="blog"]', { hasText: 'Type wars Robert C. Martin' })
+        await blog2.getByText('show').click()
+        await blog2.getByTestId('likeButton').click()
+        await blog2.getByTestId('likeButton').click()
+        await blog2.getByTestId('likeButton').click()
+        await expect(blog2.getByText('likes 5')).toBeVisible()
+        await blog2.getByText('hide').click()
+
+        const afterTitles = [
+          'Go To Statement Considered Harmful Edsger W. Dijkstrashow',
+          'Canonical string reduction Edsger W. Dijkstrashow',
+          'React patterns Michael Chanshow',
+          'Type wars Robert C. Martinshow',
+          'First class tests Robert C. Martinshow',
+          'TDD harms architecture Robert C. Martinshow',
+          'Type wars II Robert C. Martinshow'
+        ]
+
+        const blogs = await page.getByTestId('blog')
+
+        for (let i = 0; i < 7; ++i)
+        {
+          // console.log('title', i, await blogs.nth(i).textContent())
+          expect(await blogs.nth(i).textContent()).toStrictEqual(afterTitles[i])
+        }
+      })
+
+      test('blog with lowest like moves up to the correct place', async ({ page }) => {
+        const blog = await page.locator('[data-testid="blog"]', { hasText: 'Type wars II Robert C. Martin' })
+        await blog.getByText('show').click()
+        await blog.getByTestId('likeButton').click()
+        await blog.getByTestId('likeButton').click()
+        await blog.getByTestId('likeButton').click()
+        await expect(blog.getByText('likes 4')).toBeVisible()
+
+        const afterTitles = [
+          'React patterns Michael Chanshow',
+          'Go To Statement Considered Harmful Edsger W. Dijkstrashow',
+          'Canonical string reduction Edsger W. Dijkstrashow',
+          'First class tests Robert C. Martinshow',
+          'Type wars II Robert C. Martinshow',
+          'TDD harms architecture Robert C. Martinshow',
+          'Type wars Robert C. Martinshow'
+        ]
+
+        const blogs = await page.getByTestId('blog')
+        await blog.getByText('hide').click()
+
+        for (let i = 0; i < 7; ++i)
+        {
+          // console.log('title', i, await blogs.nth(i).textContent())
+          expect(await blogs.nth(i).textContent()).toStrictEqual(afterTitles[i])
+        }
       })
     })
   })
