@@ -27,7 +27,8 @@ testingRouter.post('/create/:username', async (request, response) => {
     await User.findOneAndDelete({ username: 'fake' })
   }
 
-  blog.likes = 0
+  if (!blog.likes)
+    blog.likes = 0
 
   await blog.save()
 

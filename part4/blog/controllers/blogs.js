@@ -54,27 +54,35 @@ blogsRouter.delete('/:id', async (request, response) => {
 
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
+  const updatingBlog = await Blog.findById(request.params.id)
 
-  const blog = {
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    user: request.user.id,
-    likes: body.likes
-  }
-
-  if (!blog.likes)
-    response.status(400).send({ error: 'missing likes' })
-  else if (isNaN(blog.likes))
-    response.status(400).send({ error: 'wrong field value for likes ' })
-  else {
-    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
-    if (updatedBlog) {
-      response.json(updatedBlog)
-    } else {
-      response.status(404).end()
+  if (updatingBlog) {
+    const blog = {
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      user: updatingBlog.user,
+      likes: body.likes
+    }
+  
+    if (!blog.likes)
+      response.status(400).send({ error: 'missing likes' })
+    else if (isNaN(blog.likes))
+      response.status(400).send({ error: 'wrong field value for likes ' })
+    else {
+      const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+      if (updatedBlog) {
+        response.json(updatedBlog)
+      } else {
+        response.status(404).end()
+      }
     }
   }
+  else {
+    response.status(404).end()
+  }
+
+  
 })
 
 module.exports = blogsRouter

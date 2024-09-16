@@ -1,4 +1,5 @@
 const { describe, test, expect, beforeEach } = require('@playwright/test')
+const assert = require('node:assert');
 import { userInit, loginWith, blogsInit } from './helper'
 
 let userId
@@ -8,6 +9,7 @@ const oneBlog = [
     title: 'React patterns',
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
+    likes: 0
   }
 ]
 
@@ -16,36 +18,43 @@ const initialBlogs = [
     title: 'React patterns',
     author: 'Michael Chan',
     url: 'https://reactpatterns.com/',
+    likes: 7
   },
   {
     title: 'Go To Statement Considered Harmful',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+    likes: 6
   },
   {
     title: 'Canonical string reduction',
     author: 'Edsger W. Dijkstra',
     url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+    likes: 5
   },
   {
     title: 'First class tests',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+    likes: 4
   },
   {
     title: 'TDD harms architecture',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+    likes: 3
   },
   {
     title: 'Type wars',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+    likes: 2
   },
   {
     title: 'Type wars II',
     author: 'Robert C. Martin',
     url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWarsII.html',
+    likes: 1
   }
 ]
 
@@ -83,7 +92,7 @@ describe('Blog App', () => {
 
   describe('When Logged In', () => {
     beforeEach(async ({ page, request }) => {
-      await blogsInit(request, initialBlogs)
+      await blogsInit(request, initialBlogs, 'root')
       await loginWith(page, 'root', 'sekret')
     })
 
@@ -109,6 +118,16 @@ describe('Blog App', () => {
   
         await expect(page.getByText('New Blog Mark Twain')).toBeVisible()
         await expect(page.getByText('https://google.com')).not.toBeVisible()
+      })
+    })
+
+    describe('Blogs Sorting Order', () => {
+      test('initial order is correct', async ({ page }) => {
+        const blogs = await page.getByTestId('blog')
+        const iniTitles = initialBlogs.map(blog => blog.title + ' ' + blog.author + 'show')
+
+        for (let i = 0; i < 7; ++i)
+          assert(await blogs.nth(i).textContent(), iniTitles[i])
       })
     })
   })

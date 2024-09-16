@@ -22,7 +22,8 @@ const blogsInit = async (request, blogs, user) => {
       data: {
         title: blog.title,
         author: blog.author,
-        url: blog.url
+        url: blog.url,
+        likes: blog.likes
       }
     })
   })
