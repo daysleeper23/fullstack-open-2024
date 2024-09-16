@@ -35,8 +35,9 @@ const Blog = ({ blog, onLikeClick, onRemoveClick, username }) => {
         show
           ? <div data-testid='toggable'>
             <div data-testid='url'>{blog.url}</div>
-            <div data-testid='likes'>likes {blog.likes}
-              <button value={blog.id} onClick={handleLikeClick}>like</button>
+            <div data-testid='likes'>
+              likes {blog.likes}
+              <button data-testid='likeButton' value={blog.id} onClick={handleLikeClick}>like</button>
             </div>
             <div data-testid='name'>{blog.user?.name || 'Unknown Creator'}</div>
             {username === blog.user?.username

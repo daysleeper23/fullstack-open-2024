@@ -1,8 +1,4 @@
-// const { describe, test, expect, beforeEach } = require('@playwright/test')
-// import axios from 'axios'
-const { request } = require('@playwright/test')
-
-const testInit = async (request) => {
+const userInit = async (request) => {
   await request.post('http://localhost:3003/api/testing/reset')
   await request.post('http://localhost:3003/api/users', {
     data: {
@@ -20,4 +16,16 @@ const loginWith = async (page, username, password) => {
   await page.getByTestId('login-button').click()
 }
 
-export { testInit, loginWith }
+const blogsInit = async (request, blogs) => {
+  blogs.forEach(async (blog) => {
+    await request.post('http://localhost:3003/api/testing/create', {
+      data: {
+        title: blog.title,
+        author: blog.author,
+        url: blog.url
+      }
+    })
+  })
+}
+
+export { userInit, loginWith, blogsInit }

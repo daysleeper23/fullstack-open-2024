@@ -1,16 +1,55 @@
 const { describe, test, expect, beforeEach } = require('@playwright/test')
-import { testInit, loginWith } from './helper'
+import { userInit, loginWith, blogsInit } from './helper'
+
+const oneBlog = [
+  {
+    title: 'React patterns',
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+  }
+]
+
+const initialBlogs = [
+  {
+    title: 'React patterns',
+    author: 'Michael Chan',
+    url: 'https://reactpatterns.com/',
+  },
+  {
+    title: 'Go To Statement Considered Harmful',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.u.arizona.edu/~rubinson/copyright_violations/Go_To_Considered_Harmful.html',
+  },
+  {
+    title: 'Canonical string reduction',
+    author: 'Edsger W. Dijkstra',
+    url: 'http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html',
+  },
+  {
+    title: 'First class tests',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/05/05/TestDefinitions.htmll',
+  },
+  {
+    title: 'TDD harms architecture',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2017/03/03/TDD-Harms-Architecture.html',
+  },
+  {
+    title: 'Type wars',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWars.html',
+  },
+  {
+    title: 'Type wars II',
+    author: 'Robert C. Martin',
+    url: 'http://blog.cleancoder.com/uncle-bob/2016/05/01/TypeWarsII.html',
+  }
+]
 
 describe('Blog App', () => {
   beforeEach(async ({ page, request }) => {
-    await request.post('http://localhost:3003/api/testing/reset')
-    await request.post('http://localhost:3003/api/users', {
-      data: {
-        name: 'Groot',
-        username: 'root',
-        password: 'sekret'
-      }
-    })
+    await userInit(request)
     await page.goto('http://localhost:5173')
   })
 
@@ -40,9 +79,10 @@ describe('Blog App', () => {
   })
 
   describe('When Logged In', () => {
-    beforeEach(async ({page}) => {
+    beforeEach(async ({ page, request }) => {
+      await blogsInit(request, initialBlogs)
       await loginWith(page, 'root', 'sekret')
-    }),
+    })
 
     test('blog list is shown', async ({ page }) => {
       await expect(page.getByText('logged in')).toBeVisible()
@@ -52,21 +92,36 @@ describe('Blog App', () => {
       await expect(page.getByTestId('logout-button')).toBeVisible()
     })
 
-    test('create new blog out button is shown', async ({ page }) => {
+    test('create new blog button is shown', async ({ page }) => {
       await expect(page.getByText('create new blog')).toBeVisible()
     })
 
-    test('a new blog can be created', async ({ page }) => {
-      await page.getByText('create new blog').click()
-      await page.getByTestId('title').fill('New Blog')
-      await page.getByTestId('author').fill('Mark Twain')
-      await page.getByTestId('url').fill('https://google.com')
-      await page.getByTestId('create').click()
-
-      await expect(page.getByText('New Blog Mark Twain')).toBeVisible()
-      await expect(page.getByText('show')).toBeVisible()
-      await expect(page.getByText('https://google.com')).not.toBeVisible()
+    describe('Creating a blog', () => {
+      test('with essential information is possible', async ({ page }) => {
+        await page.getByText('create new blog').click()
+        await page.getByTestId('title').fill('New Blog')
+        await page.getByTestId('author').fill('Mark Twain')
+        await page.getByTestId('url').fill('https://google.com')
+        await page.getByTestId('create').click()
+  
+        await expect(page.getByText('New Blog Mark Twain')).toBeVisible()
+        await expect(page.getByText('https://google.com')).not.toBeVisible()
+      })
     })
   })
 
+  describe('Single Blog Function', () => {
+    beforeEach(async ({ page, request }) => {
+      await blogsInit(request, oneBlog)
+      await loginWith(page, 'root', 'sekret')
+    })
+
+    test('blogs can be liked', async ({ page }) => {
+      // const blog = await page.locator('div', { hasText: 'React patterns Michael Chan' })
+      
+      await page.getByText('show').click()
+      await page.getByTestId('likeButton').click()
+      await expect(page.getByText('likes 1')).toBeVisible()
+    })
+  })
 })
