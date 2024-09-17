@@ -32,16 +32,30 @@ const reducer = (state = initialState, action) => {
 
       return updatingState
     case 'NEW':
-      const anecdote = {
-        id: getId(),
-        content: action.payload.content,
-        votes: 0
-      }
-      updatingState = [...state, anecdote]
-      return updatingState
+      return [...updatingState, action.payload]
 
     default:
       return updatingState
+  }
+}
+
+export const createAction = (content) => {
+  return {
+    type: 'NEW',
+    payload: {
+      id: getId(),
+      content: content,
+      votes: 0
+    }
+  }
+}
+
+export const voteAction = (id) => {
+  return {
+    type: 'VOTE',
+    payload: {
+      id
+    }
   }
 }
 
