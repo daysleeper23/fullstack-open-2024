@@ -14,7 +14,7 @@ const AnecdoteList = () => {
   return (
     <>
       {anecdotes
-        .filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase()))
+        .filter(anecdote => anecdote.content.toLowerCase().includes(filter.toLowerCase() === 'ALL' ? '' : filter.toLowerCase()))
         .sort((a, b) => {
           if (b.votes > a.votes) return 1
           if (b.votes < a.votes) return -1
