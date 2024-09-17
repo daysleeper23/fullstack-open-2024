@@ -4,7 +4,7 @@ import { create } from '../requests'
 const AnecdoteForm = () => {
   const queryClient = useQueryClient()
 
-  const newAnecdoteMutation = useMutation({ 
+  const createMutation = useMutation({ 
     mutationFn: create,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['anecdotes'] })
@@ -16,7 +16,7 @@ const AnecdoteForm = () => {
     const content = event.target.anecdote.value
     event.target.anecdote.value = ''
     console.log('new anecdote')
-    newAnecdoteMutation.mutate(content)
+    createMutation.mutate(content)
   }
 
   return (
