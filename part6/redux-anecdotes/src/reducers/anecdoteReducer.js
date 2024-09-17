@@ -11,15 +11,15 @@ const anecdotesAtStart = [
 
 const getId = () => (100000 * Math.random()).toFixed(0)
 
-const asObject = (anecdote) => {
-  return {
-    content: anecdote,
-    id: getId(),
-    votes: 0
-  }
-}
+// const asObject = (anecdote) => {
+//   return {
+//     content: anecdote,
+//     id: getId(),
+//     votes: 0
+//   }
+// }
 
-const initialState = anecdotesAtStart.map(asObject)
+const initialState = []
 
 const anecdoteSlice = createSlice({
   name: 'anecdotes',
@@ -41,9 +41,16 @@ const anecdoteSlice = createSlice({
 
       console.log(current(state))
       return state.map(a => a.id === id ? updAnecdote : a)
+    },
+    appendAnecdote(state, action) {
+      state.push(action.payload)
+    },
+    setAnecdotes(_state, action) {
+      return action.payload
     }
   }
 })
 
-export const { createAnecdote, voteAnecdote } = anecdoteSlice.actions
+export const { createAnecdote, voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
+export { getId } 
 export default anecdoteSlice.reducer
