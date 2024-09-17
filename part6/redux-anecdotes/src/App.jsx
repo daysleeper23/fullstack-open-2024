@@ -9,10 +9,27 @@ const App = () => {
     dispatch({ type: 'VOTE', payload: { id: id }})
   }
 
+  const create = (event) => {
+    event.preventDefault()
+
+    console.log('create', event.target.anecdote.value)
+    dispatch({ type: 'NEW', payload: { content: event.target.anecdote.value }})
+
+    event.target.anecdote.value = ''
+  }
+
   return (
     <div>
       <h2>Anecdotes</h2>
-      {anecdotes.map(anecdote =>
+      {anecdotes
+        .sort((a, b) => {
+          if (b.votes > a.votes) return 1
+          if (b.votes < a.votes) return -1
+
+          if (b.id >= a.id) return 1
+          else return -1
+        })
+        .map(anecdote =>
         <div key={anecdote.id}>
           <div>
             {anecdote.content}
@@ -24,9 +41,9 @@ const App = () => {
         </div>
       )}
       <h2>create new</h2>
-      <form>
-        <div><input /></div>
-        <button>create</button>
+      <form onSubmit={create}>
+        <div><input name='anecdote' /></div>
+        <button type='submit'>create</button>
       </form>
     </div>
   )
