@@ -28,7 +28,7 @@ export const create = async (content) => {
 
 export const update = async (newAnecdote) => {
   const updAnecdote = { ...newAnecdote, votes: newAnecdote.votes + 1 }
-  console.log('upd:', updAnecdote)
+  // console.log('upd:', updAnecdote)
   const response = await axios.put(`${baseUrl}/${newAnecdote.id}`, updAnecdote)
   return response.data
 }
