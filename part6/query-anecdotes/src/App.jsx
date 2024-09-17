@@ -4,11 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { getAll } from './requests'
 
 const App = () => {
-  // const result = useQuery({
-  //   queryKey: ['anecdotes'],
-  //   queryFn: () => axios.get('http://localhost:3001/anecdotes').then(res => res.data)
-  // })
-  // console.log(JSON.parse(JSON.stringify(result)))
+
   const result = useQuery({
     queryKey: ['anecdotes'],
     queryFn: getAll
