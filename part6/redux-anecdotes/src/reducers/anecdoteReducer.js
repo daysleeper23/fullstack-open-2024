@@ -1,4 +1,6 @@
 import { createSlice, current } from '@reduxjs/toolkit'
+import anecdoteService from '../services/anecdotes'
+import { setVoteNotification, setCreateNotification } from './notificationReducer'
 
 const anecdotesAtStart = [
   'If it hurts, do it more often',
@@ -9,7 +11,7 @@ const anecdotesAtStart = [
   'Debugging is twice as hard as writing the code in the first place. Therefore, if you write the code as cleverly as possible, you are, by definition, not smart enough to debug it.'
 ]
 
-const getId = () => (100000 * Math.random()).toFixed(0)
+// const getId = () => (100000 * Math.random()).toFixed(0)
 
 // const asObject = (anecdote) => {
 //   return {
@@ -25,15 +27,6 @@ const anecdoteSlice = createSlice({
   name: 'anecdotes',
   initialState,
   reducers: {
-    createAnecdote(state, action) {
-      const content = action.payload
-      state.push({
-        id: getId(),
-        content: content,
-        votes: 0
-      })
-      console.log(current(state))
-    },
     voteAnecdote(state, action) {
       const id = action.payload
       const curAnecdote = state.find(a => a.id === id)
@@ -51,6 +44,43 @@ const anecdoteSlice = createSlice({
   }
 })
 
-export const { createAnecdote, voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
-export { getId } 
+export const createAnecdote = content => {
+  return async dispatch => {
+    try {
+      const savedAnecdote = await anecdoteService.create(content)
+      console.log('saved:', savedAnecdote)
+
+      if (savedAnecdote) {
+        dispatch(appendAnecdote(savedAnecdote))
+        dispatch(setCreateNotification(content, 5))
+      }
+    }
+    catch (exception) {
+  
+    }
+  }
+}
+
+export const updateAnecdote = newAnecdote => {
+  return async dispatch => {
+    try {
+      await anecdoteService.update(newAnecdote)
+      console.log('updated', newAnecdote)
+      dispatch(voteAnecdote(newAnecdote.id))
+      dispatch(setVoteNotification(newAnecdote.content, 5))
+    }
+    catch (exception) {
+  
+    }
+  }
+}
+
+export const initializeAnecdotes = () => {
+  return async dispatch => {
+    const anecdotes = await anecdoteService.getAll()
+    dispatch(setAnecdotes(anecdotes))
+  }
+}
+
+export const { voteAnecdote, appendAnecdote, setAnecdotes } = anecdoteSlice.actions
 export default anecdoteSlice.reducer
