@@ -168,15 +168,21 @@ const resolvers = {
   },
   Mutation: {
     addAuthor: (_root, args) => {
-      // console.log('args', args)
+      if (authors.find(a => a.name === args.name)) {
+        throw new GraphQLError('Name must be unique', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name
+          }
+        })
+      }
+
       const author = { ...args, id: uuid() }
-      // console.log('author', author)
       authors = authors.concat(author)
       return author
     },
     editAuthor: (_root, args) => {
       const author = authors.find(a => a.name === args.name)
-      // console.log('author', author)
       if (author) {
         author.born = args.setBornTo
         authors = authors.map(a => a.name === author.name ? author : a)
@@ -186,6 +192,15 @@ const resolvers = {
         return null
     },
     addBook: (root, args) => {
+      if (books.find(b => b.name === args.name)) {
+        throw new GraphQLError('Name must be unique', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name
+          }
+        })
+      }
+
       const book = { ...args, id: uuid() }
       books = books.concat(book)
 
