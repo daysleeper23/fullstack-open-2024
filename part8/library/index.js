@@ -128,12 +128,18 @@ const typeDefs = `
       name: String!
     ): Author
 
+    editAuthor(
+      name: String!
+      setBornTo: Int!
+    ): Author
+
     addBook(
       title: String!
       author: String!
       published: Int!
       genres: [String!]!
     ): Book
+
   }
 `
 
@@ -162,11 +168,22 @@ const resolvers = {
   },
   Mutation: {
     addAuthor: (_root, args) => {
-      console.log('args', args)
+      // console.log('args', args)
       const author = { ...args, id: uuid() }
-      console.log('author', author)
+      // console.log('author', author)
       authors = authors.concat(author)
       return author
+    },
+    editAuthor: (_root, args) => {
+      const author = authors.find(a => a.name === args.name)
+      // console.log('author', author)
+      if (author) {
+        author.born = args.setBornTo
+        authors = authors.map(a => a.name === author.name ? author : a)
+        return author
+      }
+      else 
+        return null
     },
     addBook: (root, args) => {
       const book = { ...args, id: uuid() }
