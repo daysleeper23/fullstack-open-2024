@@ -2,6 +2,8 @@ import { useDispatch } from "react-redux";
 import { updateBlog, addComment } from "../reducers/blogReducer";
 import { useField } from "../hooks/useField";
 
+import { Button, Input } from '@headlessui/react'
+
 const Blog = ({ blog }) => {
   // console.log('navigate to blog info page', blog)
   const { reset: resetComment, ...comment } = useField("text");
@@ -37,22 +39,26 @@ const Blog = ({ blog }) => {
           </div>
           <div data-testid="likes">
             likes {blog.likes}
-            <button
+            <Button
               data-testid="likeButton"
               value={blog.id}
               onClick={handleLikeClick}
+              className="rounded bg-sky-600 py-2 px-4 text-sm text-white data-[hover]:bg-sky-500 data-[active]:bg-sky-700"
             >
               like
-            </button>
+            </Button>
           </div>
           <div data-testid="addedby">added by {blog.user.name}</div>
           <h2>comments</h2>
           <form onSubmit={handleComment}>
             <div>
-              <input required data-testid="comment" {...comment} />
-              <button data-testid="comment" type="submit">
+              <Input required data-testid="comment" {...comment} />
+              {/* <button data-testid="comment" type="submit" className="py-3 px-4 inline-flex items-center gap-x-2 text-sm font-medium rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 focus:outline-none focus:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none">
+                
+              </button> */}
+              <Button data-testid ="comment" type="submit" className="rounded bg-sky-600 py-2 px-4 text-sm text-white data-[hover]:bg-sky-500 data-[active]:bg-sky-700">
                 add comment
-              </button>
+              </Button>
             </div>
           </form>
 

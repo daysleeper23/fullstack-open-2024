@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch } from "react-redux";
 import { useField } from "../hooks/useField";
 import { createBlog } from "../reducers/blogReducer";
+import { Button, TextField, Table, TableBody, TableCell, TableRow } from "@mui/material";
 
 const BlogNewForm = () => {
   const { reset: resetTitle, ...title } = useField("text");
@@ -30,25 +31,35 @@ const BlogNewForm = () => {
   return (
     <>
       {!display ? (
-        <button onClick={() => setDisplay(true)}>create new blog</button>
+        <Button variant='contained' onClick={() => setDisplay(true)}>create new blog</Button>
       ) : (
         <>
-          <h1>create new</h1>
+          <h2>Create new blog</h2>
           <form onSubmit={handleSubmit}>
+            <Table>
+              <TableBody>
+                <TableRow>
+                  <TableCell>Title</TableCell>
+                  <TableCell><TextField id="outlined-basic" label="Required" required data-testid="title" {...title} /></TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>Author</TableCell>
+                  <TableCell><TextField id="outlined-basic" label="Required" required data-testid="author" {...author} /></TableCell>
+                </TableRow>
+                <TableRow>
+                  <TableCell>URL</TableCell>
+                  <TableCell><TextField id="outlined-basic" label="Required" required data-testid="url" {...url} /></TableCell>
+                </TableRow>
+                
+              </TableBody>
+            </Table>
             <div>
-              title <input required data-testid="title" {...title} />
+              <Button data-testid="create" type="submit" variant='contained'>
+                Create
+              </Button>
+              <Button onClick={() => setDisplay(false)}>Cancel</Button>
             </div>
-            <div>
-              author <input required data-testid="author" {...author} />
-            </div>
-            <div>
-              url <input required data-testid="url" {...url} />
-            </div>
-            <button data-testid="create" type="submit">
-              create
-            </button>
           </form>
-          <button onClick={() => setDisplay(false)}>cancel</button>
         </>
       )}
     </>

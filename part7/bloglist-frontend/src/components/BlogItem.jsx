@@ -1,5 +1,7 @@
 import PropTypes from "prop-types";
 
+import { ListItem, Divider, ListItemButton } from "@mui/material";
+
 import { Link } from "react-router-dom";
 
 const BlogItem = ({ blog }) => {
@@ -12,12 +14,17 @@ const BlogItem = ({ blog }) => {
   };
 
   return (
-    <div data-testid="blog-item" style={blogStyle}>
-      <Link to={`/blogs/${blog.id}`}>
-        {" "}
-        {blog.title} {blog.author}{" "}
-      </Link>
-    </div>
+    <>
+    <ListItem>
+      {/* <ListItemButton component="Link" href={`/blogs/${blog.id}`}> */}
+        {/* <ListItemText primary={blog.title + blog.author} /> */}
+        <Link to={`/blogs/${blog.id}`}>
+          {blog.title} {blog.author}
+        </Link>
+      {/* </ListItemButton> */}
+    </ListItem>
+    <Divider />
+    </>
   );
 };
 

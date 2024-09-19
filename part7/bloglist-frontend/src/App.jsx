@@ -2,6 +2,8 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Routes, Route, useMatch } from "react-router-dom";
 
+import { Container } from '@mui/material'
+
 import LoginForm from "./components/LoginForm";
 import Users from "./components/Users";
 import Blogs from "./components/Blogs";
@@ -65,13 +67,13 @@ const App = () => {
   // ============================================================
 
   return (
-    <div>
+    <Container>
       {!auth ? (
         <LoginForm />
       ) : (
         <>
           <NavigationMenu />
-          <h1>blog app</h1>
+          <h1>Blog App</h1>
           <Routes>
             <Route path="/blogs/:id" element={<Blog blog={blog} />} />
             <Route path="/users/:id" element={<User user={user} />} />
@@ -80,7 +82,7 @@ const App = () => {
           </Routes>
         </>
       )}
-    </div>
+    </Container>
   );
 };
 

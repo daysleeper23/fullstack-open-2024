@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import blogService from "../services/blogs";
 import { authLogout } from "../reducers/authReducer";
 import { Link } from "react-router-dom";
+import { Button } from "@mui/material";
 
 export const NavigationMenu = () => {
   const style = {
@@ -28,8 +29,12 @@ export const NavigationMenu = () => {
   return (
     <>
       <p style={style}>
-        <Link to="/"> blogs </Link>
-        <Link to="/users"> users </Link>
+        <Link to="/"> 
+          <Button variant="text">Blogs</Button>
+        </Link>
+        <Link to="/users">
+          <Button variant="text">Users</Button>
+        </Link>
         {auth.name} logged in
         <button data-testid="logout-button" onClick={handleLogout}>
           logout
