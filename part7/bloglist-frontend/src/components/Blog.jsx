@@ -1,20 +1,10 @@
-import { useState } from "react";
-import PropTypes from "prop-types";
-import { useDispatch, useSelector } from "react-redux";
-import { deleteBlog, updateBlog } from "../reducers/blogReducer";
+import { useDispatch } from "react-redux";
+import { updateBlog, deleteBlog } from "../reducers/blogReducer";
 
 const Blog = ({ blog }) => {
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: "solid",
-    borderWidth: 1,
-    marginBottom: 5,
-  };
-
-  const [show, setShow] = useState(false);
-  const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  
+  console.log('navigate to blog info page', blog)
+  const dispatch = useDispatch()
 
   const handleLikeClick = async () => {
     const updatedBlog = {
@@ -32,45 +22,37 @@ const Blog = ({ blog }) => {
   };
 
   return (
-    <div data-testid="blog" style={blogStyle}>
-      {blog.title} {blog.author}
-      <button data-testid="showButton" onClick={() => setShow(!show)}>
-        {show ? "hide" : "show"}
-      </button>
-      {show ? (
-        <div data-testid="toggable">
-          <div data-testid="url">{blog.url}</div>
-          <div data-testid="likes">
-            likes {blog.likes}
-            <button
-              data-testid="likeButton"
-              value={blog.id}
-              onClick={handleLikeClick}
-            >
-              like
-            </button>
-          </div>
-          <div data-testid="name">{blog.user?.name || "Unknown Creator"}</div>
-          {user.username === blog.user?.username ? (
-            <button
-              data-testid="removeButton"
-              value={blog.id}
-              onClick={handleRemoveClick}
-            >
-              remove
-            </button>
-          ) : (
-            <></>
-          )}
-        </div>
-      ) : (
-        <></>
-      )}
-    </div>
-  );
-};
-
-Blog.propTypes = {
-  blog: PropTypes.object.isRequired,
+    <>
+      {!blog 
+        ? <p>...loading blog</p>
+        : <>
+            {blog?.title ? <h1>{blog.title}</h1> : <h1>Unnamed blog</h1>}
+            <div data-testid="url">
+              <a href={blog.url}>{blog.url}</a>
+            </div>
+            <div data-testid="likes">
+              likes {blog.likes}
+              <button
+                data-testid="likeButton"
+                value={blog.id}
+                onClick={handleLikeClick}
+              >
+                like
+              </button>
+            </div>
+            <div data-testid="addedby">
+              added by {blog.user.name}
+            </div>
+            <h2>comments</h2>
+          
+            {blog?.comments 
+              ? <ul>
+                  {blog.comments.map(c => <li>{c.content}</li>)}
+                </ul>
+              : ''}
+          </> 
+      }
+    </>
+  )
 };
 export default Blog;

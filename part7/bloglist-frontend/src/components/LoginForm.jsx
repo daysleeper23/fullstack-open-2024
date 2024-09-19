@@ -1,18 +1,22 @@
 import { useField } from "../hooks/useField";
 import Notification from "./Notification";
-import { userLogin } from "../reducers/userReducer";
-import { useDispatch, useSelector } from "react-redux";
+import { authLogin } from "../reducers/authReducer";
+import { useDispatch } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const { reset: resetUsername, ...username } = useField("text");
   const { reset: resetPassword, ...password } = useField("text");
 
   const dispatch = useDispatch();
-  const user = useSelector((state) => state.user);
+  const navigate = useNavigate();
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    dispatch(userLogin(username.value, password.value));
+    dispatch(authLogin(username.value, password.value));
+    resetUsername()
+    resetPassword()
+    navigate("/")
   };
 
   return (

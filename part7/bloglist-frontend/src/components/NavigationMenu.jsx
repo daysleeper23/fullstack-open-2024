@@ -1,6 +1,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import blogService from "../services/blogs";
-import { userLogout } from "../reducers/userReducer";
+import { authLogout } from "../reducers/authReducer";
 import { Link } from "react-router-dom";
 
 export const NavigationMenu = () => {
@@ -12,7 +12,7 @@ export const NavigationMenu = () => {
     backgroundColor: "#d3d3d3",
   };
 
-  const user = useSelector((state) => state.user);
+  const auth = useSelector((state) => state.auth);
   const dispatch = useDispatch();
 
   // ============================================================
@@ -22,7 +22,7 @@ export const NavigationMenu = () => {
     e.preventDefault();
     blogService.setToken("");
     window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(""));
-    dispatch(userLogout());
+    dispatch(authLogout());
   };
 
   return (
@@ -30,7 +30,7 @@ export const NavigationMenu = () => {
       <p style={style}>
         <Link to="/"> blogs </Link>
         <Link to="/users"> users </Link>
-        {user.name} logged in
+        {auth.name} logged in
         <button data-testid="logout-button" onClick={handleLogout}>
           logout
         </button>

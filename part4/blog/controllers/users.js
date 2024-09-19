@@ -51,36 +51,20 @@ usersRouter.post('/', async (request, response) => {
 //   response.status(204).end()
 // })
 
-// usersRouter.put('/:id', async (request, response) => {
-//   const body = request.body
+usersRouter.put('/:id', async (request, response) => {
+  const body = request.body
+  const currentUser = await User.findById(request.params.id)
 
-//   const user = {
-//     title: body.content,
-//     author: body.author,
-//     url: body.url,
-//     likes: body.likes
-//   }
+  if (currentUser) {
+    const updatedUser = {
+      name: body.name
+    }
 
-//   const blogs = (await Blog.find({})).map(blog => new mongoose.Types.ObjectId(blog.id))
-//   user.blogs = blogs
-
-//   await User.findByIdAndUpdate(request.params.id, user, { new: true })
-//   response.status(200)
-
-
-
-//   // if (!user.likes)
-//   //   response.status(400).send({ error: 'missing likes' })
-//   // else if (isNaN(user.likes))
-//   //   response.status(400).send({ error: 'wrong field value for likes ' })
-//   // else {
-//   //   const updatedUser = await User.findByIdAndUpdate(request.params.id, user, { new: true })
-//   //   if (updatedUser) {
-//   //     response.json(updatedUser)
-//   //   } else {
-//   //     response.status(404).end()
-//   //   }
-//   // }
-// })
+    const savedUser = await User.findByIdAndUpdate(request.params.id, updatedUser, { new: true })
+    response.status(201).json(savedUser)
+  }
+  else
+    response.status(404).end()
+})
 
 module.exports = usersRouter

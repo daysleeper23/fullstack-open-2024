@@ -1,8 +1,6 @@
-PUT http://localhost:3003/api/users/66df1a159437b029ae0b2ebe/ HTTP/1.1
+PUT http://localhost:3003/api/users/66df65ed4ba647ce9dd539a6/ HTTP/1.1
 content-type: application/json
 
 {
-    "username": "luu",
-    "name": "Loud Pi",
-    "password": "123"
+    "name": "Luu Dao"
 }

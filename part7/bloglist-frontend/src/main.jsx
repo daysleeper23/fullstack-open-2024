@@ -5,16 +5,18 @@ import { configureStore } from "@reduxjs/toolkit";
 import "./index.css";
 
 import notificationReducer from "./reducers/notificationReducer";
-import userReducer from "./reducers/userReducer";
+import authReducer from "./reducers/authReducer";
 import blogReducer from "./reducers/blogReducer";
+import userReducer from "./reducers/userReducer";
 
 import { BrowserRouter as Router } from "react-router-dom";
 
 const store = configureStore({
   reducer: {
     notification: notificationReducer,
-    user: userReducer,
+    auth: authReducer,
     blogs: blogReducer,
+    users: userReducer
   },
 });
 

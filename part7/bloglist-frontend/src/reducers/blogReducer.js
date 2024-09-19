@@ -80,6 +80,7 @@ export const deleteBlog = (id) => {
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
+    console.log('initialize blogs')
     const blogs = await blogService.getAll();
     blogs.sort((a, b) => {
       if (b.likes > a.likes) return 1;

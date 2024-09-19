@@ -2,6 +2,9 @@ const Blog = require('../models/blog')
 const User = require('../models/user')
 const blogsRouter = require('express').Router()
 
+// ============================================================
+// GET ALL: Retrieve all blogs
+// ============================================================
 blogsRouter.get('/', async (_request, response) => {
   const blogs = await Blog
     .find({})
@@ -10,6 +13,33 @@ blogsRouter.get('/', async (_request, response) => {
   response.json(blogs)
 })
 
+// ============================================================
+// POST COMMENT: Add comments to a blog
+// ============================================================
+blogsRouter.post('/:id/comments', async (request, response) => {
+  const blog = new Blog(request.body)
+  blog.user = request.user.id
+
+  if (!blog.title || !blog.url)
+    response.status(400).send({ error: 'missing title or url' })
+  else {
+    if (!blog.likes)
+      blog.likes = 0
+
+    const savedBlog = await blog.save()
+
+    const user = await User.findById(blog.user)
+    user.blogs = user.blogs.concat(savedBlog._id)
+    savedBlog.populate('user', { username: 1, name: 1 })
+    await user.save()
+
+    response.status(201).json(savedBlog)
+  }
+})
+
+// ============================================================
+// POST: Create a new blog
+// ============================================================
 blogsRouter.post('/', async (request, response) => {
   const blog = new Blog(request.body)
   blog.user = request.user.id
@@ -31,6 +61,9 @@ blogsRouter.post('/', async (request, response) => {
   }
 })
 
+// ============================================================
+// GET: Retrieve a single blog
+// ============================================================
 blogsRouter.get('/:id', async (request, response) => {
   const blog = await Blog.findById(request.params.id)
   if (blog)
@@ -53,6 +86,9 @@ blogsRouter.delete('/:id', async (request, response) => {
   }
 })
 
+// ============================================================
+// PUT: Update a single blog
+// ============================================================
 blogsRouter.put('/:id', async (request, response) => {
   const body = request.body
   const updatingBlog = await Blog.findById(request.params.id)
@@ -82,8 +118,6 @@ blogsRouter.put('/:id', async (request, response) => {
   else {
     response.status(404).end()
   }
-
-  
 })
 
 module.exports = blogsRouter
