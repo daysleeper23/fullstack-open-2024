@@ -8,6 +8,8 @@ import notificationReducer from "./reducers/notificationReducer";
 import userReducer from "./reducers/userReducer";
 import blogReducer from "./reducers/blogReducer";
 
+import { BrowserRouter as Router } from "react-router-dom";
+
 const store = configureStore({
   reducer: {
     notification: notificationReducer,
@@ -20,6 +22,8 @@ console.log(store.getState());
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
-    <App />
+    <Router>
+      <App />
+    </Router>
   </Provider>,
 );

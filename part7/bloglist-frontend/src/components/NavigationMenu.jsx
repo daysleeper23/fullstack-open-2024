@@ -1,8 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
 import blogService from "../services/blogs";
 import { userLogout } from "../reducers/userReducer";
+import { Link } from "react-router-dom";
 
-export const UserInfo = () => {
+export const NavigationMenu = () => {
+  const style = {
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingLeft: 10,
+    marginBottom: 5,
+    backgroundColor: "#d3d3d3",
+  };
+
   const user = useSelector((state) => state.user);
   const dispatch = useDispatch();
 
@@ -18,17 +27,15 @@ export const UserInfo = () => {
 
   return (
     <>
-      {user ? (
-        <p>
-          {user.name} logged in
-          <button data-testid="logout-button" onClick={handleLogout}>
-            logout
-          </button>
-        </p>
-      ) : (
-        ""
-      )}
+      <p style={style}>
+        <Link to="/"> blogs </Link>
+        <Link to="/users"> users </Link>
+        {user.name} logged in
+        <button data-testid="logout-button" onClick={handleLogout}>
+          logout
+        </button>
+      </p>
     </>
   );
 };
-export default UserInfo;
+export default NavigationMenu;

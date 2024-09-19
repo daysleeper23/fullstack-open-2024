@@ -1,14 +1,14 @@
 import { useEffect } from "react";
-import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
-import BlogNewForm from "./components/BlogNewForm";
-import Notification from "./components/Notification";
+import Users from "./components/Users";
+import Blogs from "./components/Blogs";
 
 import blogService from "./services/blogs";
 import { useDispatch, useSelector } from "react-redux";
 import { saveUser } from "./reducers/userReducer";
 import { initializeBlogs } from "./reducers/blogReducer";
-import UserInfo from "./components/UserInfo";
+import NavigationMenu from "./components/NavigationMenu";
+import { Routes, Route } from "react-router-dom";
 
 const App = () => {
   const blogs = useSelector((state) => state.blogs);
@@ -50,13 +50,14 @@ const App = () => {
         <LoginForm />
       ) : (
         <>
-          <h1>blogs</h1>
-          <Notification />
-          <UserInfo />
-          <BlogNewForm />
-          {blogs.map((blog) => (
-            <Blog key={blog.id} blog={blog} />
-          ))}
+          <NavigationMenu />
+          <h1>blog app</h1>
+          <Routes>
+            {/* <Route path="/anecdotes/:id" element={<Anecdote anecdote={anecdote} />} /> */}
+            <Route path="/users" element={<Users />} />
+            {/* <Route path="/about" element={<About />} /> */}
+            <Route path="/" element={<Blogs blogs={blogs} />} />
+          </Routes>
         </>
       )}
     </div>
