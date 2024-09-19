@@ -17,10 +17,6 @@ const Blog = ({ blog }) => {
     dispatch(updateBlog(updatedBlog));
   };
 
-  const handleRemoveClick = async () => {
-    dispatch(deleteBlog(blog.id));
-  };
-
   return (
     <>
       {!blog 

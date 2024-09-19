@@ -17,23 +17,30 @@ blogsRouter.get('/', async (_request, response) => {
 // POST COMMENT: Add comments to a blog
 // ============================================================
 blogsRouter.post('/:id/comments', async (request, response) => {
-  const blog = new Blog(request.body)
-  blog.user = request.user.id
+  const body = request.body
+  const updatingBlog = await Blog.findById(request.params.id)
 
-  if (!blog.title || !blog.url)
-    response.status(400).send({ error: 'missing title or url' })
+  if (updatingBlog) {
+    let blog = updatingBlog
+    // if (blog.comments) {
+      blog.comments = updatingBlog.comments.concat({ content: body.content, ts: new Date() })
+      console.log('current blog has comments', blog)
+    // }
+    // else {
+    //   // blog.comments = []
+    //   console.log('current blog has no comment', blog)
+    // }
+
+
+    const updatedBlog = await Blog.findByIdAndUpdate(request.params.id, blog, { new: true })
+    if (updatedBlog) {
+      response.json(updatedBlog)
+    } else {
+      response.status(404).end()
+    }
+  }
   else {
-    if (!blog.likes)
-      blog.likes = 0
-
-    const savedBlog = await blog.save()
-
-    const user = await User.findById(blog.user)
-    user.blogs = user.blogs.concat(savedBlog._id)
-    savedBlog.populate('user', { username: 1, name: 1 })
-    await user.save()
-
-    response.status(201).json(savedBlog)
+    response.status(404).end()
   }
 })
 

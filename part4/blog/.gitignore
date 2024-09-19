@@ -11,6 +11,7 @@ node_modules
 #dist: remove for front-end build
 dist-ssr
 *.local
+requests
 
 #env
 .env
