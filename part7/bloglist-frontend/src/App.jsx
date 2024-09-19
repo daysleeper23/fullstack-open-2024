@@ -9,7 +9,6 @@ import NavigationMenu from "./components/NavigationMenu";
 import User from "./components/User";
 import Blog from "./components/Blog";
 
-
 import blogService from "./services/blogs";
 
 import { saveAuth } from "./reducers/authReducer";
@@ -17,9 +16,9 @@ import { initializeBlogs } from "./reducers/blogReducer";
 import { initializeUsers } from "./reducers/userReducer";
 
 const App = () => {
-  const auth = useSelector(state => state.auth);
-  const users = useSelector(state => state.users);
-  const blogs = useSelector(state => state.blogs);
+  const auth = useSelector((state) => state.auth);
+  const users = useSelector((state) => state.users);
+  const blogs = useSelector((state) => state.blogs);
   const dispatch = useDispatch();
 
   // ============================================================
@@ -28,7 +27,7 @@ const App = () => {
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem("loggedBlogAppUser");
     if (loggedUserJSON) {
-      console.log('load auth data from localStorage')
+      console.log("load auth data from localStorage");
       const auth = JSON.parse(loggedUserJSON);
       dispatch(saveAuth(auth));
       blogService.setToken(auth.token);
@@ -40,26 +39,26 @@ const App = () => {
   // ============================================================
   useEffect(() => {
     if (auth) {
-      console.log('auth data is valid')
+      console.log("auth data is valid");
       blogService.setToken(auth.token);
       window.localStorage.setItem("loggedBlogAppUser", JSON.stringify(auth));
       dispatch(initializeBlogs());
-      dispatch(initializeUsers())
+      dispatch(initializeUsers());
     }
   }, [auth]);
 
   // ============================================================
   // SECTION: Matching URLs that contain IDs
   // ============================================================
-  const userMatch = useMatch('/users/:id')
-  const user = userMatch 
-    ? users.find(u => u.id === userMatch.params.id)
-    : null
+  const userMatch = useMatch("/users/:id");
+  const user = userMatch
+    ? users.find((u) => u.id === userMatch.params.id)
+    : null;
 
-  const blogMatch = useMatch('/blogs/:id')
-  const blog = blogMatch 
-    ? blogs.find(b => b.id === blogMatch.params.id)
-    : null
+  const blogMatch = useMatch("/blogs/:id");
+  const blog = blogMatch
+    ? blogs.find((b) => b.id === blogMatch.params.id)
+    : null;
 
   // ============================================================
   // SECTION: Component UI
@@ -74,8 +73,8 @@ const App = () => {
           <NavigationMenu />
           <h1>blog app</h1>
           <Routes>
-            <Route path="/blogs/:id" element={<Blog blog={blog}/>} />
-            <Route path="/users/:id" element={<User user={user}/>} />
+            <Route path="/blogs/:id" element={<Blog blog={blog} />} />
+            <Route path="/users/:id" element={<User user={user} />} />
             <Route path="/users" element={<Users />} />
             <Route path="/" element={<Blogs />} />
           </Routes>

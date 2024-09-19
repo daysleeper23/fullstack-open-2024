@@ -13,7 +13,10 @@ const BlogItem = ({ blog }) => {
 
   return (
     <div data-testid="blog-item" style={blogStyle}>
-      <Link to={`/blogs/${blog.id}`}> {blog.title} {blog.author} </Link>
+      <Link to={`/blogs/${blog.id}`}>
+        {" "}
+        {blog.title} {blog.author}{" "}
+      </Link>
     </div>
   );
 };

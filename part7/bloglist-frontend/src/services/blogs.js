@@ -33,6 +33,17 @@ const updateOne = async (newObject, objectId) => {
   return response.data;
 };
 
+const addComment = async (content, id) => {
+  const response = await axios.post(
+    `${baseUrl}/${id}/comments`,
+    { content: content },
+    {
+      headers: { Authorization: token },
+    },
+  );
+  return response.data;
+};
+
 const deleteOne = async (objectId) => {
   const response = await axios.delete(`${baseUrl}/${objectId}`, {
     headers: { Authorization: token },
@@ -40,4 +51,12 @@ const deleteOne = async (objectId) => {
   return response.data;
 };
 
-export default { getAll, createNew, updateOne, deleteOne, setToken, getToken };
+export default {
+  getAll,
+  createNew,
+  updateOne,
+  deleteOne,
+  addComment,
+  setToken,
+  getToken,
+};

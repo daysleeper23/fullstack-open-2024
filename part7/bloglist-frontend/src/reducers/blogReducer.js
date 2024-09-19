@@ -16,6 +16,20 @@ const blogSlice = createSlice({
       console.log("like", id);
       return state.map((a) => (a.id === id ? updBlog : a));
     },
+    commentBlog(state, action) {
+      const id = action.payload.id;
+      const curBlog = state.find((a) => a.id === id);
+      const updBlog = {
+        ...curBlog,
+        comments: curBlog.comments.concat({
+          content: action.payload.content,
+          ts: new Date().toISOString(),
+        }),
+      };
+
+      console.log("new blog", updBlog);
+      return state.map((a) => (a.id === id ? updBlog : a));
+    },
     appendBlog(state, action) {
       state.push(action.payload);
     },
@@ -31,7 +45,8 @@ const blogSlice = createSlice({
   },
 });
 
-export const { likeBlog, appendBlog, removeBlog, setBlogs } = blogSlice.actions;
+export const { likeBlog, commentBlog, appendBlog, removeBlog, setBlogs } =
+  blogSlice.actions;
 
 export const createBlog = (blog) => {
   return async (dispatch) => {
@@ -66,6 +81,18 @@ export const updateBlog = (updatedBlog) => {
   };
 };
 
+export const addComment = (comment, blogId) => {
+  return async (dispatch) => {
+    try {
+      // console.log("add comment", comment, "to blog", blogId);
+      await blogService.addComment(comment, blogId);
+      dispatch(commentBlog({ id: blogId, content: comment }));
+    } catch (exception) {
+      dispatch(errorNotification(`Error while commenting to blog`, 5));
+    }
+  };
+};
+
 export const deleteBlog = (id) => {
   return async (dispatch) => {
     try {
@@ -80,7 +107,7 @@ export const deleteBlog = (id) => {
 
 export const initializeBlogs = () => {
   return async (dispatch) => {
-    console.log('initialize blogs')
+    console.log("initialize blogs");
     const blogs = await blogService.getAll();
     blogs.sort((a, b) => {
       if (b.likes > a.likes) return 1;

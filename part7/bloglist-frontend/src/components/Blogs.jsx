@@ -5,10 +5,10 @@ import { useSelector } from "react-redux";
 // import { Link } from "react-router-dom";
 
 const Blogs = () => {
-  const blogs = useSelector(state => state.blogs)
+  const blogs = useSelector((state) => state.blogs);
 
   // const blogMatch = useMatch('/blogs/:id')
-  // const blog = blogMatch 
+  // const blog = blogMatch
   //   ? blogs.find(b => b.id === blogMatch.params.id)
   //   : null
 

@@ -14,9 +14,9 @@ const LoginForm = () => {
   const handleSubmit = (event) => {
     event.preventDefault();
     dispatch(authLogin(username.value, password.value));
-    resetUsername()
-    resetPassword()
-    navigate("/")
+    resetUsername();
+    resetPassword();
+    navigate("/");
   };
 
   return (

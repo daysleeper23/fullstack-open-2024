@@ -16,11 +16,9 @@ const store = configureStore({
     notification: notificationReducer,
     auth: authReducer,
     blogs: blogReducer,
-    users: userReducer
+    users: userReducer,
   },
 });
-
-console.log(store.getState());
 
 ReactDOM.createRoot(document.getElementById("root")).render(
   <Provider store={store}>
