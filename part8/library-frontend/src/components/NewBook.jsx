@@ -1,31 +1,29 @@
 import { useState } from 'react'
+import { useField } from '../hooks/useField'
 
-const NewBook = (props) => {
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [published, setPublished] = useState('')
-  const [genre, setGenre] = useState('')
+const NewBook = () => {
+  // const [title, setTitle] = useState('')
+  const { reset: resetTitle, ...title } = useField('text')
+  const { reset: resetAuthor, ...author } = useField('text')
+  const { reset: resetPublished, ...published } = useField('number')
+  const { reset: resetGenre, ...genre } = useField('text')
   const [genres, setGenres] = useState([])
-
-  if (!props.show) {
-    return null
-  }
 
   const submit = async (event) => {
     event.preventDefault()
 
     console.log('add book...')
 
-    setTitle('')
-    setPublished('')
-    setAuthor('')
+    resetTitle()
+    resetPublished()
+    resetAuthor()
     setGenres([])
-    setGenre('')
+    resetGenre
   }
 
   const addGenre = () => {
     setGenres(genres.concat(genre))
-    setGenre('')
+    resetGenre()
   }
 
   return (
@@ -33,31 +31,18 @@ const NewBook = (props) => {
       <form onSubmit={submit}>
         <div>
           title
-          <input
-            value={title}
-            onChange={({ target }) => setTitle(target.value)}
-          />
+          <input required data-testid="title" {...title} />
         </div>
         <div>
           author
-          <input
-            value={author}
-            onChange={({ target }) => setAuthor(target.value)}
-          />
+          <input required data-testid="author" {...author} />
         </div>
         <div>
           published
-          <input
-            type="number"
-            value={published}
-            onChange={({ target }) => setPublished(target.value)}
-          />
+          <input required data-testid="published" {...published} />
         </div>
         <div>
-          <input
-            value={genre}
-            onChange={({ target }) => setGenre(target.value)}
-          />
+          <input data-testid="genre" {...genre} />
           <button onClick={addGenre} type="button">
             add genre
           </button>
