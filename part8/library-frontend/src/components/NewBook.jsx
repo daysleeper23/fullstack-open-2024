@@ -2,7 +2,6 @@ import { useState } from 'react'
 import { useField } from '../hooks/useField'
 
 const NewBook = () => {
-  // const [title, setTitle] = useState('')
   const { reset: resetTitle, ...title } = useField('text')
   const { reset: resetAuthor, ...author } = useField('text')
   const { reset: resetPublished, ...published } = useField('number')
@@ -18,7 +17,7 @@ const NewBook = () => {
     resetPublished()
     resetAuthor()
     setGenres([])
-    resetGenre
+    resetGenre()
   }
 
   const addGenre = () => {
