@@ -1,7 +1,7 @@
 const { ApolloServer } = require('@apollo/server')
 const { startStandaloneServer } = require('@apollo/server/standalone')
 const { v1: uuid } = require('uuid')
-
+const { GraphQLError } = require('graphql')
 
 let authors = [
   {
@@ -192,11 +192,11 @@ const resolvers = {
         return null
     },
     addBook: (root, args) => {
-      if (books.find(b => b.name === args.name)) {
-        throw new GraphQLError('Name must be unique', {
+      if (books.find(b => b.title === args.title)) {
+        throw new GraphQLError('Book title must be unique', {
           extensions: {
             code: 'BAD_USER_INPUT',
-            invalidArgs: args.name
+            invalidArgs: args.title
           }
         })
       }

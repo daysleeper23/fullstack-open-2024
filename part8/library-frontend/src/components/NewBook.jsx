@@ -1,5 +1,9 @@
 import { useState } from 'react'
 import { useField } from '../hooks/useField'
+import { useMutation } from '@apollo/client'
+import { ADD_BOOK } from '../queries/mutations'
+import { ALL_AUTHORS, ALL_BOOKS } from '../queries/queries'
+// import { GraphQLError } from 'graphql'
 
 const NewBook = () => {
   const { reset: resetTitle, ...title } = useField('text')
@@ -8,10 +12,29 @@ const NewBook = () => {
   const { reset: resetGenre, ...genre } = useField('text')
   const [genres, setGenres] = useState([])
 
+  const [ addBook ] = useMutation(ADD_BOOK, {
+    refetchQueries: [ 
+      { query: ALL_BOOKS },
+      { query: ALL_AUTHORS },
+    ],
+    onError: (error) => {
+      // const messages = error.graphQLError.map(e => e.message).join('\n')
+      console.log('error:', error)
+    }
+  })
+
   const submit = async (event) => {
     event.preventDefault()
 
     console.log('add book...')
+    addBook({ 
+      variables: { 
+        title: title.value,
+        author: author.value,
+        published: Number(published.value),
+        genres: genres
+    }
+  })
 
     resetTitle()
     resetPublished()
@@ -21,12 +44,13 @@ const NewBook = () => {
   }
 
   const addGenre = () => {
-    setGenres(genres.concat(genre))
+    setGenres(genres.concat(genre.value))
     resetGenre()
   }
 
   return (
     <div>
+      <h2>Add new book</h2>
       <form onSubmit={submit}>
         <div>
           title
