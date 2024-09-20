@@ -18,8 +18,8 @@ const NewBook = () => {
       { query: ALL_AUTHORS },
     ],
     onError: (error) => {
-      // const messages = error.graphQLError.map(e => e.message).join('\n')
-      console.log('error:', error)
+      const messages = error.graphQLError.map(e => e.message).join('\n')
+      console.log('error:', messages)
     }
   })
 

@@ -128,7 +128,7 @@ const typeDefs = `
       name: String!
     ): Author
 
-    editAuthor(
+    authorSetBorn(
       name: String!
       setBornTo: Int!
     ): Author
@@ -181,7 +181,7 @@ const resolvers = {
       authors = authors.concat(author)
       return author
     },
-    editAuthor: (_root, args) => {
+    authorSetBorn: (_root, args) => {
       const author = authors.find(a => a.name === args.name)
       if (author) {
         author.born = args.setBornTo
