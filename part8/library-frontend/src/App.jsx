@@ -1,4 +1,3 @@
-import { useEffect, useState } from "react";
 import Authors from "./components/Authors";
 import Books from "./components/Books";
 import NewBook from "./components/NewBook";
@@ -8,7 +7,7 @@ import { Route, Routes } from "react-router-dom";
 const App = () => {
 
   return (  
-    <div>
+    <div className="container mx-auto px-4">
       <NavigationMenu />
       <Routes>
         <Route path="/authors" element={<Authors />}></Route>
