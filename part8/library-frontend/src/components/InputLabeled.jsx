@@ -8,6 +8,7 @@ const InputLabeled = (props) => {
         value={props.field.value}
         onChange={props.field.onChange}
         required={props.required}
+        type={props.field.type}
       />
     </div>
   )

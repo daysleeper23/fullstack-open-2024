@@ -1,4 +1,4 @@
-const Button = ({ type, children, variant }) => {
+const Button = ({ type, children, variant, onClick }) => {
   let twClass = ""
   switch (variant) {
     case "solid":
@@ -21,7 +21,7 @@ const Button = ({ type, children, variant }) => {
       break
   }
   return (
-    <button type={type} className={twClass}>
+    <button type={type} className={twClass} onClick={onClick}>
       {children}
     </button>
   )

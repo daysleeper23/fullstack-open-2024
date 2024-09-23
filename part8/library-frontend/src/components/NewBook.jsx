@@ -3,6 +3,8 @@ import { useField } from '../hooks/useField'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK } from '../queries/mutations'
 import { ALL_AUTHORS, ALL_BOOKS } from '../queries/queries'
+import InputLabeled from './InputLabeled'
+import Button from './Button'
 // import { GraphQLError } from 'graphql'
 
 const NewBook = () => {
@@ -18,23 +20,23 @@ const NewBook = () => {
       { query: ALL_AUTHORS },
     ],
     onError: (error) => {
-      const messages = error.graphQLError.map(e => e.message).join('\n')
-      console.log('error:', messages)
+      // const messages = error.graphQLError.map(e => e.message).join('\n')
+      console.log('error:', error)
     }
   })
 
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log('add book...')
+    console.log('add book...', title.value, author.value, published.value, genres)
     addBook({ 
       variables: { 
         title: title.value,
         author: author.value,
         published: Number(published.value),
         genres: genres
-    }
-  })
+      }
+    })
 
     resetTitle()
     resetPublished()
@@ -43,35 +45,26 @@ const NewBook = () => {
     resetGenre()
   }
 
-  const addGenre = () => {
+  const addGenre = (e) => {
+    e.preventDefault()
     setGenres(genres.concat(genre.value))
     resetGenre()
   }
 
   return (
-    <div>
-      <h2>Add new book</h2>
-      <form onSubmit={submit}>
-        <div>
-          title
-          <input required data-testid="title" {...title} />
+    <div className="space-y-6">
+      <h2 className="text-3xl font-bold">Add new book</h2>
+      <form className="space-y-4" >
+        <InputLabeled required label="Title" field={title} />
+        <InputLabeled required label="Author" field={author} />
+        <InputLabeled required label="Published" field={published} />
+        <div className="space-y-2">
+          <InputLabeled label="Genres" placeholder="E.g. refactoring, design" field={genre} />
+          <p className="text-sm font-medium">{genres.join(' ')}</p>
+          <Button onClick={addGenre} variant="outline">Add genre</Button>
         </div>
-        <div>
-          author
-          <input required data-testid="author" {...author} />
-        </div>
-        <div>
-          published
-          <input required data-testid="published" {...published} />
-        </div>
-        <div>
-          <input data-testid="genre" {...genre} />
-          <button onClick={addGenre} type="button">
-            add genre
-          </button>
-        </div>
-        <div>genres: {genres.join(' ')}</div>
-        <button type="submit">create book</button>
+        
+        <Button type="submit" onClick={submit} variant="solid">Create new book</Button>
       </form>
     </div>
   )

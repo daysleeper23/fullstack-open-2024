@@ -155,6 +155,7 @@ const typeDefs = `
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
+    allGenres: [String!]!
     allAuthors: [Author!]!
     me: User
   }
@@ -197,29 +198,34 @@ const resolvers = {
       let results = []
       if (args.author) {
         const author = await Author.findOne({ name: args.author })
-        console.log('has author', author)
+        // console.log('has author', author)
 
         results = await Book.find({ author: author._id })
-        console.log('has author', results)
+        // console.log('has author', results)
 
         if (args.genre) {
-          console.log('no genres')
+          // console.log('no genres')
           results = await results.filter(b => b.genres.includes(args.genre))
         }
       }
       else {
-        console.log('no author')
+        // console.log('no author')
         if (args.genre) {
-          console.log('has genre')
+          // console.log('has genre')
           results = await Book.find({ genres: args.genre })
         }
         else {
           results = await Book.find({})
         }
       }
-      console.log('result', results)
+      // console.log('result', results)
 
       return results
+    },
+    allGenres: async () => {
+      const genres = (await Book.find({ })).flatMap(b => b.genres)
+      const uniqueGenres = await [...new Set(genres)]
+      return uniqueGenres
     },
     allAuthors: async () => await Author.find({}),
     me: (_root, _args, context) => {
@@ -295,7 +301,7 @@ const resolvers = {
       }
 
       const existingBook = await Book.findOne({ title: args.title })
-      console.log('ex:', existingBook)
+      // console.log('ex:', existingBook)
       if (existingBook !== null) {
         throw new GraphQLError('Book title must be unique', {
           extensions: {
@@ -306,11 +312,11 @@ const resolvers = {
       }
 
       try {
-        console.log('add new book')
+        // console.log('add new book')
         
         let existingAuthor = await Author.findOne({ name: args.author })
         if (existingAuthor ===  null) {
-          console.log('add author', args.author)
+          // console.log('add author', args.author)
 
           try {
             await resolvers.Mutation.addAuthor(root, { name: args.author })
@@ -326,12 +332,12 @@ const resolvers = {
             })
           }
         }
-        console.log('author', existingAuthor)
+        // console.log('author', existingAuthor)
 
         const book = new Book({ ...args, author: existingAuthor.id })
-        console.log('book to add', book)
+        // console.log('book to add', book)
         const newBook = await book.save()
-        console.log('new book', newBook)
+        // console.log('new book', newBook)
 
         return newBook
       }

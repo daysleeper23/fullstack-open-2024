@@ -16,7 +16,7 @@ const Authors = () => {
     ],
     onError: (error) => {
       const messages = error.graphQLError.map(e => e.message).join('\n')
-      console.log('error:', messages)
+      // console.log('error:', messages)
     }
   })
 
@@ -27,7 +27,7 @@ const Authors = () => {
 
   const updateBorn = (event) => {
     event.preventDefault()
-    console.log('update author:', name.value)
+    // console.log('update author:', name.value)
     updateBornYear({ 
       variables: { 
         name: name.value,
