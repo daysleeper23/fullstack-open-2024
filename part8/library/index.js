@@ -224,7 +224,7 @@ const resolvers = {
         const savedAuthor = await author.save()
         return savedAuthor
       } catch (error) {
-        throw new GraphQLError('Saving author failed', {
+        throw new GraphQLError(error.message, {
           extensions: {
             code: 'BAD_USER_INPUT',
             invalidArgs: args.name,
@@ -268,8 +268,20 @@ const resolvers = {
         let existingAuthor = await Author.findOne({ name: args.author })
         if (existingAuthor ===  null) {
           console.log('add author', args.author)
-          await resolvers.Mutation.addAuthor(root, { name: args.author })
-          existingAuthor = await Author.findOne({ name: args.author })
+
+          try {
+            await resolvers.Mutation.addAuthor(root, { name: args.author })
+            existingAuthor = await Author.findOne({ name: args.author })
+          }
+          catch (error) {
+            throw new GraphQLError(error.message, {
+              extensions: {
+                code: 'BAD_USER_INPUT',
+                invalidArgs: args.author,
+                error
+              }
+            })
+          }
         }
         console.log('author', existingAuthor)
 
@@ -281,14 +293,14 @@ const resolvers = {
         return newBook
       }
       catch (error) {
-        console.log(error)
-        // throw new GraphQLError('Book title must be unique', {
-        //   extensions: {
-        //     code: 'BAD_USER_INPUT',
-        //     invalidArgs: args.title,
-        //     error
-        //   }
-        // })
+        // console.log(error)
+        throw new GraphQLError(error.message, {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.title,
+            error
+          }
+        })
       }
     }
   }
