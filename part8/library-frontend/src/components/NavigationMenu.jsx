@@ -16,6 +16,9 @@ const NavigationMenu = () => {
       <Link to="/add-book">
         <Button variant="link">Add book</Button>
       </Link>
+      <Link to="/recommendations">
+        <Button variant="link">Recommendations</Button>
+      </Link>
       <Link to="/login">
         <Button variant="link">Login</Button>
       </Link>
