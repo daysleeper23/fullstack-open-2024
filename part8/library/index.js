@@ -154,7 +154,7 @@ const typeDefs = `
     dummy: Int
     bookCount: Int!
     authorCount: Int!
-    allBooks(author: String, genre: String): [Book!]!
+    allBooks(author: String!, genre: String!): [Book!]!
     allGenres: [String!]!
     allAuthors: [Author!]!
     me: User
@@ -196,25 +196,27 @@ const resolvers = {
     authorCount: async () => await Author.collection.countDocuments(),
     allBooks: async (_root, args) => {
       let results = []
-      if (args.author) {
+      console.log('author:', args.author, 'genre:', args.genre)
+      if (args.author && args.author !== "all") {
         const author = await Author.findOne({ name: args.author })
         // console.log('has author', author)
 
         results = await Book.find({ author: author._id })
         // console.log('has author', results)
 
-        if (args.genre) {
+        if (args.genre && args.genre !== "all") {
           // console.log('no genres')
           results = await results.filter(b => b.genres.includes(args.genre))
         }
       }
       else {
         // console.log('no author')
-        if (args.genre) {
+        if (args.genre && args.genre !== "all") {
           // console.log('has genre')
           results = await Book.find({ genres: args.genre })
         }
         else {
+          console.log('no author no genre')
           results = await Book.find({})
         }
       }

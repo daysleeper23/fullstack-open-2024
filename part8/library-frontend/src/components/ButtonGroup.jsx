@@ -4,9 +4,9 @@ const ButtonGroup = ({list, onSelectGenre}) => {
   const [ value, setValue ] = useState('')
   
   const handleClick = (e) => {
-    
+    e.preventDefault()
     if (value !== e.target.value) {
-      console.log('click:', e.target.value)
+      // console.log('click:', e.target.value)
       setValue(e.target.value)
       onSelectGenre(e.target.value)
     }

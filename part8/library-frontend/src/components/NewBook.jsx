@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useField } from '../hooks/useField'
 import { useMutation } from '@apollo/client'
 import { ADD_BOOK } from '../queries/mutations'
-import { ALL_AUTHORS, ALL_BOOKS } from '../queries/queries'
+import { ALL_AUTHORS, ALL_BOOKS, GENRES_ALL } from '../queries/queries'
 import InputLabeled from './InputLabeled'
 import Button from './Button'
 // import { GraphQLError } from 'graphql'
@@ -18,17 +18,25 @@ const NewBook = () => {
     refetchQueries: [ 
       { query: ALL_BOOKS },
       { query: ALL_AUTHORS },
+      { query: GENRES_ALL }
     ],
     onError: (error) => {
       // const messages = error.graphQLError.map(e => e.message).join('\n')
       console.log('error:', error)
-    }
+    },
+    // update: (cache, response) => {
+    //   cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
+    //     return {
+    //       allBooks: allBooks.concat(response.data.addBook)
+    //     }
+    //   })
+    // }
   })
 
   const submit = async (event) => {
     event.preventDefault()
 
-    console.log('add book...', title.value, author.value, published.value, genres)
+    // console.log('add book...', title.value, author.value, published.value, genres)
     addBook({ 
       variables: { 
         title: title.value,
