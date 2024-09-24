@@ -11,6 +11,10 @@ const authorSchema = new mongoose.Schema({
   },
   born: {
     type: Number,
+  },
+  bookCount: {
+    type: Number,
+    default: 0
   }
 })
 

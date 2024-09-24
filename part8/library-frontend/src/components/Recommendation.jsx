@@ -4,6 +4,8 @@ import { ALL_BOOKS } from "../queries/queries"
 
 const Recommendations = ({ user }) => {
 
+  if (!user) return 'You need to login first!'
+
   const { loading, error, data } = useQuery(ALL_BOOKS, {
     variables : {
       author: "all",

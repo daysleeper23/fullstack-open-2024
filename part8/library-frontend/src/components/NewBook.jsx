@@ -15,21 +15,50 @@ const NewBook = () => {
   const [genres, setGenres] = useState([])
 
   const [ addBook ] = useMutation(ADD_BOOK, {
-    refetchQueries: [ 
-      { query: ALL_BOOKS },
-      { query: ALL_AUTHORS },
-      { query: GENRES_ALL }
+    refetchQueries: [
+      // (genres.map(genre => { 
+      //   return { 
+      //     query: ALL_BOOKS, 
+      //     variables: {
+      //       author: "all",
+      //       genre: genre
+      //     }
+      //   } 
+      // })),
+      ALL_AUTHORS,
+      GENRES_ALL
     ],
     onError: (error) => {
       // const messages = error.graphQLError.map(e => e.message).join('\n')
       console.log('error:', error)
     },
-    // update: (cache, response) => {
-    //   cache.updateQuery({ query: ALL_BOOKS }, ({ allBooks }) => {
-    //     return {
-    //       allBooks: allBooks.concat(response.data.addBook)
-    //     }
+    // update: async (cache, response) => {
+    //   console.log('boo', response.data.addBook)
+    //   response.data.addBook.genres.forEach( async genre => {
+    //     await cache.updateQuery({ 
+    //       query: ALL_BOOKS,
+    //       variables: {
+    //         author: "all",
+    //         genre: genre
+    //       }}, ({ allBooks }) => {
+    //         return {
+    //           allBooks: allBooks.concat(response.data.addBook)
+    //         }
+    //       }
+    //     )
     //   })
+
+    //   await cache.updateQuery({ 
+    //     query: ALL_BOOKS,
+    //     variables: {
+    //       author: "all",
+    //       genre: "all"
+    //     }}, ({ allBooks }) => {
+    //       return {
+    //         allBooks: allBooks.concat(response.data.addBook)
+    //       }
+    //     }
+    //   )
     // }
   })
 
