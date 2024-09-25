@@ -1,6 +1,6 @@
 const bmiCalculator = (height: number, weight: number): string => {
   if (height <= 0 || weight <= 0) {
-    return "malformatted parameters"
+    return "malformatted parameters";
   }
   const bmi = weight / Math.pow((height / 100), 2);
 
@@ -12,16 +12,16 @@ const bmiCalculator = (height: number, weight: number): string => {
     case bmi < 18.5:
       return "Underweight (Mild thinness)";
     case bmi < 25:
-      return "Normal range"
+      return "Normal range";
     case bmi < 30:
-      return "Overweight (Pre-obese)"
+      return "Overweight (Pre-obese)";
     case bmi < 35:
-      return "Obese (Class I"
+      return "Obese (Class I";
     case bmi < 40:
-      return "Obese (Class II)"
+      return "Obese (Class II)";
     default:
-      return "Obese (Class III)"
+      return "Obese (Class III)";
   }
-}
+};
 // console.log(bmiCalculator(Number(process.argv[2]), Number(process.argv[3])))
-export default bmiCalculator
+export default bmiCalculator;

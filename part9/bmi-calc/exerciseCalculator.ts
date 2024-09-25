@@ -9,13 +9,13 @@ interface Result {
 }
 
 const readArgugmentsToArray = (): number[] => {
-  const argCount = process.argv.length
+  const argCount = process.argv.length;
   // console.log("arg length", argCount)
-  return process.argv.slice(3, argCount).map(Number)
-}
+  return process.argv.slice(3, argCount).map(Number);
+};
 
 const exerciseCalculator = (exerciseHours: number[], target: number): Result => {
-  const periodLength = exerciseHours.length
+  const periodLength = exerciseHours.length;
   // console.log('p length', periodLength)
   if (periodLength === 0)
   {
@@ -27,10 +27,10 @@ const exerciseCalculator = (exerciseHours: number[], target: number): Result => 
       ratingDescription: "invalid data - zero training",
       target,
       average: 0
-    }
+    };
   }
 
-  const dataValidation = exerciseHours.filter(hour => hour < 0).length
+  const dataValidation = exerciseHours.filter(hour => hour < 0).length;
   if (dataValidation > 0)
   {
     return {
@@ -41,36 +41,36 @@ const exerciseCalculator = (exerciseHours: number[], target: number): Result => 
       ratingDescription: "invalid data - negative hours",
       target,
       average: 0
-    }
+    };
   }
 
-  const trainingDays = exerciseHours.filter(hour => hour > 0).length
-  const average = exerciseHours.reduce((acc, cur) => acc + cur) / periodLength
-  const success = target > average ? false : true
-  let rating = 0
-  let ratingDescription = "not too bad but could be better"
+  const trainingDays = exerciseHours.filter(hour => hour > 0).length;
+  const average = exerciseHours.reduce((acc, cur) => acc + cur) / periodLength;
+  const success = target > average ? false : true;
+  let rating = 0;
+  let ratingDescription = "not too bad but could be better";
 
   if (target > 0) {
-    const performance = average / target * 100
+    const performance = average / target * 100;
     // console.log('performance', performance)
     switch (true) {
       case (performance < 75):
-        rating = 1
-        ratingDescription = "definitely need more effort"
-        break
+        rating = 1;
+        ratingDescription = "definitely need more effort";
+        break;
       case (performance < 98):
-        rating = 2
-        ratingDescription = "not too bad but could be better"
-        break
+        rating = 2;
+        ratingDescription = "not too bad but could be better";
+        break;
       default:
-        rating = 3
-        ratingDescription = "keep up the good work"
-        break
+        rating = 3;
+        ratingDescription = "keep up the good work";
+        break;
     }
   } else {
-    console.log("invalid target")
-    rating = 0
-    ratingDescription = "invalid data - target"
+    console.log("invalid target");
+    rating = 0;
+    ratingDescription = "invalid data - target";
   }
 
   return {
@@ -81,7 +81,7 @@ const exerciseCalculator = (exerciseHours: number[], target: number): Result => 
     ratingDescription,
     target,
     average
-  }
-}
+  };
+};
 
-console.log(exerciseCalculator(readArgugmentsToArray(), Number(process.argv[2])))
+console.log(exerciseCalculator(readArgugmentsToArray(), Number(process.argv[2])));

@@ -20,25 +20,25 @@ app.get(
       return res.status(400).json({ error: "malformatted parameters" });
     }
 
-    const height = Number(req.query.height)
-    const weight = Number(req.query.weight)
+    const height = Number(req.query.height);
+    const weight = Number(req.query.weight);
 
     if (weight <= 0 || height <= 0) {
       return res.status(400).json({
         error: "malformatted parameters"
-      })
+      });
     }
 
-    console.log("h:", height, "w:", weight)
+    console.log("h:", height, "w:", weight);
 
-    const bmi = bmiCalculator(height, weight)
+    const bmi = bmiCalculator(height, weight);
 
     return res.status(200).json({
       weight: weight,
       height: height,
       bmi: bmi
-    })
-})
+    });
+});
 
 const PORT = process.env.PORT || 3003;
 
