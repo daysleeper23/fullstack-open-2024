@@ -1,8 +1,10 @@
 {
   "name": "bmi-calc",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "index.ts",
   "scripts": {
+    "start": "ts-node index.ts",
+    "dev": "ts-node-dev index.ts",
     "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,6 +18,11 @@
     "@types/lodash": "^4.17.9",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.6.1",
-    "@types/react": "^18.3.9"
+    "@types/react": "^18.3.9",
+    "ts-node-dev": "^2.0.0"
+  },
+  "dependencies": {
+    "expres": "^0.0.5",
+    "express": "^4.21.0"
   }
 }
