@@ -1,4 +1,5 @@
 const bmiCalculator = (height: number, weight: number): string => {
+  // console.log('height', process.argv[2], ', weight', process.argv[3])
   const bmi = weight / Math.pow((height / 100), 2);
 
   switch (true) {
@@ -20,4 +21,4 @@ const bmiCalculator = (height: number, weight: number): string => {
       return "Obese (Class III)"
   }
 }
-console.log(bmiCalculator(180, 74))
+console.log(bmiCalculator(Number(process.argv[2]), Number(process.argv[3])))
