@@ -8,9 +8,15 @@ interface Result {
   average: number
 }
 
+const readArgugmentsToArray = (): number[] => {
+  const argCount = process.argv.length
+  // console.log("arg length", argCount)
+  return process.argv.slice(3, argCount).map(Number)
+}
+
 const exerciseCalculator = (exerciseHours: number[], target: number): Result => {
   const periodLength = exerciseHours.length
-  console.log('p length', periodLength)
+  // console.log('p length', periodLength)
   if (periodLength === 0)
   {
     return {
@@ -39,14 +45,14 @@ const exerciseCalculator = (exerciseHours: number[], target: number): Result => 
   }
 
   const trainingDays = exerciseHours.filter(hour => hour > 0).length
-  const average = exerciseHours.reduce((acc, cur) => acc = acc + cur) / periodLength
+  const average = exerciseHours.reduce((acc, cur) => acc + cur) / periodLength
   const success = target > average ? false : true
   let rating = 0
   let ratingDescription = "not too bad but could be better"
 
   if (target > 0) {
     const performance = average / target * 100
-    console.log('performance', performance)
+    // console.log('performance', performance)
     switch (true) {
       case (performance < 75):
         rating = 1
@@ -66,7 +72,6 @@ const exerciseCalculator = (exerciseHours: number[], target: number): Result => 
     rating = 0
     ratingDescription = "invalid data - target"
   }
-    
 
   return {
     periodLength,
@@ -79,4 +84,4 @@ const exerciseCalculator = (exerciseHours: number[], target: number): Result => 
   }
 }
 
-console.log(exerciseCalculator([3, 0, 2, 4.5, 0, 3, 1], 2))
+console.log(exerciseCalculator(readArgugmentsToArray(), Number(process.argv[2])))
