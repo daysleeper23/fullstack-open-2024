@@ -7,22 +7,31 @@
     "dev": "ts-node-dev index.ts",
     "calculateBmi": "ts-node bmiCalculator.ts",
     "calculateExercises": "ts-node exerciseCalculator.ts",
+    "lint": "npx eslint .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "@eslint/js": "^9.11.1",
+    "@types/eslint__js": "^8.42.3",
     "@types/express": "^4.17.21",
     "@types/jest": "^29.5.13",
     "@types/lodash": "^4.17.9",
     "@types/mongoose": "^5.11.96",
     "@types/node": "^22.6.1",
     "@types/react": "^18.3.9",
-    "ts-node-dev": "^2.0.0"
+    "eslint": "^9.11.1",
+    "eslint-plugin-react": "^7.36.1",
+    "globals": "^15.9.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.6.2",
+    "typescript-eslint": "^8.7.0"
   },
   "dependencies": {
     "expres": "^0.0.5",
-    "express": "^4.21.0"
+    "express": "^4.21.0",
+    "express-validator": "^7.2.0"
   }
 }

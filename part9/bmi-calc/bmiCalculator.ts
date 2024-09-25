@@ -1,5 +1,7 @@
 const bmiCalculator = (height: number, weight: number): string => {
-  // console.log('height', process.argv[2], ', weight', process.argv[3])
+  if (height <= 0 || weight <= 0) {
+    return "malformatted parameters"
+  }
   const bmi = weight / Math.pow((height / 100), 2);
 
   switch (true) {
@@ -21,4 +23,5 @@ const bmiCalculator = (height: number, weight: number): string => {
       return "Obese (Class III)"
   }
 }
-console.log(bmiCalculator(Number(process.argv[2]), Number(process.argv[3])))
+// console.log(bmiCalculator(Number(process.argv[2]), Number(process.argv[3])))
+export default bmiCalculator
