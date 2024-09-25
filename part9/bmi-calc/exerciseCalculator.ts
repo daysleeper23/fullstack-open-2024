@@ -1,4 +1,4 @@
-interface Result {
+export interface Result {
   periodLength: number,
   trainingDays: number,
   success: boolean,
@@ -14,7 +14,7 @@ const readArgugmentsToArray = (): number[] => {
   return process.argv.slice(3, argCount).map(Number);
 };
 
-const exerciseCalculator = (exerciseHours: number[], target: number): Result => {
+export const exerciseCalculator = (exerciseHours: number[], target: number): Result => {
   const periodLength = exerciseHours.length;
   // console.log('p length', periodLength)
   if (periodLength === 0)
