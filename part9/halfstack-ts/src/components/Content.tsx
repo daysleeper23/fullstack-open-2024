@@ -1,17 +1,10 @@
-interface CoursePart {
-  name: string,
-  exerciseCount: number
-}
+import Part, { CoursePart } from "./Part"
 
 const Content = ({ list }: { list: CoursePart[] }) => {
   return (
     <div className="space-y-4">
       {
-        list.map(element => 
-          <p>
-            {element.name} {element.exerciseCount}
-          </p>
-        )
+        list.map(element => <Part part={element} />)
       }
     </div>
   )
