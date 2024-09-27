@@ -1,7 +1,7 @@
 import { Gender, NewPatient } from "./types";
 import z from 'zod';
 
-const newPatientSchema = z.object({
+export const NewPatientSchema = z.object({
   name: z.string(),
   dateOfBirth: z.string().date(),
   gender: z.nativeEnum(Gender),
@@ -10,7 +10,7 @@ const newPatientSchema = z.object({
 });
 
 export const toNewPatient = (object: unknown): NewPatient => {
-  return newPatientSchema.parse(object);
+  return NewPatientSchema.parse(object);
   // if ( !object || typeof object !== 'object' ) {
   //   throw new Error('Incorrect or missing data');
   // }
