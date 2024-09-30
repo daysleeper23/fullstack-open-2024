@@ -17,6 +17,16 @@ import {
   SelectTrigger,
   SelectValue,
 } from "./ui/select";
+import { Calendar } from './ui/calendar'
+import { CalendarIcon } from "@radix-ui/react-icons"
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from './ui/popover'
+import { cn } from "../lib/utils";
+import { format } from "date-fns"
+
 import diaryService from '../services/diaries'
 import { useState } from "react";
 import { z } from "zod";
@@ -38,7 +48,8 @@ interface AddDiaryEntryFormProps {
 }
 
 export default function AddDiaryEntryForm({ onCreateNew }: AddDiaryEntryFormProps) {
-  const [date, setDate] = useState<string>('')
+  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [isOpen, setIsOpen] = useState(false)
   const [visibility, setVisibility] = useState('')
   const [weather, setWeather] = useState('')
   const [comment, setComment] = useState<string>('')
@@ -71,10 +82,15 @@ export default function AddDiaryEntryForm({ onCreateNew }: AddDiaryEntryFormProp
 
   const clearFormData = (event: React.MouseEvent<HTMLButtonElement>) => {
     event.preventDefault()
-    setDate('')
+    setDate(new Date())
     setVisibility('')
     setWeather('')
     setComment('')
+  }
+
+  const handleSetDate = (value: Date | undefined) => {
+    setDate(value)
+    setIsOpen(false)
   }
 
   return (
@@ -93,8 +109,37 @@ export default function AddDiaryEntryForm({ onCreateNew }: AddDiaryEntryFormProp
             <div className="grid w-full items-center gap-4">
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="name">Date</Label>
-                <Input id="name" placeholder="The date of your flight" value={date} onChange={(e) => setDate(e.target.value)}/>
+                <Popover open={isOpen} onOpenChange={setIsOpen}>
+                  <PopoverTrigger asChild>
+                      <Button
+                        variant={"outline"}
+                        className={cn(
+                          "w-[240px] pl-3 text-left font-normal",
+                          !date && "text-muted-foreground"
+                        )}
+                      >
+                        {date ? (
+                          format(date, "dd.MM.yyyy")
+                        ) : (
+                          <span>Pick a date</span>
+                        )}
+                        <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                      </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0" align="start">
+                    <Calendar
+                      mode="single"
+                      selected={date}
+                      onSelect={handleSetDate}
+                      // disabled={(date) =>
+                      //   date > new Date() || date < new Date("1900-01-01")
+                      // }
+                      initialFocus
+                    />
+                  </PopoverContent>
+                </Popover>                
               </div>
+
               <div className="flex flex-col space-y-1.5">
                 <Label htmlFor="framework">Visibility</Label>
                 <Select value={visibility} onValueChange={(value) => setVisibility(value as Visibility)}>
