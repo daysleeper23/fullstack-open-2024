@@ -35,6 +35,24 @@ const errorMiddleware = (error: unknown, _req: Request, res: Response, next: Nex
  * ENDPOINTS
 ***************************/
 
+router.get('/:id', (req, res) => {
+  // console.log('find by id: ', req.params.id)
+  try {
+    const patient = patientsService.findById(req.params.id)
+    
+    if (patient) {
+      // console.log('found patient:', patient)
+      res.status(200).json(patient);
+    } else {
+      // console.log('patient not found')
+      res.status(404).json({ error: 'could not find patient'});
+    }
+  }
+  catch (error) {
+    res.status(400).json({ error: 'error during finding patient'});
+  }
+});
+
 router.get('/', (_req, res) => {
   res.status(200).json(patientsService.getNonSensitivePatientInfo());
 });
