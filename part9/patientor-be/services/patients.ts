@@ -24,7 +24,7 @@ const addPatient = (patient: NewPatient): NonSensitivePatientInfo => {
     id,
     ...patient
   };
-  patientsData.concat(newPatient);
+  patients.concat(newPatient);
 
   const { ssn, ...returnPatient } = newPatient;
   return returnPatient;
