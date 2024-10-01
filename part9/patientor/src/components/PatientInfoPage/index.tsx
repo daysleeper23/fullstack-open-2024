@@ -18,6 +18,12 @@ const SectionTitle = ({ text }: { text : string } ) => {
   )
 };
 
+const assertNever = (value: never): never => {
+  throw new Error(
+    `Unhandled discriminated union member: ${JSON.stringify(value)}`
+  );
+};
+
 const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) => {
   const [patientInfo, setPatientInfo] = useState<Patient>()
 
@@ -63,12 +69,15 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
             {patientInfo.entries 
               ? patientInfo.entries.map(d => {
                   switch (d.type) {
-                    case EntryType.Hospital:
+                    case 'Hospital':
                       return <CardEntryHospital key={d.id} data={d} diag={diag} />;
-                    case EntryType.HealthCheck:
+                    case 'HealthCheck':
                       return <CardEntryHealthCheck key={d.id} data={d} diag={diag} />;
-                    case EntryType.OccupationalHealthcare:
+                    case 'OccupationalHealthcare':
                       return <CardEntryOccupationalHealthcare key={d.id} data={d} diag={diag} />;
+                    default:
+                      assertNever(d); 
+                      break;
                   }
                 })
               : <></>
