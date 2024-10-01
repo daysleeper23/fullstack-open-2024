@@ -1,5 +1,5 @@
-import { Box, Typography } from '@mui/material';
-import { Diagnosis, Patient } from "../../types";
+import { Box, Button, Grid, Typography } from '@mui/material';
+import { Diagnosis, EntryWithoutId, Patient } from "../../types";
 import { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../../constants';
 import axios from 'axios';
@@ -9,6 +9,7 @@ import CardEntryHospital from './CardEntryHospital';
 import CardInfo from './CardInfo';
 import CardEntryHealthCheck from './CardEntryHealthCheck';
 import CardEntryOccupationalHealthcare from './CardEntryOccupationalHealthcare';
+import AddEntryModal from '../AddEntryModal';
 
 const SectionTitle = ({ text }: { text : string } ) => {
   return (
@@ -26,6 +27,8 @@ const assertNever = (value: never): never => {
 
 const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) => {
   const [patientInfo, setPatientInfo] = useState<Patient>()
+  const [modalOpen, setModalOpen] = useState(false);
+  const [error, setError] = useState('')
 
   useEffect(() => {
     void axios.get<void>(`${apiBaseUrl}/ping`);
@@ -36,6 +39,42 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
     };
     void fetchPatient();
   }, []);
+
+  const openModal = () => {
+    console.log('open modal');
+    setModalOpen(true);
+  }
+
+  const closeModal = () => {
+    console.log('open modal')
+    setModalOpen(false);
+    setError('');
+  }
+
+  const submitNewEntry = async (object: EntryWithoutId) => {
+    console.log('submit new entry')
+    try {
+      if (patientInfo) {
+        const newEntry = await patientService.createEntry(object, patientInfo.id);
+        const newPatient = patientInfo
+        newPatient.entries = newPatient.entries.concat(newEntry);
+        setModalOpen(false);
+      }
+    } catch (e: unknown) {
+      if (axios.isAxiosError(e)) {
+        if (e?.response?.data && typeof e?.response?.data === "string") {
+          const message = e.response.data.replace('Something went wrong. Error: ', '');
+          console.error(message);
+          setError(message);
+        } else {
+          setError("Unrecognized axios error");
+        }
+      } else {
+        console.error("Unknown error", e);
+        setError("Unknown error");
+      }
+    }
+  }
 
   if (id === 'empty') {
     return (
@@ -64,7 +103,17 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
           </Box>
 
           <div>
-            <SectionTitle text="Entries:" />
+            <Grid container>
+              <Grid item xs={9}>
+                <SectionTitle text="Entries:" />
+              </Grid>
+              <Grid item xs={3}>
+                <Button variant="contained" onClick={() => openModal()}>
+                  Add New Entry
+                </Button>
+              </Grid>
+            </Grid>
+            
             {patientInfo.entries 
               ? patientInfo.entries.map(d => {
                   switch (d.type) {
@@ -82,6 +131,12 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
               : <></>
             }
           </div>
+          <AddEntryModal
+            modalOpen={modalOpen}
+            onSubmit={submitNewEntry}
+            error={error}
+            onClose={closeModal}
+          />
         </Box>
       )
     }
