@@ -20,6 +20,8 @@ const CardEntryOccupationalHealthcare = ({ data, diag}: { data: EntryOccupationa
 
       <CardContent>
         <SectionDateDescription date={data.date} desc={data.description} />
+
+        <SectionDiagnoses specialist={data.specialist} diagnosisCodes={data.diagnosisCodes || []} diag={diag} />
         
         <Grid container spacing={2}>
           <Grid item xs={3}>
@@ -33,9 +35,7 @@ const CardEntryOccupationalHealthcare = ({ data, diag}: { data: EntryOccupationa
                 }
               </CardInfo>
           </Grid>
-        </Grid>
-
-        <SectionDiagnoses specialist={data.specialist} diagnosisCodes={data.diagnosisCodes || []} diag={diag} />
+        </Grid>        
       </CardContent>
     </Card>
   )
