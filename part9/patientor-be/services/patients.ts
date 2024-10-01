@@ -22,7 +22,8 @@ const addPatient = (patient: NewPatient): NonSensitivePatientInfo => {
   const id = uuid();
   const newPatient: Patient = {
     id,
-    ...patient
+    ...patient,
+    entries: []
   };
   patients.concat(newPatient);
 

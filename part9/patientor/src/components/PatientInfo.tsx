@@ -1,6 +1,6 @@
 import MaleIcon from '@mui/icons-material/Male';
 import FemaleIcon from '@mui/icons-material/Female';
-import { Typography } from '@mui/material';
+import { List, ListItem, ListItemText, Typography } from '@mui/material';
 import { Patient } from "../types";
 import { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../constants';
@@ -10,9 +10,19 @@ import patientService from '../services/patients';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 
+import { Entry } from '../types';
+
 const SectionTitle = ({ text }: { text : string } ) => {
   return (
-    <Typography variant="h5">
+    <Typography variant="h5" style={{ marginBottom: "0.5em" }}>
+      {text}
+    </Typography>
+  )
+};
+
+const SectionTitleMedium = ({ text }: { text : string } ) => {
+  return (
+    <Typography variant="h6" style={{ marginBottom: "0.5em" }}>
       {text}
     </Typography>
   )
@@ -20,11 +30,37 @@ const SectionTitle = ({ text }: { text : string } ) => {
 
 const SectionContentText = ({ text }: { text : string | undefined } ) => {
   return (
-    <Typography variant="body1" color="textSecondary" style={{ marginBottom: "1em" }}>
+    <Typography variant="subtitle1" color="textSecondary" style={{ marginBottom: "1em" }}>
       {text || ''}
     </Typography>
   )
 };
+
+const SectionContentEntry = ({ data }: { data: Entry }) => {
+  return (
+    <Card style={{ marginBottom: "1em" }}>
+      <CardContent>
+        <SectionTitleMedium text="Type" />
+        <SectionContentText text={data.type} />
+
+        <SectionTitleMedium text="Date" />
+        <SectionContentText text={data.date} />
+
+        <SectionTitleMedium text="Description" />
+        <SectionContentText text={data.description} />
+
+        <SectionTitleMedium text="Diagnoses:" />
+        <List dense>
+          {data.diagnosisCodes ? data.diagnosisCodes.map(c => 
+            <ListItem key={c}>
+              <ListItemText primary={c} />
+            </ListItem>
+          ) : <></>}
+        </List>
+      </CardContent>
+    </Card>
+  )
+}
 
 const PatientInfo = ({ id }: { id : string }) => {
   const [patientInfo, setPatientInfo] = useState<Patient>()
@@ -74,7 +110,7 @@ const PatientInfo = ({ id }: { id : string }) => {
 
           <div>
             <SectionTitle text="Entries:" />
-            {patientInfo.entries ? patientInfo.entries.map(d => <SectionContentText text={d.toString()} />) : <></>}
+            {patientInfo.entries ? patientInfo.entries.map(d => <SectionContentEntry key={d.id} data={d} />) : <></>}
           </div>
           </CardContent>
         </Card>
