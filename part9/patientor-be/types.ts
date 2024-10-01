@@ -17,10 +17,10 @@ export enum EntryType {
 }
 
 export enum HealthCheckRating {
-  "Healthy" = 0,
-  "LowRisk" = 1,
-  "HighRisk" = 2,
-  "CriticalRisk" = 3
+  'Healthy' = 0,
+  'LowRisk' = 1,
+  'HighRisk' = 2,
+  'CriticalRisk' = 3
 }
 
 export interface EntryBase {
@@ -83,6 +83,8 @@ export interface EntryOccupationalHealthcare extends EntryBase {
   }
 }
 
+
+
 export type Entry =
   | EntryHospital
   | EntryOccupationalHealthcare
@@ -92,6 +94,7 @@ export type Entry =
 type UnionOmit<T, K extends string | number | symbol> = T extends unknown ? Omit<T, K> : never;
 // Define Entry without the 'id' property
 export type EntryWithoutId = UnionOmit<Entry, 'id'>;
+export type EntryHealthCheckWithoutId = Omit<EntryHealthCheck, 'id'>;
 
 export interface Patient {
 // "id": "d2773336-f723-11e9-8f0b-362b9e155667",

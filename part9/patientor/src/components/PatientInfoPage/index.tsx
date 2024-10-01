@@ -1,5 +1,5 @@
 import { Box, Typography } from '@mui/material';
-import { Diagnosis, EntryType, Patient } from "../../types";
+import { Diagnosis, Patient } from "../../types";
 import { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../../constants';
 import axios from 'axios';
@@ -52,7 +52,6 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
     else {
       return (
         <Box>
-          {/* <CardContent> */}
           <Typography variant="h4" style={{ marginTop: "1em", marginBottom: "1em" }}>
             {patientInfo.name}
           </Typography>

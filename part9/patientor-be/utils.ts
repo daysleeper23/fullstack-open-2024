@@ -1,5 +1,5 @@
-import { EntryType, Gender, NewPatient } from "./types";
-import z from 'zod';
+import { EntryType, Gender, HealthCheckRating, NewPatient } from "./types";
+import z, { string } from 'zod';
 
 export const EntrySchema = z.object({
   id: z.string(),
@@ -7,7 +7,16 @@ export const EntrySchema = z.object({
   specialist: z.string(),
   description: z.string(),
   type: z.nativeEnum(EntryType),
-  // healthCheckRating: z.nativeEnum(HealthCheckRating).optional()
+  healthCheckRating: z.nativeEnum(HealthCheckRating).optional()
+})
+
+export const NewEntryHealthCheckSchema = z.object({
+  date: z.string().date(),
+  specialist: z.string(),
+  description: z.string(),
+  type: z.nativeEnum(EntryType),
+  healthCheckRating: z.nativeEnum(HealthCheckRating),
+  diagnosisCodes: z.array(string()).optional()
 })
 
 export const NewPatientSchema = z.object({

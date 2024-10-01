@@ -1,38 +1,13 @@
 import express, { NextFunction, Request, Response } from 'express';
 import patientsService from '../services/patients';
-import { NewPatientSchema } from '../utils';
+import { NewEntryHealthCheckSchema, NewPatientSchema } from '../utils';
 import z from 'zod';
-import { NewPatient, NonSensitivePatientInfo } from '../types';
+import { Entry, EntryHealthCheckWithoutId, NewPatient, NonSensitivePatientInfo } from '../types';
 
 const router = express.Router();
 
 /***************************
- * MIDDLEWARES
-***************************/
-
-const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
-  try {
-    NewPatientSchema.parse(req.body)
-    next;
-  }
-  catch (error: unknown) {
-    next(error);
-  }
-}
-
-const errorMiddleware = (error: unknown, _req: Request, res: Response, next: NextFunction) => {
-  if (error instanceof z.ZodError) {
-    res.status(400).send({
-      error: error.issues
-    })
-  }
-  else {
-    next(error);
-  }
-}
-
-/***************************
- * ENDPOINTS
+ * QUERY DATA ENDPOINTS
 ***************************/
 
 router.get('/:id', (req, res) => {
@@ -57,9 +32,88 @@ router.get('/', (_req, res) => {
   res.status(200).json(patientsService.getNonSensitivePatientInfo());
 });
 
-router.post('/', newPatientParser, (req: Request<unknown, unknown, NewPatient>, res: Response<NonSensitivePatientInfo>) => {
+/***************************
+ * DATA VALIDATION MIDDLEWARES
+***************************/
+
+const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
+  console.log('parse entry')
+  try {
+    NewEntryHealthCheckSchema.parse(req.body);
+    console.log('parse ok', req.body);
+    next();
+  } catch (error: unknown) {
+    next(error);
+  }
+};
+
+const newPatientParser = (req: Request, _res: Response, next: NextFunction) => {
+  console.log('parse patient')
+  try {
+    NewPatientSchema.parse(req.body)
+    next();
+  }
+  catch (error: unknown) {
+    next(error);
+  }
+}
+
+const errorMiddleware = (error: unknown, _req: Request, res: Response, next: NextFunction) => {
+  console.log('error', error)
+  if (error instanceof z.ZodError) {
+    console.log('zod error')
+    res.status(400).send({
+      error: error.issues
+    })
+  }
+  else if (error instanceof SyntaxError) {
+    console.log('syntax error')
+    res.status(400).send({
+      error: error.message
+    })
+  }
+  else {
+    console.log('something else error')
+    next(error);
+  }
+};
+
+/***************************
+ * CREATE DATA ENDPOINTS
+***************************/
+
+router.post('/:id/entries', newEntryParser, (req: Request<{ id: string }, unknown, EntryHealthCheckWithoutId>, res: Response<Entry | { message: unknown }>) => {
+  try {
+    console.log('new entry --- start')
+    const patient = patientsService.findById(req.params.id)
+    console.log('new entry --- patient:', patient)
+
+    if (!patient) {
+      res.status(404).json({ message: 'could not find patient' })
+    } else {
+      const newEntry = patientsService.addNewEntryToPatient(req.body, patient.id);
+      
+
+      if (newEntry) {
+        console.log('new entry --- can create new entry:', newEntry)
+        res.status(200).json(newEntry);
+      } else {
+        res.status(400).json({ message: 'error while adding entry' });
+      }
+    }
+  } catch (error) {
+    res.status(400).json({ message: error })
+  }
+});
+
+router.post('/', newPatientParser, (req: Request<unknown, unknown, NewPatient>, res: Response<NonSensitivePatientInfo | { message: unknown }>) => {
+  try {
+    console.log('create patient start');
     const savedPatient = patientsService.addPatient(req.body);
     res.status(200).json(savedPatient);
+  } catch (error) {
+    res.status(400).json({ message: 'bad request' })
+  }
 });
 
 router.use(errorMiddleware)
