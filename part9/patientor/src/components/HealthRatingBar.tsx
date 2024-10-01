@@ -1,4 +1,4 @@
-import { Rating } from '@mui/material';
+import { Rating, Typography } from '@mui/material';
 import { Favorite } from '@mui/icons-material';
 
 import { styled } from '@mui/material/styles';
@@ -34,7 +34,7 @@ const HealthRatingBar = ({ rating, showText }: BarProps) => {
         icon={<Favorite fontSize="inherit" />}
       />
 
-      {showText ? <p>{HEALTHBAR_TEXTS[rating]}</p> : null}
+      {showText ? <Typography variant='body2' color='textSecondary'>{HEALTHBAR_TEXTS[rating]}</Typography> : null}
     </div>
   );
 };

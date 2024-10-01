@@ -1,16 +1,14 @@
-import MaleIcon from '@mui/icons-material/Male';
-import FemaleIcon from '@mui/icons-material/Female';
-import { List, ListItem, ListItemText, Typography } from '@mui/material';
-import { Diagnosis, Patient } from "../../types";
+import { Box, Typography } from '@mui/material';
+import { Diagnosis, EntryType, Patient } from "../../types";
 import { useEffect, useState } from 'react';
 import { apiBaseUrl } from '../../constants';
 import axios from 'axios';
 import patientService from '../../services/patients';
-// import TextField from '@mui/material/TextField';
-import Card from '@mui/material/Card';
-import CardContent from '@mui/material/CardContent';
 
-import { Entry } from '../../types';
+import CardEntryHospital from './CardEntryHospital';
+import CardInfo from './CardInfo';
+import CardEntryHealthCheck from './CardEntryHealthCheck';
+import CardEntryOccupationalHealthcare from './CardEntryOccupationalHealthcare';
 
 const SectionTitle = ({ text }: { text : string } ) => {
   return (
@@ -19,54 +17,6 @@ const SectionTitle = ({ text }: { text : string } ) => {
     </Typography>
   )
 };
-
-const SectionTitleMedium = ({ text }: { text : string } ) => {
-  return (
-    <Typography variant="h6" style={{ marginBottom: "0.5em" }}>
-      {text}
-    </Typography>
-  )
-};
-
-const SectionContentText = ({ text }: { text : string | undefined } ) => {
-  return (
-    <Typography variant="subtitle1" color="textSecondary" style={{ marginBottom: "1em" }}>
-      {text || ''}
-    </Typography>
-  )
-};
-
-const SectionContentEntry = ({ data, diag }: { data: Entry, diag: Array<Diagnosis> }) => {
-  return (
-    <Card style={{ marginBottom: "1em" }}>
-      <CardContent>
-        <SectionTitleMedium text="Type" />
-        <SectionContentText text={data.type} />
-
-        <SectionTitleMedium text="Date" />
-        <SectionContentText text={data.date} />
-
-        <SectionTitleMedium text="Description" />
-        <SectionContentText text={data.description} />
-
-        <SectionTitleMedium text="Diagnoses:" />
-        <List disablePadding>
-          {data.diagnosisCodes 
-            ? data.diagnosisCodes.map(c => {
-                const dName = diag.find(d => d.code === c)?.name || ''
-                return (
-                  <ListItem key={c} color="textSecondary">
-                    <ListItemText primary={c + ' - ' + dName} />
-                  </ListItem>
-                )
-              }) 
-            : <></>
-          }
-        </List>
-      </CardContent>
-    </Card>
-  )
-}
 
 const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) => {
   const [patientInfo, setPatientInfo] = useState<Patient>()
@@ -95,31 +45,36 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
     }
     else {
       return (
-        <Card variant='outlined'>
-          <CardContent>
-          <Typography variant="h4" style={{ marginBottom: "1.5em" }}>
+        <Box>
+          {/* <CardContent> */}
+          <Typography variant="h4" style={{ marginTop: "1em", marginBottom: "1em" }}>
             {patientInfo.name}
           </Typography>
-          <SectionTitle text="Gender" />
-          <Typography variant="body1" color="textSecondary" style={{ marginBottom: "1em" }}>
-            {patientInfo.gender} {patientInfo.gender ? <MaleIcon /> : <FemaleIcon />}
-          </Typography>
 
-          <SectionTitle text="SSN" />
-          <SectionContentText text={patientInfo.ssn} />
-
-          <SectionTitle text="Date of birth" />
-          <SectionContentText text={patientInfo.dateOfBirth} />
-
-          <SectionTitle text="Occupation" />
-          <SectionContentText text={patientInfo.occupation} />
+          <Box sx={{ display: 'flex', gap: '1em', flexDirection: 'row', alignItems: "center", marginBottom: "1em" }}>
+            <CardInfo title='Gender' content={patientInfo.gender || ''} />
+            <CardInfo title='SSN' content={patientInfo.ssn || ''} />
+            <CardInfo title='Date of birth' content={patientInfo.dateOfBirth || ''} />
+            <CardInfo title='Occupation' content={patientInfo.occupation || ''} />
+          </Box>
 
           <div>
             <SectionTitle text="Entries:" />
-            {patientInfo.entries ? patientInfo.entries.map(d => <SectionContentEntry key={d.id} data={d} diag={diag} />) : <></>}
+            {patientInfo.entries 
+              ? patientInfo.entries.map(d => {
+                  switch (d.type) {
+                    case EntryType.Hospital:
+                      return <CardEntryHospital key={d.id} data={d} diag={diag} />;
+                    case EntryType.HealthCheck:
+                      return <CardEntryHealthCheck key={d.id} data={d} diag={diag} />;
+                    case EntryType.OccupationalHealthcare:
+                      return <CardEntryOccupationalHealthcare key={d.id} data={d} diag={diag} />;
+                  }
+                })
+              : <></>
+            }
           </div>
-          </CardContent>
-        </Card>
+        </Box>
       )
     }
   }
