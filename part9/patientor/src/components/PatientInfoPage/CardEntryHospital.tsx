@@ -1,6 +1,6 @@
 import { Diagnosis, EntryHospital } from "../../types";
 
-import { Card, Box, Typography, CardContent, List, ListItem, ListItemText } from "@mui/material";
+import { Card, Box, Typography, CardContent, List, ListItem, ListItemText, Grid } from "@mui/material";
 import { red, blue } from "@mui/material/colors";
 import LocalHospitalIcon from '@mui/icons-material/LocalHospital';
 

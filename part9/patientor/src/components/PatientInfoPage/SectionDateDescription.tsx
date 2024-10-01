@@ -1,16 +1,16 @@
-import { Box } from "@mui/material"
+import Grid from '@mui/material/Grid';
 import CardInfo from "./CardInfo"
 
 const SectionDateDescription = ({ date, desc }: { date: string, desc: string }) => {
   return (
-    <Box sx={{ display: 'flex', gap: '1em', flexDirection: 'row', alignItems: "center" }}>
-      <Box sx={{ flexGrow: 1 }}>
+    <Grid container spacing={2}>
+      <Grid item xs={3}>
         <CardInfo title='Date' content={date} />
-      </Box>
-      <Box sx={{ flexGrow: 3 }}>
+      </Grid>
+      <Grid item xs={9}>
         <CardInfo title='Description' content={desc} />
-      </Box>
-    </Box>
+      </Grid>
+    </Grid> 
   )
 }
 

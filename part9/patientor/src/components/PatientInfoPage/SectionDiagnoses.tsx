@@ -1,4 +1,4 @@
-import { Box, Card, CardContent, List, ListItem, ListItemText, Typography } from "@mui/material"
+import { Box, Card, CardContent, Grid, List, ListItem, ListItemText, Typography } from "@mui/material"
 import CardInfo from "./CardInfo"
 import { Diagnosis } from "../../types"
 import { blue } from "@mui/material/colors"
@@ -14,11 +14,11 @@ const SectionDiagnoses = ({
 }) => {
 
   return (
-    <Box sx={{ display: 'flex', gap: '1em', flexDirection: 'row', alignItems: "top" }}>
-      <Box sx={{ flexGrow: 1 }}>
+    <Grid container spacing={2}>
+      <Grid item xs={3}>
         <CardInfo title='Diagnosed by:' content={specialist} />
-      </Box>
-      <Box sx={{ flexGrow: 3 }}>
+      </Grid>
+      <Grid item xs={9}>
         <Card 
           sx={{
             '& .MuiCardContent-root:last-child': {
@@ -47,8 +47,8 @@ const SectionDiagnoses = ({
             </List>
           </CardContent>
         </Card>
-      </Box>
-    </Box>
+      </Grid>
+    </Grid>
   )
 }
 

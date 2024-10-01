@@ -1,20 +1,38 @@
 import { EntryType, Gender, HealthCheckRating, NewPatient } from "./types";
 import z, { string } from 'zod';
 
-export const EntrySchema = z.object({
-  id: z.string(),
+export const NewEntrySchema = z.object({
   date: z.string().date(),
   specialist: z.string(),
   description: z.string(),
   type: z.nativeEnum(EntryType),
-  healthCheckRating: z.nativeEnum(HealthCheckRating).optional()
+  diagnosisCodes: z.array(string()).optional()
+})
+
+export const NewEntryHospitalSchema = z.object({
+  date: z.string().date(),
+  specialist: z.string(),
+  description: z.string(),
+  type: z.literal('Hospital'),
+  diagnosisCodes: z.array(string()).optional(),
+  discharge: z.object({ date: z.string().date(), criteria: z.string() })
+})
+
+export const NewEntryOccupationalSchema = z.object({
+  date: z.string().date(),
+  specialist: z.string(),
+  description: z.string(),
+  type: z.literal('OccupationalHealthcare'),
+  diagnosisCodes: z.array(string()).optional(),
+  employerName: z.string(),
+  sickLeave: z.object({ startDate: z.string(), endDate: z.string() }).optional()
 })
 
 export const NewEntryHealthCheckSchema = z.object({
   date: z.string().date(),
   specialist: z.string(),
   description: z.string(),
-  type: z.nativeEnum(EntryType),
+  type: z.literal('HealthCheck'),
   healthCheckRating: z.nativeEnum(HealthCheckRating),
   diagnosisCodes: z.array(string()).optional()
 })

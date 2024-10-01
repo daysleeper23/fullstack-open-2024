@@ -1,6 +1,6 @@
 import express, { NextFunction, Request, Response } from 'express';
 import patientsService from '../services/patients';
-import { NewEntryHealthCheckSchema, NewPatientSchema } from '../utils';
+import { NewEntryHealthCheckSchema, NewEntryHospitalSchema, NewEntryOccupationalSchema, NewEntrySchema, NewPatientSchema } from '../utils';
 import z from 'zod';
 import { Entry, EntryHealthCheckWithoutId, NewPatient, NonSensitivePatientInfo } from '../types';
 
@@ -35,11 +35,28 @@ router.get('/', (_req, res) => {
 /***************************
  * DATA VALIDATION MIDDLEWARES
 ***************************/
+// const assertNever = (value: never): never => {
+//   throw new Error(
+//     `Unhandled discriminated union member: ${JSON.stringify(value)}`
+//   );
+// };
 
 const newEntryParser = (req: Request, _res: Response, next: NextFunction) => {
   console.log('parse entry')
   try {
-    NewEntryHealthCheckSchema.parse(req.body);
+    NewEntrySchema.parse(req.body);
+
+    switch (req.body.type) {
+      case 'HealthCheck':
+        NewEntryHealthCheckSchema.parse(req.body);
+        break;
+      case 'Hospital':
+        NewEntryHospitalSchema.parse(req.body);
+        break;
+      case 'OccupationalHealthcare':
+        NewEntryOccupationalSchema.parse(req.body);
+        break;
+    }
     console.log('parse ok', req.body);
     next();
   } catch (error: unknown) {

@@ -21,11 +21,11 @@ const CardEntryHealthCheck = ({ data, diag}: { data: EntryHealthCheck, diag: Arr
       <CardContent>
         <SectionDateDescription date={data.date} desc={data.description} />
 
+        <SectionDiagnoses specialist={data.specialist} diagnosisCodes={data.diagnosisCodes || []} diag={diag} />
+
         <CardInfo title='Healthcheck Rating' content={data.healthCheckRating.toString()} >
           <HealthRatingBar showText={true} rating={data.healthCheckRating} />
         </CardInfo>
-
-        <SectionDiagnoses specialist={data.specialist} diagnosisCodes={data.diagnosisCodes || []} diag={diag} />
       </CardContent>
     </Card>
   )
