@@ -188,12 +188,9 @@ const AddEntryForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
                 {...rating}                
               >
                 {ratingOptions.map(option =>
-                  <MenuItem
-                    key={option.label}
-                    value={option.value}
-                  >
-                    {option.label
-                  }</MenuItem>
+                  <MenuItem key={option.label} value={option.value}>
+                    {option.label}
+                  </MenuItem>
                 )}
                 </Select>
             </>
