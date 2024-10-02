@@ -52,7 +52,6 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
   }
 
   const submitNewEntry = async (object: EntryWithoutId) => {
-    console.log('submit new entry')
     try {
       if (patientInfo) {
         const newEntry = await patientService.createEntry(object, patientInfo.id);
@@ -67,7 +66,7 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
           console.error(message);
           setError(message);
         } else {
-          setError("Unrecognized axios error");
+          setError("Missing or bad data!");
         }
       } else {
         console.error("Unknown error", e);
@@ -104,11 +103,11 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
 
           <div>
             <Grid container>
-              <Grid item xs={9}>
+              <Grid item xs={10}>
                 <SectionTitle text="Entries:" />
               </Grid>
-              <Grid item xs={3}>
-                <Button variant="contained" onClick={() => openModal()}>
+              <Grid item xs={2}>
+                <Button fullWidth variant="contained" onClick={() => openModal()}>
                   Add New Entry
                 </Button>
               </Grid>
@@ -136,6 +135,7 @@ const PatientInfoPage = ({ id, diag }: { id : string, diag: Array<Diagnosis> }) 
             onSubmit={submitNewEntry}
             error={error}
             onClose={closeModal}
+            diagData={diag}
           />
         </Box>
       )

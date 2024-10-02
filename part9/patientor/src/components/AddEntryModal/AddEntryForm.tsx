@@ -1,13 +1,14 @@
-import { SyntheticEvent } from "react";
-import {  TextField, InputLabel, MenuItem, Select, Grid, Button, Input } from '@mui/material';
-import { EntryWithoutId, HealthCheckRating, EntryType } from "../../types";
-import  { useField } from './useField'
-import { useFieldSelect } from "./useFieldSelect";
+import { SyntheticEvent, useState } from "react";
+import {  TextField, InputLabel, MenuItem, Select, Grid, Button, Input, OutlinedInput, Box, Chip, SelectChangeEvent, Theme, useTheme } from '@mui/material';
+import { EntryWithoutId, HealthCheckRating, EntryType, Diagnosis } from "../../types";
+import  { useField } from '../../hooks/useField'
+import { useFieldSelect } from "../../hooks/useFieldSelect";
 
 
 interface Props {
   onCancel: () => void;
   onSubmit: (values: EntryWithoutId) => void;
+  diagnoses: Array<Diagnosis>;
 }
 
 interface EntryOptions{
@@ -33,7 +34,27 @@ const ratingOptions: HealthCheckOptions[] =
     })
   );
 
-const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
+const ITEM_HEIGHT = 48;
+const ITEM_PADDING_TOP = 8;
+const MenuProps = {
+  PaperProps: {
+    style: {
+      maxHeight: ITEM_HEIGHT * 4.5 + ITEM_PADDING_TOP,
+      width: 250,
+    },
+  },
+};
+
+function getStyles(name: string, personName: readonly string[], theme: Theme) {
+  return {
+    fontWeight: personName.includes(name)
+      ? theme.typography.fontWeightMedium
+      : theme.typography.fontWeightRegular,
+  };
+}
+
+
+const AddEntryForm = ({ onCancel, onSubmit, diagnoses }: Props) => {
   const entryType = useFieldSelect('text', entryOptions);
   const rating = useFieldSelect('number', ratingOptions);
   const date = useField('date');
@@ -45,24 +66,37 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
   const sickLeaveStart = useField('date');
   const sickLeaveEnd = useField('date');
 
+  const theme = useTheme();
+  const [diagnosisCodes, setDiagnosisCodes] = useState<string[]>([]);
+
+  const onSelectDiagnosisCode = (event: SelectChangeEvent<typeof diagnosisCodes>) => {
+    const {
+      target: { value },
+    } = event;
+    setDiagnosisCodes(
+      // On autofill we get a stringified value.
+      typeof value === 'string' ? value.split(',') : value,
+    );
+  };
+
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
 
     switch (entryType.value) {
       case 'HealthCheck':
-        console.log('go to HC', entryType.value)
+        // console.log('go to HC', entryType.value, date.value)
+        // return;
         onSubmit({
           type: 'HealthCheck',
           date: date.value,
           description: description.value,
           specialist: specialist.value,
           healthCheckRating: rating.value,
-          // ,
-          // diagnosisCodes: codes
+          diagnosisCodes: diagnosisCodes
         });
         break;
       case 'Hospital':
-        console.log('go to H', entryType.value)
+        console.log('go to H', entryType.value, dischargeDate.value)
         onSubmit({
           type: 'Hospital',
           date: date.value,
@@ -72,8 +106,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
             date: dischargeDate.value,
             criteria: dischargeCriteria.value
           },
-          // ,
-          // diagnosisCodes: codes
+          diagnosisCodes: diagnosisCodes
         });
         break;
       case 'OccupationalHealthcare':
@@ -88,8 +121,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
             startDate: sickLeaveStart.value,
             endDate: sickLeaveEnd.value
           },
-          // ,
-          // diagnosisCodes: codes
+          diagnosisCodes: diagnosisCodes
         });
         break;
     }
@@ -116,12 +148,39 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
         <InputLabel style={{ marginTop: "2em", marginBottom: "1em" }}>Details</InputLabel>
 
         <Input required fullWidth placeholder="Date" style={{ marginBottom: "0.5em" }} {...date} />
-        <TextField variant="standard" label="Description" fullWidth style={{ marginBottom: "1em"}}
+        <TextField required variant="standard" label="Description" fullWidth style={{ marginBottom: "1em"}}
           {...description}
         />
-        <TextField variant="standard" label="Specialist" fullWidth style={{ marginBottom: "1em"}}
+        <TextField required variant="standard" label="Specialist" fullWidth style={{ marginBottom: "1em"}}
           {...specialist}
         />
+
+        <InputLabel id="multiple-chip-label" style={{ marginTop: "1em", marginBottom: "0.5em" }}>Diagnoses</InputLabel>
+        <Select
+          labelId="multiple-chip-label" id="multiple-chip"
+          multiple fullWidth variant="standard"
+          value={diagnosisCodes} onChange={onSelectDiagnosisCode}
+          input={<OutlinedInput id="select-multiple-chip" label="Diagnoses" />}
+          renderValue={(selected) => (
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+              {selected.map((value) => (
+                <Chip key={value} label={value} />
+              ))}
+            </Box>
+          )}
+          MenuProps={MenuProps}
+        >
+          {diagnoses.map((diagnosis) => (
+            <MenuItem
+              key={diagnosis.code}
+              value={diagnosis.code}
+              style={getStyles(diagnosis.code, diagnosisCodes, theme)}
+            >
+              {diagnosis.code}
+            </MenuItem>
+          ))}
+        </Select>
+
         {entryType.value === 'HealthCheck' 
           ? <>
               <InputLabel style={{ marginTop: "1em", marginBottom: "0.5em" }}>Health Rating</InputLabel>
@@ -141,17 +200,17 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
           : entryType.value === 'Hospital'
               ? <>
                   <InputLabel style={{ marginTop: "2em", marginBottom: "1em" }}>Discharge Information</InputLabel>
-                  <Input fullWidth style={{ marginBottom: "0.5em" }} {...dischargeDate} />
-                  <TextField variant="standard" label="Criteria" fullWidth style={{ marginBottom: "1em"}}
+                  <Input required fullWidth style={{ marginBottom: "0.5em" }} {...dischargeDate} />
+                  <TextField required variant="standard" label="Criteria" fullWidth style={{ marginBottom: "1em"}}
                     {...dischargeCriteria}
                   />
                 </>
               : <>
-                  <TextField variant="standard" label="Employer name" style={{ marginBottom: "1em"}} fullWidth
+                  <TextField required variant="standard" label="Employer name" style={{ marginTop: "1em", marginBottom: "1em"}} fullWidth
                     {...employerName}
                   />
 
-                  <InputLabel style={{ marginTop: "2em", marginBottom: "1em" }}>Sick Leave</InputLabel>
+                  <InputLabel style={{ marginTop: "1em", marginBottom: "1em" }}>Sick Leave</InputLabel>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
                       <Input fullWidth style={{ marginBottom: "0.5em" }} {...sickLeaveStart} />
@@ -163,7 +222,7 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
                 </>
           }
 
-        <Grid>
+        <Grid style={{ marginTop: "2em", paddingBottom: "1em" }}>
           <Grid item>
             <Button
               color="secondary"
