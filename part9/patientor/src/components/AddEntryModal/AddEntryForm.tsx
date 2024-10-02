@@ -1,5 +1,5 @@
-import { useState, SyntheticEvent } from "react";
-import {  TextField, InputLabel, MenuItem, Select, Grid, Button, SelectChangeEvent } from '@mui/material';
+import { SyntheticEvent } from "react";
+import {  TextField, InputLabel, MenuItem, Select, Grid, Button, Input } from '@mui/material';
 import { EntryWithoutId, HealthCheckRating, EntryType } from "../../types";
 import  { useField } from './useField'
 import { useFieldSelect } from "./useFieldSelect";
@@ -36,14 +36,14 @@ const ratingOptions: HealthCheckOptions[] =
 const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
   const entryType = useFieldSelect('text', entryOptions);
   const rating = useFieldSelect('number', ratingOptions);
-  const date = useField('');
+  const date = useField('date');
   const description = useField('');
   const specialist = useField('');
-  const dischargeDate = useField('');
+  const dischargeDate = useField('date');
   const dischargeCriteria = useField('');
   const employerName = useField('');
-  const sickLeaveStart = useField('');
-  const sickLeaveEnd = useField('');
+  const sickLeaveStart = useField('date');
+  const sickLeaveEnd = useField('date');
 
   const addEntry = (event: SyntheticEvent) => {
     event.preventDefault();
@@ -100,29 +100,26 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
     <div>
       <form onSubmit={addEntry}>
         <InputLabel style={{ marginTop: "0.5em", marginBottom: "0.5em" }}>Type</InputLabel>
-        <Select label="Entry Type" fullWidth {...entryType}
-          // onChange={onEntryTypeChange}
-          style={{ marginBottom: "1em"}}
+        <Select label="Entry Type" fullWidth style={{ marginBottom: "1em"}}
+          {...entryType}
         >
-        {entryOptions.map(option =>
-          <MenuItem
-            key={option.label}
-            value={option.value}
-          >
-            {option.label
-          }</MenuItem>
-        )}
+          {entryOptions.map(option =>
+            <MenuItem
+              key={option.label}
+              value={option.value}
+            >
+              {option.label
+            }</MenuItem>
+          )}
         </Select>
 
-        <InputLabel style={{ marginTop: "1em", marginBottom: "0.5em" }}>Details</InputLabel>
+        <InputLabel style={{ marginTop: "2em", marginBottom: "1em" }}>Details</InputLabel>
 
-        <TextField label="Date" placeholder="YYYY-MM-DD" fullWidth style={{ marginBottom: "1em"}}
-          {...date}
-        />
-        <TextField label="Description" fullWidth style={{ marginBottom: "1em"}}
+        <Input required fullWidth placeholder="Date" style={{ marginBottom: "0.5em" }} {...date} />
+        <TextField variant="standard" label="Description" fullWidth style={{ marginBottom: "1em"}}
           {...description}
         />
-        <TextField label="Specialist" fullWidth style={{ marginBottom: "1em"}}
+        <TextField variant="standard" label="Specialist" fullWidth style={{ marginBottom: "1em"}}
           {...specialist}
         />
         {entryType.value === 'HealthCheck' 
@@ -143,30 +140,24 @@ const AddEntryForm = ({ onCancel, onSubmit }: Props) => {
             </>
           : entryType.value === 'Hospital'
               ? <>
-                  <InputLabel style={{ marginTop: "1em", marginBottom: "0.5em" }}>Discharge Information</InputLabel>
-                  <TextField label="Date" placeholder="YYYY-MM-DD" fullWidth style={{ marginBottom: "1em"}}
-                    {...dischargeDate}
-                  />
-                  <TextField label="Criteria" fullWidth style={{ marginBottom: "1em"}}
+                  <InputLabel style={{ marginTop: "2em", marginBottom: "1em" }}>Discharge Information</InputLabel>
+                  <Input fullWidth style={{ marginBottom: "0.5em" }} {...dischargeDate} />
+                  <TextField variant="standard" label="Criteria" fullWidth style={{ marginBottom: "1em"}}
                     {...dischargeCriteria}
                   />
                 </>
               : <>
-                  <TextField label="Employer name" style={{ marginBottom: "1em"}} fullWidth
+                  <TextField variant="standard" label="Employer name" style={{ marginBottom: "1em"}} fullWidth
                     {...employerName}
                   />
 
-                  <InputLabel style={{ marginTop: "1em", marginBottom: "0.5em" }}>Sick Leave</InputLabel>
+                  <InputLabel style={{ marginTop: "2em", marginBottom: "1em" }}>Sick Leave</InputLabel>
                   <Grid container spacing={2}>
                     <Grid item xs={6}>
-                      <TextField label="Start date" placeholder="YYYY-MM-DD" style={{ marginBottom: "1em"}} fullWidth
-                        {...sickLeaveStart}
-                      />
+                      <Input fullWidth style={{ marginBottom: "0.5em" }} {...sickLeaveStart} />
                     </Grid>
                     <Grid item xs={6}>
-                      <TextField label="End date" placeholder="YYYY-MM-DD" style={{ marginBottom: "1em"}} fullWidth
-                        {...sickLeaveEnd}
-                      />
+                      <Input fullWidth style={{ marginBottom: "0.5em" }} {...sickLeaveEnd} />
                     </Grid>
                   </Grid>
                 </>
