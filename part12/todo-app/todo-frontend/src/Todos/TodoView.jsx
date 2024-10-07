@@ -3,12 +3,14 @@ import axios from '../util/apiClient'
 
 import List from './List'
 import Form from './Form'
+import apiClient from '../util/apiClient'
 
 const TodoView = () => {
   const [todos, setTodos] = useState([])
 
   const refreshTodos = async () => {
-    const { data } = await axios.get('/todos')
+    const { data } = await apiClient.get(`/todos`)
+    console.log('data', data)
     setTodos(data)
   }
 
