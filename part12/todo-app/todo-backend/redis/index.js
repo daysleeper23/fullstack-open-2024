@@ -2,8 +2,24 @@ const redis = require('redis')
 const { promisify } = require('util')
 const { REDIS_URL } = require('../util/config')
 
-let getAsync
-let setAsync
+let getAsync;
+//  = async (key) => {
+//   try {
+//     const value = await client.get(key)
+//     return value
+//   } catch (error) {
+//     console.log('error getting ', key, error)
+//   }
+// }
+
+let setAsync;
+//  = async (key, value) => {
+//   try {
+//     await client.set(key, value)
+//   } catch (error) {
+//     console.log('error setting ', key, error)
+//   }
+// }
 
 if (!REDIS_URL) {
   const redisIsDisabled = () => {
@@ -20,6 +36,9 @@ if (!REDIS_URL) {
   getAsync = promisify(client.get).bind(client)
   setAsync = promisify(client.set).bind(client)    
 }
+
+// onst { getAsync, setAsync } = require('./redis');
+
 
 module.exports = {
   getAsync,
