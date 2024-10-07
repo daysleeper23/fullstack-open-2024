@@ -1,0 +1,48 @@
+Script started on Mon Oct  7 10:44:35 2024
+Restored session: Mon Oct  7 10:41:54 EEST 2024
+[1m[7m%[27m[1m[0m                                                                                ]7;file://Luus-MacBook-Pro.local/Users/wade/Downloads/dev/fullstack-open-2024/part12/script-answers[0m[27m[24m[Jwade@Luus-MacBook-Pro script-answers % [K[?2004h[7mdocker container run -it ubuntu bash[27m[36D[27md[27mo[27mc[27mk[27me[27mr[27m [27mc[27mo[27mn[27mt[27ma[27mi[27mn[27me[27mr[27m [27mr[27mu[27mn[27m [27m-[27mi[27mt[27m [27mu[27mb[27mu[27mn[27mt[27mu[27m [27mb[27ma[27ms[27mh[?2004l
+Unable to find image 'ubuntu:latest' locally
+latest: Pulling from library/ubuntu
+
+[1A[2K25a614108e8d: Pulling fs layer [1B[1A[2K25a614108e8d: Downloading  1.049MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  3.146MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  4.194MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  5.243MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  6.291MB/28.89MB[1B[1A[2K25a614108e8d: Downloading   7.34MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  8.389MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  9.437MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  10.49MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  11.53MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  13.63MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  14.68MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  15.73MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  16.78MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  17.83MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  18.87MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  19.92MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  20.97MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  22.02MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  23.07MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  25.17MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  26.21MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  27.26MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  28.31MB/28.89MB[1B[1A[2K25a614108e8d: Downloading  28.89MB/28.89MB[1B[1A[2K25a614108e8d: Download complete [1BDigest: sha256:b359f1067efa76f37863778f7b6d0e8d911e3ee8efa807ad01fbf5dc1ef9006b
+Status: Downloaded newer image for ubuntu:latest
+[?2004h]0;root@a8fc78aeaeb0: /root@a8fc78aeaeb0:/# mki dir       pwd
+[?2004l/
+[?2004h]0;root@a8fc78aeaeb0: /root@a8fc78aeaeb0:/# cd usr/s
+sbin/  share/ src/   
+]0;root@a8fc78aeaeb0: /root@a8fc78aeaeb0:/# cd usr/s  
+[?2004l[?2004h]0;root@a8fc78aeaeb0: /usrroot@a8fc78aeaeb0:/usr# ls-  -lart
+[?2004ltotal 52
+drwxr-xr-x  2 root root  4096 Apr 22 13:08 [0m[01;34msrc[0m
+drwxr-xr-x  2 root root  4096 Apr 22 13:08 [01;34minclude[0m
+drwxr-xr-x  2 root root  4096 Apr 22 13:08 [01;34mgames[0m
+drwxr-xr-x  4 root root  4096 Sep  4 14:12 [01;34mlibexec[0m
+drwxr-xr-x 10 root root  4096 Sep  4 14:12 [01;34mlocal[0m
+drwxr-xr-x 11 root root  4096 Sep  4 14:12 [01;34m.[0m
+drwxr-xr-x 34 root root  4096 Sep  4 14:17 [01;34mshare[0m
+drwxr-xr-x 13 root root  4096 Sep  4 14:17 [01;34mlib[0m
+drwxr-xr-x  2 root root 12288 Sep  4 14:17 [01;34mbin[0m
+drwxr-xr-x  2 root root  4096 Sep  4 14:17 [01;34msbin[0m
+drwxr-xr-x  1 root root  4096 Oct  7 07:44 [01;34m..[0m
+[?2004h]0;root@a8fc78aeaeb0: /usrroot@a8fc78aeaeb0:/usr# cd src/
+[?2004l[?2004h]0;root@a8fc78aeaeb0: /usr/srcroot@a8fc78aeaeb0:/usr/src# ls -lart
+[?2004ltotal 8
+drwxr-xr-x  2 root root 4096 Apr 22 13:08 [0m[01;34m.[0m
+drwxr-xr-x 11 root root 4096 Sep  4 14:12 [01;34m..[0m
+[?2004h]0;root@a8fc78aeaeb0: /usr/srcroot@a8fc78aeaeb0:/usr/src# mkdir app
+[?2004l[?2004h]0;root@a8fc78aeaeb0: /usr/srcroot@a8fc78aeaeb0:/usr/src# touch index.js
+[?2004l[?2004h]0;root@a8fc78aeaeb0: /usr/srcroot@a8fc78aeaeb0:/usr/src# ls -lart
+[?2004ltotal 16
+drwxr-xr-x 1 root root 4096 Sep  4 14:12 [0m[01;34m..[0m
+drwxr-xr-x 2 root root 4096 Oct  7 07:45 [01;34mapp[0m
+-rw-r--r-- 1 root root    0 Oct  7 07:45 index.js
+drwxr-xr-x 1 root root 4096 Oct  7 07:45 [01;34m.[0m
+[?2004h]0;root@a8fc78aeaeb0: /usr/srcroot@a8fc78aeaeb0:/usr/src# exit
+[?2004lexit
+[1m[7m%[27m[1m[0m                                                                                ]7;file://Luus-MacBook-Pro.local/Users/wade/Downloads/dev/fullstack-open-2024/part12/script-answers[0m[27m[24m[Jwade@Luus-MacBook-Pro script-answers % [K[?2004heexit[?2004l
+
+Saving session...
+...saving history...truncating history files...
+...completed.
+
+Script done on Mon Oct  7 10:45:30 2024

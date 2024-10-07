@@ -1,7 +1,7 @@
 import { Diagnosis, EntryHealthCheck } from "../../types";
 
-import { Card, Box, Typography, CardContent, List, ListItem, ListItemText } from "@mui/material";
-import { green, blue } from "@mui/material/colors";
+import { Card, Box, Typography, CardContent } from "@mui/material";
+import { green } from "@mui/material/colors";
 import MonitorHeartIcon from '@mui/icons-material/MonitorHeart';
 
 import CardInfo from "./CardInfo";
