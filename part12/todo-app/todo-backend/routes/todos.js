@@ -22,9 +22,7 @@ router.post('/', async (req, res) => {
 
   //increase TODO COUNT & save to Redis
   let todoCount = await getAsync(TODO_COUNTER_KEY);
-  console.log('todo before', todoCount);
   todoCount = todoCount ? parseInt(todoCount) + 1 : 1;
-  console.log('todo after', todoCount);
 
   await setAsync(TODO_COUNTER_KEY, todoCount);
   res.send(todo);
@@ -37,7 +35,6 @@ const findByIdMiddleware = async (req, res, next) => {
 
   try {
     req.todo = await Todo.findById(id)
-    console.log('todo', req.todo)
     if (!req.todo)
       return res.sendStatus(404)
   } catch (error) {
@@ -60,7 +57,6 @@ singleRouter.get('/', async (req, res) => {
 
 /* PUT todo. */
 singleRouter.put('/', async (req, res) => {
-  console.log('new:', req.body)
   try {
     await Todo.findOneAndUpdate(
       { _id: req.todo.id }, 
