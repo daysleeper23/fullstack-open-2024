@@ -1,0 +1,6 @@
+services:
+  app:
+    image: fso24-p12-todo-be
+    build: .
+    ports:
+      - 3000:3000
