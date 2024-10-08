@@ -1,0 +1,18 @@
+FROM node:20 AS build-stage
+
+WORKDIR /usr/src/app
+
+COPY --chown=node:node . .
+
+RUN npm ci
+
+ENV DEBUG=todo-frontend:*
+ENV VITE_BACKEND_URL=http://localhost:3000
+
+RUN npm run build
+
+# new stage
+
+FROM nginx:1.25-alpine
+
+COPY --from=build-stage /usr/src/app/dist /usr/share/nginx/html

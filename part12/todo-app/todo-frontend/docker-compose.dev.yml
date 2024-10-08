@@ -1,0 +1,6 @@
+services:
+  app:
+    image: fso24-p12-todo-fe
+    build: .
+    ports:
+      - 8080:80
