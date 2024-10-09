@@ -1,0 +1,62 @@
+services:
+#Mongo
+  mongo:
+    image: mongo
+    build: 
+      context: ./todo-backend
+    # ports:
+    #   - 3456:27017
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: the_database
+    volumes: 
+      - ./todo-backend/mongo/mongo-init.js:/docker-entrypoint-initdb.d/mongo-init.js
+      - ./todo-backend/mongo_data:/data/db
+#Redis
+  redis:
+    image: redis
+    build: 
+      context: ./todo-backend
+    # ports:
+    #   - 6379:6379
+    command: ['redis-server', '--appendonly', 'yes']
+    volumes:
+      - ./todo-backend/redis_data:/data
+#Back-end
+  backend:
+    image: p12-be-dev
+    build: 
+      context: ./todo-backend
+      dockerfile: ./todo-backend/dev.Dockerfile
+    volumes:
+      - ./todo-backend/:/usr/src/app
+    # ports:
+    #   - 3000:3000
+    environment:
+      - MONGO_URL=mongodb://the_username:the_password@mongo:27017/the_database
+      - REDIS_URL=redis://redis:6379
+    container_name: p12-be-root
+#Front-end
+  frontend:
+    image: p12-fe-dev
+    build:
+      context: ./todo-frontend
+      dockerfile: ./todo-frontend/dev.Dockerfile
+    volumes:
+      - ./todo-frontend/:/usr/src/app
+    # ports:
+    #   - 5173:5173
+    container_name: p12-fe-root
+    depends_on:
+      - backend # wait for the backend container to be started
+#Reverse Proxy
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8080:80
+    container_name: reverse-proxy
+    depends_on:
+      - frontend # wait for the frontend container to be started
