@@ -1,0 +1,31 @@
+services:
+  #BE
+  backend:
+    image: patientor-be-dev
+    build:
+      context: ./backend
+      dockerfile: ./dev.Dockerfile
+    # ports:
+    #   - 3001:3001
+    volumes:
+      - ./backend:/usr/src/app
+  #FE    
+  frontend:
+    image: patientor-fe-dev
+    build:
+      context: ./frontend
+      dockerfile: ./dev.Dockerfile
+    # ports:
+    #   - 5173:5173
+    volumes:
+      - ./frontend:/usr/src/app
+  #Reverse Proxy
+  nginx:
+    image: nginx:1.20.1
+    volumes:
+      - ./nginx.dev.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - 8686:80
+    container_name: reverse-proxy
+    depends_on:
+      - frontend # wait for the frontend container to be started
