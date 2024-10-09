@@ -8,7 +8,6 @@ RUN npm ci
 RUN npm run test
 
 ENV DEBUG=todo-frontend:*
-ENV VITE_BACKEND_URL=http://localhost:3000
 
 RUN npm run build
 
