@@ -1,6 +1,11 @@
 services:
   app:
-    image: fso24-p12-todo-fe
-    build: .
+    image: p12-fe-dev
+    build:
+      context: .
+      dockerfile: dev.Dockerfile
+    volumes:
+      - ./:/usr/src/app
     ports:
-      - 8080:80
+      - 5173:5173
+    container_name: p12-fe-dev
