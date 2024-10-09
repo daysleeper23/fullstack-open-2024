@@ -5,6 +5,7 @@ WORKDIR /usr/src/app
 COPY --chown=node:node . .
 
 RUN npm ci
+RUN npm run test
 
 ENV DEBUG=todo-frontend:*
 ENV VITE_BACKEND_URL=http://localhost:3000

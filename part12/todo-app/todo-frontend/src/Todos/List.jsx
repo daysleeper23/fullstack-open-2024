@@ -1,5 +1,5 @@
-import React from 'react'
 import TodoElement from './TodoElement'
+import PropTypes from 'prop-types'
 
 const TodoList = ({ todos, deleteTodo, completeTodo }) => {
   const onClickDelete = (todo) => () => {
@@ -13,12 +13,18 @@ const TodoList = ({ todos, deleteTodo, completeTodo }) => {
   return (
     <>
       {todos.map(todo => {
-        return <TodoElement todo={todo} onDelete={onClickDelete} onComplete={onClickComplete}/>
+        return <TodoElement key={todo.text} todo={todo} onDelete={onClickDelete} onComplete={onClickComplete}/>
       })
-      .reduce((acc, cur) => [...acc, <hr />, cur], [])
+      .reduce((acc, cur) => [...acc, <hr key={cur.text} />, cur], [])
       }
     </>
   )
+}
+
+TodoList.propTypes = {
+  todos: PropTypes.array.isRequired,
+  deleteTodo: PropTypes.func.isRequired,
+  completeTodo: PropTypes.func.isRequired
 }
 
 export default TodoList
