@@ -1,0 +1,1 @@
+Backend for a blog application using express, sequelize & PostgreSQL
