@@ -1,7 +1,4 @@
-require('dotenv').config();
-const { Model, Sequelize, QueryTypes, DataTypes } = require('sequelize');
-const express = require('express');
-const app = express();
+const { Model, Sequelize, DataTypes } = require('sequelize');
 
 const sequelize = new Sequelize(process.env.DATABASE_URL, {
   dialectOptions: {
@@ -63,4 +60,3 @@ const displayBlogs = (blogs) => {
 }
 
 main();
-
