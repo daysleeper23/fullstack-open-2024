@@ -19,17 +19,25 @@ class ApiError extends Error {
 
 const createError = (status: number, message: string) => new ApiError('CreateError', status, message);
 const updateError = (status: number, message: string) => new ApiError('UpdateError', status, message);
+const loginError = (status: number, message: string) => new ApiError('LoginError', status, message);
 
 const errorHandler = (error: ApiError, _request: Request, response: Response, next: NextFunction) => 
 {
+  console.log('errorHandler', error.name, error.message);
   if (error.name === 'CreateError') {
     return response.status(error.status).send({ error: 'Error while creating blog', message: error.message })
   } else if (error.name === 'UpdateError') {
     return response.status(error.status).send({ error: 'Error while updating blog', message: error.message })
+  } else if (error.name === 'LoginError') {
+    return response.status(error.status).send({ error: 'Error while logging in', message: error.message })
+  } else if (error.name === 'JsonWebTokenError') {
+    return response.status(401).json({ error: 'Error while checking authorization', message: 'Invalid token' })
+  } else if (error.name === 'SequelizeUniqueConstraintError') {
+    return response.status(400).json({ error: 'Error while creating user', message: 'Username must be unique' })
   }
 
   return next(error)
 }
 
 // this has to be the last loaded middleware, also all the routes should be registered before this!
-export { unknownEndpoint, errorHandler, createError, updateError };
+export { unknownEndpoint, errorHandler, createError, updateError, loginError };
