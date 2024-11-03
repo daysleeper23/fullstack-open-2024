@@ -49,6 +49,7 @@ const getAllBlogs = async (req: Request, res: Response) => {
       attributes: ['name']
     },
     where,
+    order: [['likes', 'DESC']]
    });
    
   res.json(blogs);
