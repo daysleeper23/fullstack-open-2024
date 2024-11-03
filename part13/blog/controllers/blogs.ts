@@ -1,6 +1,7 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 
+const { Op } = require('sequelize');
 import { createError, deleteError, updateError } from '../util/middleware';
 import { NextFunction, Request, Response } from 'express';
 const { Blog, User } = require('../models');
@@ -21,14 +22,35 @@ const tokenExtractor = (req: AuthenticatedRequest, res: Response, next: NextFunc
   return next()
 }
 
-const getAllBlogs = async (_req: Request, res: Response) => {
+const getAllBlogs = async (req: Request, res: Response) => {
+  let where = {};
+
+  if (req.query.search) {
+    where = { 
+      [Op.or]: [
+        {
+          title: {
+            [Op.iLike]: `%${req.query.search}%`
+          }
+        },
+        {
+          author: {
+            [Op.iLike]: `%${req.query.search}%`
+          }
+        }
+      ]
+    };
+  }
+  
   const blogs = await Blog.findAll({
     attributes: { exclude: ['userId'] },
     include: {
       model: User,
       attributes: ['name']
-    }
+    },
+    where,
    });
+   
   res.json(blogs);
 };
 
@@ -134,7 +156,6 @@ const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
   //get the id of the blog to be deleted
   const id = Number(req.params.id);
   if (isNaN(id) || id < 0 || !Number.isInteger(id)) {
-    console.log('throw error');
     throw deleteError(400, 'Invalid blog id');
   }
   
