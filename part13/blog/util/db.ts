@@ -8,14 +8,14 @@ const sequelize = new Sequelize(DATABASE_URL, {
       rejectUnauthorized: false, 
     }
   },
-  logging: false
+  logging: false,
 });
 
 const connectToDatabase = async () => {
   //try-catch blog to connect to the database
   try {
     await sequelize.authenticate();
-    console.log('Connection has been established successfully.');
+    console.log('Connected to database:', process.env.DATABASE_URL);
   } catch (error: unknown) {
     if (error instanceof Error) {
       console.error('Unable to connect to the database:', error);

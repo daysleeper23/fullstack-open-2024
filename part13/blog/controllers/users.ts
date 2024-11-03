@@ -6,7 +6,12 @@ const { User } = require('../models');
 const router = express.Router();
 
 const getAllUsers = async (_req: Request, res: Response) => {
-  const users = await User.findAll({ raw: true });
+  const users = await User.findAll({ 
+    include: {
+      model: Blog,
+      attributes: { exclude: ['userId'] }
+    }
+  });
   res.json(users);
 };
 

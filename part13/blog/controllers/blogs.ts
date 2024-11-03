@@ -1,16 +1,38 @@
 const express = require('express');
-import { createError, updateError } from '../util/middleware';
-import { Request, Response } from 'express';
-const { Blog } = require('../models');
+const jwt = require('jsonwebtoken');
+
+import { createError, deleteError, updateError } from '../util/middleware';
+import { NextFunction, Request, Response } from 'express';
+const { Blog, User } = require('../models');
 
 const router = express.Router();
 
+interface AuthenticatedRequest extends Request {
+  decodedToken?: { id: string }; // decodedToken should be an object containing an id property
+}
+
+const tokenExtractor = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  const authorization = req.get('authorization')
+  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
+    req.decodedToken = jwt.verify(authorization.substring(7), process.env.SECRET)
+  }  else {
+    return res.status(401).json({ error: 'token missing' })
+  }
+  return next()
+}
+
 const getAllBlogs = async (_req: Request, res: Response) => {
-  const blogs = await Blog.findAll({ raw: true });
+  const blogs = await Blog.findAll({
+    attributes: { exclude: ['userId'] },
+    include: {
+      model: User,
+      attributes: ['name']
+    }
+   });
   res.json(blogs);
 };
 
-const createBlog = async (req: Request, res: Response) => {
+const createBlog = async (req: AuthenticatedRequest, res: Response) => {
   //read the body of the request
   const body = req.body;
 
@@ -24,6 +46,10 @@ const createBlog = async (req: Request, res: Response) => {
 
   if (typeof body.title !== 'string' || typeof body.url !== 'string') {
     throw createError(400, 'Title and URL must be strings');
+  }
+
+  if (body.author && typeof body.author !== 'string') {
+    throw createError(400, 'Author must be a string');
   }
 
   const urlPattern = /^(https?:\/\/)?[\w-]+(\.[\w-]+)+[/#?]?.*$/;
@@ -41,6 +67,16 @@ const createBlog = async (req: Request, res: Response) => {
 
   //create a new blog object with the body of the request using sequelize
   const blog = Blog.build(body);
+  if (!req.decodedToken) {
+    throw createError(401, 'Token missing or invalid');
+  }
+
+  if (blog.likes === undefined) {
+    blog.likes = 0;
+  }
+
+  const user = await User.findByPk(req.decodedToken.id);
+  blog.userId = user.id;
 
   //save the blog object to the database using try-catch block
   await blog.save();
@@ -51,7 +87,11 @@ const getBlogById = (req: Request, res: Response) => {
   res.send(`Get blog with ID ${req.params.id}`);
 };
 
-const updateBlog = async (req: Request, res: Response) => {
+const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.decodedToken) {
+    throw updateError(401, 'Token missing or invalid');
+  }
+
   //get the id of the blog to be updated
   const id = Number(req.params.id);
 
@@ -72,20 +112,47 @@ const updateBlog = async (req: Request, res: Response) => {
     throw updateError(400, 'Likes must be a number');
   }
 
+  if (req.body.likes < 0) {
+    throw updateError(400, 'Likes must be a non-negative number');
+  }
+
   // try {
   blog.likes = req.body.likes;
   await blog.save();
   return res.json(blog);
 };
 
-const deleteBlog = async (req: Request, res: Response) => {
+const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.decodedToken) {
+    throw deleteError(401, 'Token missing or invalid');
+  }
+
+  if (!req.decodedToken.id) {
+    throw deleteError(401, 'User id missing');
+  }
+
   //get the id of the blog to be deleted
   const id = Number(req.params.id);
+  if (isNaN(id) || id < 0 || !Number.isInteger(id)) {
+    console.log('throw error');
+    throw deleteError(400, 'Invalid blog id');
+  }
+  
+  //find the blog with the id using sequelize
+  const blog = await Blog.findByPk(id);
+  if (!blog) {
+    throw deleteError(404, 'Blog not found');
+  }
+
+  if (blog.userId !== req.decodedToken.id) {
+    throw deleteError(401, 'Cannot delete blogs created by other users');
+  }
 
   //delete the blog with the id using sequelize using try-catch block
   await Blog.destroy({
     where: {
-      id: id
+      id: id,
+      userId: req.decodedToken.id
     }
   });
   res.status(204).end();
@@ -93,9 +160,9 @@ const deleteBlog = async (req: Request, res: Response) => {
 
 // Define routes
 router.get('/', getAllBlogs);
-router.post('/', createBlog);
+router.post('/', tokenExtractor, createBlog);
 router.get('/:id', getBlogById);
-router.put('/:id', updateBlog);
-router.delete('/:id', deleteBlog);
+router.put('/:id', tokenExtractor, updateBlog);
+router.delete('/:id', tokenExtractor, deleteBlog);
 
 module.exports = router;

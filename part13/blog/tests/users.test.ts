@@ -1,19 +1,17 @@
 import request from 'supertest';
 import app from '../app';
-const { User } = require('../models'); // import your Blog model here
-const { sequelize } = require('../util/db') ; // import your Sequelize instance here
+const { User, Blog } = require('../models');
+const { sequelize } = require('../util/db') ;
 
 describe('Users API', () => {
-  beforeAll(async () => {
-    await sequelize.sync({ force: true });
+
+  beforeEach(async () => {
+    //clear data in User table
     await User.destroy({ where: {} });
+    await Blog.destroy({ where: {} });
   });
 
-  afterAll(async () => {
-    
-    // Delete all data from the database
-    await User.destroy({ where: {} });
-
+  afterAll(async () => {    
     // Close the database connection after tests
     await sequelize.close();
   });
@@ -21,7 +19,7 @@ describe('Users API', () => {
   describe('POST /api/users', () => {
     it('should create a new user with valid data', async () => {
       const newUser = {
-        username: 'testuser',
+        username: 'testuser@test.com',
         name: 'Test User'
       };
 
@@ -42,7 +40,7 @@ describe('Users API', () => {
 
     it('should return 400 if missing name', async () => {
       const newUser = {
-        username: 'testuser'
+        username: 'testuser@test.com'
       };
 
       await request(app)
@@ -76,7 +74,7 @@ describe('Users API', () => {
 
     it('should return 400 if name is not a string', async () => {
       const newUser = {
-        username: 'testuser',
+        username: 'testuser@test.com',
         name: 123
       };
 
@@ -88,7 +86,7 @@ describe('Users API', () => {
 
     it('should return 400 if username is not unique', async () => {
       const newUser = {
-        username: 'testuser2',
+        username: 'testuser2@test.com',
         name: 'Test User 2'
       };
 
@@ -107,7 +105,7 @@ describe('Users API', () => {
   describe('PUT /api/users/:username', () => {
     it('should update a user with valid data', async () => {
       const newUser = {
-        username: 'testuser3',
+        username: 'testuser3@test.com',
         name: 'Test User 3'
       };
 
@@ -117,7 +115,7 @@ describe('Users API', () => {
         .expect(200);
 
       const updatedUser = {
-        username: 'testuser4'
+        username: 'testuser4@test.com'
       };
 
       const updatedResponse = await request(app)
@@ -135,7 +133,7 @@ describe('Users API', () => {
 
     it('should return 400 if username is not a string', async () => {
       const newUser = {
-        username: 'testuser5',
+        username: 'testuser5@test.com',
         name: 'Test User 5'
       };
 
@@ -156,18 +154,18 @@ describe('Users API', () => {
 
     it('should return 400 if username is not found', async () => {
       const updatedUser = {
-        username: 'testuser6'
+        username: 'testuser6@test.com'
       };
 
       await request(app)
-        .put(`/api/users/testuser6`)
+        .put(`/api/users/testuser6@test.com`)
         .send(updatedUser)
         .expect(404);
     });
 
     it('should return 400 if username is not provided', async () => {
       const newUser = {
-        username: 'testuser7',
+        username: 'testuser7@test.com',
         name: 'Test User 7'
       };
 
@@ -183,7 +181,7 @@ describe('Users API', () => {
 
     it('should return 400 if username is not unique', async () => {
       const newUser = {
-        username: 'testuser8',
+        username: 'testuser8@test.com',
         name: 'Test User 8'
       };
 
@@ -193,7 +191,7 @@ describe('Users API', () => {
         .expect(200);
 
       const newUser2 = {
-        username: 'testuser9',
+        username: 'testuser9@test.com',
         name: 'Test User 9'
       };
 
@@ -203,7 +201,7 @@ describe('Users API', () => {
         .expect(200);
 
       const updatedUser = {
-        username: 'testuser9'
+        username: 'testuser9@test.com'
       };
 
       await request(app)

@@ -7,9 +7,6 @@ const User = require('../models/user');
 
 const router = express.Router();
 
-
-const { SECRET } = require('../util/config');
-
 router.post('/', async (req: Request, res: Response) => {
   const body = req.body;
   
@@ -24,7 +21,7 @@ router.post('/', async (req: Request, res: Response) => {
     id: user.id
   };
 
-  const token = jwt.sign(userForToken, SECRET);
+  const token = jwt.sign(userForToken, process.env.SECRET);
 
   res.status(200).send({ token, username: user.username, name: user.name });
 });
