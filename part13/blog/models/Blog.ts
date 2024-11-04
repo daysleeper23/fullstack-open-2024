@@ -26,7 +26,7 @@ Blog.init({
   user_id: {
     type: DataTypes.INTEGER,
     allowNull: false,
-    references: { model: 'users', key: 'id' },
+    references: { model: 'user', key: 'id' },
   },
   year: {
     type: DataTypes.INTEGER,

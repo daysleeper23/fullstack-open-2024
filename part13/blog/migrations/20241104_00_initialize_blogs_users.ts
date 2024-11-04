@@ -69,7 +69,7 @@ module.exports = {
   down: async ({ context }: { context: QueryInterface }) => {
     const queryInterface = context;
 
-    await queryInterface.dropTable('notes')
+    await queryInterface.dropTable('blogs')
     await queryInterface.dropTable('users')
   },
 }

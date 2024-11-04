@@ -14,7 +14,6 @@ User.init({
     unique: true,
     allowNull: false,
     validate: {
-      //regex for email validation
       isEmail: true
     }
   },
