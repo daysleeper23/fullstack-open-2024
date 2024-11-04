@@ -22,6 +22,16 @@ Blog.init({
   },
   likes: {
     type: DataTypes.INTEGER
+  },
+  user_id: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    references: { model: 'users', key: 'id' },
+  },
+  year: {
+    type: DataTypes.INTEGER,
+    allowNull: false,
+    defaultValue: new Date().getFullYear(),
   }
 }, {
   sequelize,

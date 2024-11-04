@@ -1,7 +1,7 @@
 const express = require('express');
 import { Request, Response } from 'express';
 import { createError, updateError } from '../util/middleware';
-const { User } = require('../models');
+const { Blog, User } = require('../models');
 
 const router = express.Router();
 

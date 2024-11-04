@@ -84,8 +84,12 @@ const createBlog = async (req: AuthenticatedRequest, res: Response) => {
     throw createError(400, 'Likes must be a non-negative integer');
   }
 
-  if (body.createdDate && isNaN(new Date(body.createdDate).getTime())) {
-    throw createError(400, 'Created Date must be a valid date');
+  if (body.year && isNaN(Number(body.year))) {
+    throw createError(400, 'Year must be a number');
+  }
+
+  if (body.year < 1991 || body.year > new Date().getFullYear()) {
+    throw createError(400, 'Year must be between 1991 and the current year');
   }
 
   //create a new blog object with the body of the request using sequelize
@@ -99,7 +103,10 @@ const createBlog = async (req: AuthenticatedRequest, res: Response) => {
   }
 
   const user = await User.findByPk(req.decodedToken.id);
-  blog.userId = user.id;
+  if (!user) {
+    throw createError(401, 'User not found');
+  }
+  blog.user_id = user.id;
 
   //save the blog object to the database using try-catch block
   await blog.save();

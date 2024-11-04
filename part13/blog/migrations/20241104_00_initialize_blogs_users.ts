@@ -1,35 +1,39 @@
-const { DataTypes } = require('sequelize')
+import { QueryInterface, DataTypes } from "sequelize";
 
 module.exports = {
-  up: async ({ context: queryInterface }) => {
+  up: async ({ context }: { context: QueryInterface}) => {
+    const queryInterface = context;
+
     await queryInterface.createTable('blogs', {
       id: {
         type: DataTypes.INTEGER,
         primaryKey: true,
-        autoIncrement: true
+        autoIncrement: true,
+        allowNull: false
       },
       author: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
       },
       title: {
-        type: DataTypes.TEXT,
+        type: DataTypes.STRING,
         allowNull: false
       },
       url: {
-        type: DataTypes.BOOLEAN,
+        type: DataTypes.STRING,
         allowNull: false
       },
       likes: {
-        type: DataTypes.DATE,
-        defaultValue: 0
+        type: DataTypes.INTEGER,
+        allowNull: false,
+        defaultValue: 0,
       },
       created_at: {
-        type: DataTypes.TIMESTAMP,
-        defaultValue: DataTypes.NOW
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       },
       updated_at: {
-        type: DataTypes.TIMESTAMP,
-        defaultValue: DataTypes.NOW
+        type: DataTypes.DATE,
+        defaultValue: DataTypes.NOW,
       }
     })
     await queryInterface.createTable('users', {
@@ -48,11 +52,11 @@ module.exports = {
         allowNull: false
       },
       created_at: {
-        type: DataTypes.TIMESTAMP,
+        type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
       },
       updated_at: {
-        type: DataTypes.TIMESTAMP,
+        type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
       },
     })
@@ -62,7 +66,9 @@ module.exports = {
       references: { model: 'users', key: 'id' },
     })
   },
-  down: async ({ context: queryInterface }) => {
+  down: async ({ context }: { context: QueryInterface }) => {
+    const queryInterface = context;
+
     await queryInterface.dropTable('notes')
     await queryInterface.dropTable('users')
   },

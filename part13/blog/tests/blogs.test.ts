@@ -1,5 +1,6 @@
 import request from 'supertest';
 import app from '../app';
+
 const { Blog, User } = require ('../models');
 const { sequelize } = require('../util/db');
 
@@ -65,6 +66,10 @@ const initialBlogs = [
   }
 ]
 
+beforeAll(async () => {
+  await sequelize.sync();
+});
+
 beforeEach(async () => {
   await Blog.destroy({ where: {} });
   await User.destroy({ where: {} });
@@ -78,14 +83,22 @@ beforeEach(async () => {
   let token = response.body.token;
   authToken = `Bearer ${token}`;
 
+  const user = await User.findOne({ });
+
   initialBlogs.forEach(async blog => {
-    await Blog.create({
-      title: blog.title,
-      author: blog.author,
-      url: blog.url,
-      likes: blog.likes,
-      userId: response.body.id
-    });
+    try{
+      await Blog.create({
+        title: blog.title,
+        author: blog.author,
+        url: blog.url,
+        likes: blog.likes,
+        user_id: user.id
+      });
+    }
+    catch (error){
+      console.log('error: ', error);
+    }
+    
   });
 
   await User.create({ username: 'itestuser2@test.com', name: 'Integration Test User 2' });
@@ -109,7 +122,8 @@ describe('Blogs API', () => {
         title: 'Test Blog',
         author: 'Test Author',
         url: 'http://test.com',
-        likes: 10
+        likes: 10,
+        year: 2021
       };
 
       const response = await request(app)
@@ -129,7 +143,7 @@ describe('Blogs API', () => {
       expect(blogs).toHaveLength(initialBlogs.length + 1);
     });
 
-    it('should create a new blog with default likes', async () => {
+    it('should create a new blog with default likes and year', async () => {
       const newBlog = {
         title: 'Test Blog',
         author: 'Test Author',
@@ -144,6 +158,7 @@ describe('Blogs API', () => {
         .expect('Content-Type', /application\/json/);
 
       expect(response.body.likes).toBe(0);
+      expect(response.body.year).toBe(new Date().getFullYear());
     });
 
     it('should return 400 if missing title', async () => {
@@ -252,6 +267,43 @@ describe('Blogs API', () => {
         likes: -1
       };
 
+      await request(app)
+        .post('/api/blogs')
+        .set('Authorization', authToken)
+        .send(newBlog)
+        .expect(400);
+    });
+
+    it('should return 400 if year is not a number', async () => {
+      const newBlog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'http://test.com',
+        year: 'abc'
+      };
+
+      await request(app)
+        .post('/api/blogs')
+        .set('Authorization', authToken)
+        .send(newBlog)
+        .expect(400);
+    });
+
+    it('should return 400 if year is smaller than 1991 or larger than current year', async () => {
+      const newBlog = {
+        title: 'Test Blog',
+        author: 'Test Author',
+        url: 'http://test.com',
+        year: 1990
+      };
+
+      await request(app)
+        .post('/api/blogs')
+        .set('Authorization', authToken)
+        .send(newBlog)
+        .expect(400);
+
+      newBlog.year = new Date().getFullYear() + 1;
       await request(app)
         .post('/api/blogs')
         .set('Authorization', authToken)
