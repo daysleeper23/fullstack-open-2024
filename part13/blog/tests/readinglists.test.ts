@@ -66,21 +66,20 @@ const initialBlogs = [
   }
 ]
 
-beforeAll(async () => {
-  await sequelize.sync();
-});
-
-afterAll(async () => {
-  await sequelize.close();
-});
 
 describe('Reading Lists API', () => {
+  beforeAll(async () => {
+    await sequelize.sync({ force: true, logging: console.log });
+  });
+  
+  afterAll(async () => {
+    await sequelize.close();
+  });
+
   beforeEach(async () => {
     await Blog.destroy({ where: {} });
     await User.destroy({ where: {} });
     await ReadingList.destroy({ where: {} });
-  
-    console.log('after destroy');
   
     await User.create({ username: 'itestuser@test.com', name: 'Integration Test User' });
   
@@ -91,7 +90,6 @@ describe('Reading Lists API', () => {
     let token = response.body.token;
     authToken = `Bearer ${token}`;
   
-    console.log('after destroy');
     const user = await User.findOne({ });
     testUserId = user.id;
   
@@ -110,8 +108,6 @@ describe('Reading Lists API', () => {
       }
       
     });
-  
-    console.log('after blog init');
   });
 
   it('should add a blog to the user reading list', async () => {
@@ -128,8 +124,8 @@ describe('Reading Lists API', () => {
       .expect(200)
       .expect('Content-Type', /application\/json/);
 
-    expect(response.body.blog_id).toBe(blog.id);
-    expect(response.body.user_id).toBe(testUserId);
+    expect(response.body.blogId).toBe(blog.id);
+    expect(response.body.userId).toBe(testUserId);
     expect(response.body.read).toBe(false);
   });
 

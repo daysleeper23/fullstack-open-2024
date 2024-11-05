@@ -8,7 +8,7 @@ ReadingList.init({
     primaryKey: true,
     autoIncrement: true
   },
-  blog_id: {
+  blogId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   },
@@ -16,7 +16,7 @@ ReadingList.init({
     type: DataTypes.BOOLEAN,
     defaultValue: false
   },
-  user_id: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false,
   }

@@ -5,6 +5,10 @@ const { sequelize } = require('../util/db') ;
 
 describe('Users API', () => {
 
+  beforeAll(async () => {
+    await sequelize.sync({ force: true, logging: console.log });
+  });
+
   beforeEach(async () => {
     //clear data in User table
     await User.destroy({ where: {} });

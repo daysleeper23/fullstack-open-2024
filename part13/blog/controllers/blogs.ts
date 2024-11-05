@@ -106,7 +106,7 @@ const createBlog = async (req: AuthenticatedRequest, res: Response) => {
   if (!user) {
     throw createError(401, 'User not found');
   }
-  blog.user_id = user.id;
+  blog.userId = user.id;
 
   //save the blog object to the database using try-catch block
   await blog.save();

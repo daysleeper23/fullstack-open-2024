@@ -32,7 +32,6 @@ const getReadingList = async (req: Request, res: Response) => {
 
 const addBlogToReadingList = async(req: Request, res: Response) => {
   const { blogId, userId } = req.body;
-  console.log('blogId', blogId, 'userId', userId);  
 
   if (!blogId) {
     throw updateError(400, 'Blog Id  is required');
@@ -46,18 +45,27 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
     throw updateError(400, 'Blog Id and User Id must be numbers');
   }
 
-  const user = await User.findByPk(Number(userId));
+  let user;
+  try {
+    user = await User.findByPk(Number(userId));
+  }
+  catch (error) {
+    console.log(error);
+    // throw updateError(404, 'User not found');
+  }
   if (!user || user === null) {
     throw updateError(404, 'User not found');
   }
 
+  let blog;
   try {
-    const blog = await Blog.findByPk(Number(blogId));
-    if (!blog || blog === null) {
-      throw updateError(404, 'Blog not found');
-    }
+    blog = await Blog.findByPk(Number(blogId));
   }
   catch (error) {
+    console.log(error);
+    // throw updateError(404, 'Blog not found');
+  }
+  if (!blog || blog === null) {
     throw updateError(404, 'Blog not found');
   }
 
@@ -75,15 +83,21 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
   
   if (!list) {
     list = ReadingList.build({ 
-      user_id: userId, 
-      blog_id: blogId, 
+      userId: userId, 
+      blogId: blogId, 
       read: false,
       created_at: new Date(),
       updated_at: new Date()
     });
     
-    await list.save();
-    res.json(list);
+    try {
+      await list.save();
+      res.json(list);
+    }
+    catch (error) {
+      console.log(error);
+    }
+    
   } else {
     throw updateError(400, 'Blog already in reading list');
   }

@@ -23,11 +23,12 @@ Blog.init({
   likes: {
     type: DataTypes.INTEGER
   },
-  user_id: {
-    type: DataTypes.INTEGER,
-    allowNull: false,
-    references: { model: 'user', key: 'id' },
-  },
+  // SHOULD NOT CREATE THIS FIELD DURING INITIAL MIGRATION
+  // userId: {
+  //   type: DataTypes.INTEGER,
+  //   allowNull: false,
+  //   references: { model: 'user', key: 'id' },
+  // },
   year: {
     type: DataTypes.INTEGER,
     allowNull: false,

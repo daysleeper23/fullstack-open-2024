@@ -66,56 +66,56 @@ const initialBlogs = [
   }
 ]
 
-beforeAll(async () => {
-  await sequelize.sync();
-});
-
-beforeEach(async () => {
-  await Blog.destroy({ where: {} });
-  await User.destroy({ where: {} });
-
-  await User.create({ username: 'itestuser@test.com', name: 'Integration Test User' });
-
-  let response = await request(app)
-    .post('/api/login')
-    .send({ username: 'itestuser@test.com', password: 'password' });
+describe('Blogs API', () => {
+  beforeAll(async () => {
+    await sequelize.sync({ force: true, logging: console.log });
+  });
   
-  let token = response.body.token;
-  authToken = `Bearer ${token}`;
-
-  const user = await User.findOne({ });
-
-  initialBlogs.forEach(async blog => {
-    try{
-      await Blog.create({
-        title: blog.title,
-        author: blog.author,
-        url: blog.url,
-        likes: blog.likes,
-        user_id: user.id
-      });
-    }
-    catch (error){
-      console.log('error: ', error);
-    }
+  afterAll(async () => {
+    await sequelize.close();
+  });
+  
+  beforeEach(async () => {
+    await Blog.destroy({ where: {} });
+    await User.destroy({ where: {} });
+  
+    await User.create({ username: 'itestuser@test.com', name: 'Integration Test User' });
+  
+    let response = await request(app)
+      .post('/api/login')
+      .send({ username: 'itestuser@test.com', password: 'password' });
     
+    let token = response.body.token;
+    authToken = `Bearer ${token}`;
+  
+    const user = await User.findOne({ });
+  
+    initialBlogs.forEach(async blog => {
+      try{
+        await Blog.create({
+          title: blog.title,
+          author: blog.author,
+          url: blog.url,
+          likes: blog.likes,
+          user_id: user.id
+        });
+      }
+      catch (error){
+        console.log('error: ', error);
+      }
+      
+    });
+  
+    await User.create({ username: 'itestuser2@test.com', name: 'Integration Test User 2' });
+  
+    response = await request(app)
+      .post('/api/login')
+      .send({ username: 'itestuser2@test.com', password: 'password' });
+    
+    token = response.body.token;
+    authToken2 = `Bearer ${token}`;
   });
 
-  await User.create({ username: 'itestuser2@test.com', name: 'Integration Test User 2' });
-
-  response = await request(app)
-    .post('/api/login')
-    .send({ username: 'itestuser2@test.com', password: 'password' });
-  
-  token = response.body.token;
-  authToken2 = `Bearer ${token}`;
-});
-
-afterAll(async () => {
-  await sequelize.close();
-});
-
-describe('Blogs API', () => {
   describe('POST /api/blogs', () => {
     it('should create a new blog with valid data', async () => {
       const newBlog = {

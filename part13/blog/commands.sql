@@ -25,6 +25,6 @@ CREATE TABLE users (
 );
 
 INSERT INTO users (username, name) VALUES
-    ('john_doe', 'John Doe'),
-    ('jane_smith', 'Jane Smith'),
-    ('alex_brown', 'Alex Brown');
+    ('john_doe@test.com', 'John Doe'),
+    ('jane_smith@test.com', 'Jane Smith'),
+    ('alex_brown@test.com', 'Alex Brown');

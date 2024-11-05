@@ -11,17 +11,9 @@ module.exports = {
         autoIncrement: true,
         allowNull: false
       },
-      blog_id: {
-        type: DataTypes.INTEGER,
-        allowNull: false
-      },
       read: {
         type: DataTypes.BOOLEAN,
         defaultValue: false,
-        allowNull: false
-      },
-      user_id: {
-        type: DataTypes.INTEGER,
         allowNull: false
       },
       created_at: {
@@ -34,6 +26,16 @@ module.exports = {
         defaultValue: DataTypes.NOW,
         allowNull: false
       }
+    });
+    await queryInterface.addColumn('reading_lists', 'user_id', {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'users', key: 'id' },
+    })
+    await queryInterface.addColumn('reading_lists', 'blog_id', {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      references: { model: 'blogs', key: 'id' },
     })
   },
   down: async ({ context }: { context: QueryInterface }) => {

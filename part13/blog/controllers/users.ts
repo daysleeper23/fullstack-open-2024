@@ -15,6 +15,33 @@ const getAllUsers = async (_req: Request, res: Response) => {
   res.json(users);
 };
 
+const getOneUserById = async (req: Request, res: Response) => {
+  const id = req.params.id;
+  const user = await User.findByPk(id, {
+    include: {
+      model: Blog,
+      as: 'readings',
+      through: {
+        attributes: [],
+      },
+      attributes: { 
+        exclude: ['createdAt', 'updatedAt', 'userId', 'readingList'] 
+        // include: ['id', 'title', 'author', 'url', 'likes', 'year']
+      }
+      // include: {
+      //   model: Blog,
+      //   attributes: { exclude: ['createdAt', 'updatedAt', 'userId'] }
+      // },
+    }
+  });
+
+  if (user) {
+    res.json(user);
+  } else {
+    res.status(404).end();
+  }
+}
+
 const createUser = async(req: Request, res: Response) => {
   const body = req.body;
 
@@ -58,6 +85,7 @@ const updateUser = async (req: Request, res: Response) => {
 }
 
 router.get('/', getAllUsers);
+router.get('/:id', getOneUserById);
 router.post('/', createUser);
 router.put('/:username', updateUser);
 
