@@ -16,6 +16,15 @@ const getAllUsers = async (_req: Request, res: Response) => {
 };
 
 const getOneUserById = async (req: Request, res: Response) => {
+  let where = {};
+  if (req.query.read === 'true' || req.query.read === 'false') {
+
+    const readQuery = req.query.read === 'true' ? true : false;
+    where = {
+      read: readQuery
+    };
+  }
+
   const id = req.params.id;
   const user = await User.findByPk(id, {
     include: {
@@ -23,16 +32,13 @@ const getOneUserById = async (req: Request, res: Response) => {
       as: 'readings',
       through: {
         attributes: ['read', 'id'],
+        where: where
       },
       attributes: { 
         exclude: ['createdAt', 'updatedAt', 'userId', 'readingList'] 
-        // include: ['id', 'title', 'author', 'url', 'likes', 'year']
       }
-      // include: {
-      //   model: Blog,
-      //   attributes: { exclude: ['createdAt', 'updatedAt', 'userId'] }
-      // },
-    }
+    },
+    
   });
 
   if (user) {

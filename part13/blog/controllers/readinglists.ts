@@ -64,11 +64,10 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
   let user;
   try {
     user = await User.findByPk(Number(userId));
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
-    // throw updateError(404, 'User not found');
   }
+
   if (!user || user === null) {
     throw updateError(404, 'User not found');
   }
@@ -76,10 +75,8 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
   let blog;
   try {
     blog = await Blog.findByPk(Number(blogId));
-  }
-  catch (error) {
+  } catch (error) {
     console.log(error);
-    // throw updateError(404, 'Blog not found');
   }
   if (!blog || blog === null) {
     throw updateError(404, 'Blog not found');
@@ -113,7 +110,6 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
     catch (error) {
       console.log(error);
     }
-    
   } else {
     throw updateError(400, 'Blog already in reading list');
   }
