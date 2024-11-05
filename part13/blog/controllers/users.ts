@@ -22,7 +22,7 @@ const getOneUserById = async (req: Request, res: Response) => {
       model: Blog,
       as: 'readings',
       through: {
-        attributes: [],
+        attributes: ['read', 'id'],
       },
       attributes: { 
         exclude: ['createdAt', 'updatedAt', 'userId', 'readingList'] 
