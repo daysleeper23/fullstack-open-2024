@@ -68,7 +68,8 @@ const initialBlogs = [
 
 describe('Blogs API', () => {
   beforeAll(async () => {
-    await sequelize.sync({ force: true, logging: console.log });
+    // await sequelize.sync({ force: true, logging: console.log });
+    await sequelize.sync({ force: true });
   });
   
   afterAll(async () => {
