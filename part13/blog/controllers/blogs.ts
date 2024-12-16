@@ -1,26 +1,11 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
-
 const { Op } = require('sequelize');
-import { createError, deleteError, unauthorizeError, updateError } from '../middlewares/errorMiddleware';
-import { NextFunction, Request, Response } from 'express';
+import { authenticate, AuthenticatedRequest } from '../middlewares/authMiddleware';
+import { createError, deleteError, updateError } from '../middlewares/errorMiddleware';
+import { Request, Response } from 'express';
 const { Blog, User } = require('../models');
 
 const router = express.Router();
-
-interface AuthenticatedRequest extends Request {
-  decodedToken?: { id: string }; // decodedToken should be an object containing an id property
-}
-
-const tokenExtractor = (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
-  const authorization = req.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    req.decodedToken = jwt.verify(authorization.substring(7), process.env.SECRET)
-  }  else {
-    return res.status(401).json({ error: 'token missing' })
-  }
-  return next()
-}
 
 const getAllBlogs = async (req: Request, res: Response) => {
   let where = {};
@@ -56,12 +41,10 @@ const getAllBlogs = async (req: Request, res: Response) => {
 };
 
 const createBlog = async (req: AuthenticatedRequest, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
 
   //read the body of the request
   const body = req.body;
+  const auth = req.session.user;
 
   if (!body.title) {
     throw createError(400, 'Title is required');
@@ -98,15 +81,12 @@ const createBlog = async (req: AuthenticatedRequest, res: Response) => {
 
   //create a new blog object with the body of the request using sequelize
   const blog = Blog.build(body);
-  if (!req.decodedToken) {
-    throw createError(401, 'Token missing or invalid');
-  }
 
   if (blog.likes === undefined) {
     blog.likes = 0;
   }
 
-  const user = await User.findByPk(req.decodedToken.id);
+  const user = await User.findByPk(auth.id);
   if (!user) {
     throw createError(401, 'User not found');
   }
@@ -122,13 +102,6 @@ const getBlogById = (req: Request, res: Response) => {
 };
 
 const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
-
-  if (!req.decodedToken) {
-    throw updateError(401, 'Token missing or invalid');
-  }
 
   //get the id of the blog to be updated
   const id = Number(req.params.id);
@@ -161,17 +134,8 @@ const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
 
-  if (!req.decodedToken) {
-    throw deleteError(401, 'Token missing or invalid');
-  }
-
-  if (!req.decodedToken.id) {
-    throw deleteError(401, 'User id missing');
-  }
+  const auth = req.session.user;
 
   //get the id of the blog to be deleted
   const id = Number(req.params.id);
@@ -185,7 +149,7 @@ const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
     throw deleteError(404, 'Blog not found');
   }
 
-  if (blog.userId !== req.decodedToken.id) {
+  if (blog.userId !== auth.id) {
     throw deleteError(401, 'Cannot delete blogs created by other users');
   }
 
@@ -193,7 +157,7 @@ const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
   await Blog.destroy({
     where: {
       id: id,
-      userId: req.decodedToken.id
+      userId: auth.id
     }
   });
   res.status(204).end();
@@ -201,9 +165,9 @@ const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
 
 // Define routes
 router.get('/', getAllBlogs);
-router.post('/', tokenExtractor, createBlog);
+router.post('/', authenticate, createBlog);
 router.get('/:id', getBlogById);
-router.put('/:id', tokenExtractor, updateBlog);
-router.delete('/:id', tokenExtractor, deleteBlog);
+router.put('/:id', authenticate, updateBlog);
+router.delete('/:id', authenticate, deleteBlog);
 
 module.exports = router;

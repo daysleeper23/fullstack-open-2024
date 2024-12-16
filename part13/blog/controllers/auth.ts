@@ -1,10 +1,12 @@
 const express = require('express');
 const jwt = require('jsonwebtoken');
 const { SECRET } = require('../util/config');
+const User = require('../models/user');
 
 import { Request, Response } from 'express';
-import { loginError, unauthorizeError } from '../middlewares/errorMiddleware';
-const User = require('../models/user');
+import { loginError } from '../middlewares/errorMiddleware';
+import { authenticate, AuthenticatedRequest } from '../middlewares/authMiddleware';
+
 
 const router = express.Router();
 
@@ -36,11 +38,7 @@ const authLogin = async (req: Request, res: Response) => {
     , sid: req.session.id });
 }
 
-const authLogout = async (req: Request, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
-
+const authLogout = async (req: AuthenticatedRequest, res: Response) => {
   await req.session.destroy((err: Error) => {
     if (err) {
       console.log('Error destroying session', err);
@@ -53,7 +51,7 @@ const authLogout = async (req: Request, res: Response) => {
 }
 
 router.post('/login', authLogin);
-router.delete('/logout', authLogout);
+router.delete('/logout', authenticate, authLogout);
 
 
 module.exports = router;

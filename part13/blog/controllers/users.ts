@@ -1,6 +1,7 @@
 const express = require('express');
 import { Request, Response } from 'express';
-import { createError, unauthorizeError, updateError } from '../middlewares/errorMiddleware';
+import { createError, updateError } from '../middlewares/errorMiddleware';
+import { authenticate, AuthenticatedRequest } from '../middlewares/authMiddleware';
 const { Blog, User } = require('../models');
 
 const router = express.Router();
@@ -48,10 +49,7 @@ const getOneUserById = async (req: Request, res: Response) => {
   }
 }
 
-const createUser = async(req: Request, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
+const createUser = async(req: AuthenticatedRequest, res: Response) => {
 
   const body = req.body;
 
@@ -73,10 +71,7 @@ const createUser = async(req: Request, res: Response) => {
   res.json(user);
 }
 
-const updateUser = async (req: Request, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
+const updateUser = async (req: AuthenticatedRequest, res: Response) => {
 
   const username = req.params.username;
 
@@ -100,7 +95,7 @@ const updateUser = async (req: Request, res: Response) => {
 
 router.get('/', getAllUsers);
 router.get('/:id', getOneUserById);
-router.post('/', createUser);
-router.put('/:username', updateUser);
+router.post('/', authenticate, createUser);
+router.put('/:username', authenticate, updateUser);
 
 module.exports = router;

@@ -1,25 +1,11 @@
 const express = require('express');
-const jwt = require('jsonwebtoken');
 
-import { Request, Response, NextFunction } from 'express';
-import { unauthorizeError, updateError } from '../middlewares/errorMiddleware';
+import { Request, Response } from 'express';
+import { updateError } from '../middlewares/errorMiddleware';
+import { authenticate, AuthenticatedRequest } from '../middlewares/authMiddleware';
 const { ReadingList, User, Blog } = require('../models');
 
 const router = express.Router();
-
-interface AuthenticatedRequest extends Request {
-  decodedToken?: { id: string }; // decodedToken should be an object containing an id property
-}
-
-const tokenExtractor = (req: AuthenticatedRequest, _res: Response, next: NextFunction) => {
-  const authorization = req.get('authorization')
-  if (authorization && authorization.toLowerCase().startsWith('bearer ')) {
-    req.decodedToken = jwt.verify(authorization.substring(7), process.env.SECRET)
-  }  else {
-    throw updateError(401, 'Token missing');
-  }
-  return next()
-}
 
 const getAllReadingLists = async (_req: Request, res: Response) => {
   const readingLists = await ReadingList.findAll({
@@ -46,10 +32,7 @@ const getReadingList = async (req: Request, res: Response) => {
   }
 }
 
-const addBlogToReadingList = async(req: Request, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
+const addBlogToReadingList = async(req: AuthenticatedRequest, res: Response) => {
 
   const { blogId, userId } = req.body;
 
@@ -120,10 +103,8 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
 }
 
 const updateBlogInReadingList = async(req: AuthenticatedRequest, res: Response) => {
-  if (!req.session.user) {
-    throw unauthorizeError(401, 'User not logged in');
-  }
 
+  const auth = req.session.user;
   const { read } = req.body;
   const id = Number(req.params.id);
 
@@ -139,21 +120,13 @@ const updateBlogInReadingList = async(req: AuthenticatedRequest, res: Response) 
     throw updateError(400, 'Read status must be true');
   }
 
-  if (!req.decodedToken) {
-    throw updateError(401, 'Token missing');
-  }
-
-  if (!req.decodedToken.id) {
-    throw updateError(401, 'Invalid token');
-  }
-
   const list = await ReadingList.findByPk(id);
 
   if (!list) {
     throw updateError(404, 'Reading list not found');
   }
 
-  if (list.userId !== req.decodedToken.id) {
+  if (list.userId !== auth.id) {
     throw updateError(401, 'Cannot update reading list for other users');
   }
 
@@ -169,7 +142,7 @@ const updateBlogInReadingList = async(req: AuthenticatedRequest, res: Response) 
 
 router.get('/', getAllReadingLists);
 router.get('/:id', getReadingList);
-router.post('/', addBlogToReadingList);
-router.put('/:id', tokenExtractor, updateBlogInReadingList);
+router.post('/', authenticate, addBlogToReadingList);
+router.put('/:id', authenticate, updateBlogInReadingList);
 
 module.exports = router;
