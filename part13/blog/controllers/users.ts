@@ -69,7 +69,7 @@ const createUser = async(req: AuthenticatedRequest, res: Response) => {
 
   await user.save();
   res.json(user);
-}
+};
 
 const updateUser = async (req: AuthenticatedRequest, res: Response) => {
 
@@ -93,9 +93,42 @@ const updateUser = async (req: AuthenticatedRequest, res: Response) => {
   res.json(user);
 }
 
+const enableUser = async (req: AuthenticatedRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw updateError(404, 'User not found');
+  }
+  console.log('initial user', user);
+
+  user.enabled = true;
+  console.log('enabled user', user);
+  await user.save();
+  res.json(user);
+};
+
+const disableUser = async (req: AuthenticatedRequest, res: Response) => {
+  const id = Number(req.params.id);
+  const user = await User.findByPk(id);
+  if (!user) {
+    throw updateError(404, 'User not found');
+  }
+  console.log('initial user', user);
+
+  user.enabled = false;
+  console.log('disabled user', user);
+  await user.save();
+
+  //TODO: revoke the current session
+
+  res.json(user);
+};
+
 router.get('/', getAllUsers);
 router.get('/:id', getOneUserById);
 router.post('/', authenticate, createUser);
+router.post('/disable/:id', authenticate, disableUser);
+router.post('/enable/:id', authenticate, enableUser);
 router.put('/:username', authenticate, updateUser);
 
 module.exports = router;
