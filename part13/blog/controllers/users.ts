@@ -1,6 +1,6 @@
 const express = require('express');
 import { Request, Response } from 'express';
-import { createError, updateError } from '../util/middleware';
+import { createError, updateError } from '../middlewares/errorMiddleware';
 const { Blog, User } = require('../models');
 
 const router = express.Router();

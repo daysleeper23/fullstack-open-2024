@@ -21,11 +21,13 @@ module.exports = {
       },
       created_at: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        allowNull: false,
+        defaultValue: new Date()
       },
       updated_at: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW
+        allowNull: false,
+        defaultValue: new Date()
       },
     });
     
@@ -54,11 +56,13 @@ module.exports = {
       },
       created_at: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+        allowNull: false,
+        defaultValue: new Date(),
       },
       updated_at: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
+        allowNull: false,
+        defaultValue: new Date(),
       }
     })
     

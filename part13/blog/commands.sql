@@ -24,7 +24,12 @@ CREATE TABLE users (
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-INSERT INTO users (username, name) VALUES
-    ('john_doe@test.com', 'John Doe'),
-    ('jane_smith@test.com', 'Jane Smith'),
-    ('alex_brown@test.com', 'Alex Brown');
+INSERT INTO users (username, name, enabled) VALUES
+    ('john_doe@test.com', 'John Doe', true),
+    ('jane_smith@test.com', 'Jane Smith', true),
+    ('alex_brown@test.com', 'Alex Brown', true);
+
+    INSERT INTO users (username, name, enabled, created_at, updated_at) VALUES
+    ('john_doe@test.com', 'John Doe', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('jane_smith@test.com', 'Jane Smith', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP),
+    ('alex_brown@test.com', 'Alex Brown', true, CURRENT_TIMESTAMP, CURRENT_TIMESTAMP);

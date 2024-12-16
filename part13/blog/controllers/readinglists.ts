@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 
 import { Request, Response, NextFunction } from 'express';
-import { updateError } from '../util/middleware';
+import { updateError } from '../middlewares/errorMiddleware';
 const { ReadingList, User, Blog } = require('../models');
 
 const router = express.Router();

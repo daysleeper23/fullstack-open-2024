@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 
 const { Op } = require('sequelize');
-import { createError, deleteError, updateError } from '../util/middleware';
+import { createError, deleteError, updateError } from '../middlewares/errorMiddleware';
 import { NextFunction, Request, Response } from 'express';
 const { Blog, User } = require('../models');
 

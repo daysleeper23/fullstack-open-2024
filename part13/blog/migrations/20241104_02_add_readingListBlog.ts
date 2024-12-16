@@ -16,15 +16,15 @@ module.exports = {
         defaultValue: false,
         allowNull: false
       },
-      created_at: {
+      createdAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-        allowNull: false
+        allowNull: false,
+        defaultValue: new Date()
       },
-      updated_at: {
+      updatedAt: {
         type: DataTypes.DATE,
-        defaultValue: DataTypes.NOW,
-        allowNull: false
+        allowNull: false,
+        defaultValue: new Date()
       }
     });
     await queryInterface.addColumn('reading_lists', 'user_id', {
