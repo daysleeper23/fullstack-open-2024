@@ -21,6 +21,7 @@ const createError = (status: number, message: string) => new ApiError('CreateErr
 const updateError = (status: number, message: string) => new ApiError('UpdateError', status, message);
 const loginError = (status: number, message: string) => new ApiError('LoginError', status, message);
 const deleteError = (status: number, message: string) => new ApiError('DeleteError', status, message);
+const unauthorizeError = (status: number, message: string) => new ApiError('UnauthorizeError', status, message);
 
 const errorHandler = (error: ApiError, _request: Request, response: Response, next: NextFunction) => 
 {
@@ -35,7 +36,9 @@ const errorHandler = (error: ApiError, _request: Request, response: Response, ne
     return response.status(error.status).send({ error: 'Error while deleting blog', message: error.message })
   } else if (error.name === 'JsonWebTokenError') {
     return response.status(401).json({ error: 'Error while checking authorization', message: 'Invalid token' })
-  } 
+  } else if (error.name === 'UnauthorizeError') {
+    return response.status(401).json({ error: 'Error while checking authorization', message: 'Unauthorized request' })
+  }
   
   
   else if (error.name === 'SequelizeUniqueConstraintError') {
@@ -49,4 +52,4 @@ const errorHandler = (error: ApiError, _request: Request, response: Response, ne
 }
 
 // this has to be the last loaded middleware, also all the routes should be registered before this!
-export { unknownEndpoint, errorHandler, createError, updateError, loginError, deleteError };
+export { unknownEndpoint, errorHandler, createError, updateError, loginError, deleteError, unauthorizeError };

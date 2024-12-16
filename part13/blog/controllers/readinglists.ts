@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 
 import { Request, Response, NextFunction } from 'express';
-import { updateError } from '../middlewares/errorMiddleware';
+import { unauthorizeError, updateError } from '../middlewares/errorMiddleware';
 const { ReadingList, User, Blog } = require('../models');
 
 const router = express.Router();
@@ -47,6 +47,10 @@ const getReadingList = async (req: Request, res: Response) => {
 }
 
 const addBlogToReadingList = async(req: Request, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   const { blogId, userId } = req.body;
 
   if (!blogId) {
@@ -116,6 +120,10 @@ const addBlogToReadingList = async(req: Request, res: Response) => {
 }
 
 const updateBlogInReadingList = async(req: AuthenticatedRequest, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   const { read } = req.body;
   const id = Number(req.params.id);
 

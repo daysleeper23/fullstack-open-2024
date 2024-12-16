@@ -1,6 +1,6 @@
 const express = require('express');
 import { Request, Response } from 'express';
-import { createError, updateError } from '../middlewares/errorMiddleware';
+import { createError, unauthorizeError, updateError } from '../middlewares/errorMiddleware';
 const { Blog, User } = require('../models');
 
 const router = express.Router();
@@ -49,6 +49,10 @@ const getOneUserById = async (req: Request, res: Response) => {
 }
 
 const createUser = async(req: Request, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   const body = req.body;
 
   if (!body.username) {
@@ -70,6 +74,10 @@ const createUser = async(req: Request, res: Response) => {
 }
 
 const updateUser = async (req: Request, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   const username = req.params.username;
 
   const user = await User.findOne({ where: { username: username } });

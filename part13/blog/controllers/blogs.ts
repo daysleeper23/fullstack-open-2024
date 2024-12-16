@@ -2,7 +2,7 @@ const express = require('express');
 const jwt = require('jsonwebtoken');
 
 const { Op } = require('sequelize');
-import { createError, deleteError, updateError } from '../middlewares/errorMiddleware';
+import { createError, deleteError, unauthorizeError, updateError } from '../middlewares/errorMiddleware';
 import { NextFunction, Request, Response } from 'express';
 const { Blog, User } = require('../models');
 
@@ -56,6 +56,10 @@ const getAllBlogs = async (req: Request, res: Response) => {
 };
 
 const createBlog = async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   //read the body of the request
   const body = req.body;
 
@@ -118,6 +122,10 @@ const getBlogById = (req: Request, res: Response) => {
 };
 
 const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   if (!req.decodedToken) {
     throw updateError(401, 'Token missing or invalid');
   }
@@ -153,6 +161,10 @@ const updateBlog = async (req: AuthenticatedRequest, res: Response) => {
 };
 
 const deleteBlog = async (req: AuthenticatedRequest, res: Response) => {
+  if (!req.session.user) {
+    throw unauthorizeError(401, 'User not logged in');
+  }
+
   if (!req.decodedToken) {
     throw deleteError(401, 'Token missing or invalid');
   }

@@ -8,11 +8,6 @@ let redisClient = new Redis({
   port: REDIS_PORT,
 });
 
-// const store = new RedisStore({
-//   client: redisClient,
-//   prefix: 'sess:',
-// });
-
 const sessionMiddleware = session({
   store: new RedisStore({
     client: redisClient
