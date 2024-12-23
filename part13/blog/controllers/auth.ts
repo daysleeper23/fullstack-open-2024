@@ -13,7 +13,10 @@ const router = express.Router();
 const authLogin = async (req: Request, res: Response) => {
   const body = req.body;
   
-  const user = await User.findOne({ where: { username: body.username } });
+  const user = await User.findOne({ where: { 
+    username: body.username,
+    enabled: true
+  } });
 
   if (!user || body.password !== 'password') {
     throw loginError(401, 'Invalid username or password');

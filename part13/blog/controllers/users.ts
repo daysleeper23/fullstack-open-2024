@@ -99,10 +99,8 @@ const enableUser = async (req: AuthenticatedRequest, res: Response) => {
   if (!user) {
     throw updateError(404, 'User not found');
   }
-  console.log('initial user', user);
 
   user.enabled = true;
-  console.log('enabled user', user);
   await user.save();
   res.json(user);
 };
@@ -113,13 +111,9 @@ const disableUser = async (req: AuthenticatedRequest, res: Response) => {
   if (!user) {
     throw updateError(404, 'User not found');
   }
-  console.log('initial user', user);
 
   user.enabled = false;
-  console.log('disabled user', user);
   await user.save();
-
-  //TODO: revoke the current session
 
   res.json(user);
 };
